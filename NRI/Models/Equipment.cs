@@ -8,12 +8,12 @@ namespace NRI.Models
     public class Equipment
     {
 
-        private int id;
-        private String name;
-        private List<Setup> setups; //TODO list?
+        //private int id;
+        //private String name;
+        //private List<Setup> setups; //TODO list?
 
-        public string Name { get => name; set => name = value; }
-        public List<Setup> Setups { get => setups; set => setups = value; }
-        public int Id { get => id; set => id = value; }
+        public string Name { get; set; }
+        public List<Setup> Setups { get; set; }
+        public int Id { get; set; }
     }
 }

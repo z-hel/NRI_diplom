@@ -7,14 +7,14 @@ namespace NRI.Models
 {
     public class TechOperationNeed
     {
-        private int id;
-        private TechOperation techOperation;
-        private Nomenclature nomenclatureNeed;
-        private int count;
+        //private int id;
+        //private TechOperation techOperation;
+        //private Nomenclature nomenclatureNeed;
+        //private int count;
 
-        public TechOperation TechOperation { get => techOperation; set => techOperation = value; }
-        public Nomenclature NomenclatureNeed { get => nomenclatureNeed; set => nomenclatureNeed = value; }
-        public int Count { get => count; set => count = value; }
-        public int Id { get => id; set => id = value; }
+        public TechOperation TechOperation { get; set; }
+        public Nomenclature NomenclatureNeed { get; set; }
+        public int Count { get; set; }
+        public int Id { get; set; }
     }
 }

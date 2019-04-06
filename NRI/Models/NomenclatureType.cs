@@ -7,10 +7,10 @@ namespace NRI.Models
 {
     public class NomenclatureType
     {
-        private String name;
-        private int id;
+        //private String name;
+        //private int id;
 
-        public string Name { get => name; set => name = value; }
-        public int Id { get => id; set => id = value; }
+        public string Name { get; set; }
+        public int Id { get; set; }
     }
 }

@@ -7,18 +7,18 @@ namespace NRI.Models
 {
     public class Schedule
     {
-        private int id;
-        private String name;
-        private DateTime dateTimeStart;
-        private DateTime dateTimeEnd;
-        private Pattern pattern;
-        private bool isAccessisAccessibility;
+        //private int id;
+        //private String name;
+        //private DateTime dateTimeStart;
+        //private DateTime dateTimeEnd;
+        //private Pattern pattern;
+        //private bool isAccessisAccessibility;
 
-        public string Name { get => name; set => name = value; }
-        public DateTime DateTimeStart { get => dateTimeStart; set => dateTimeStart = value; }
-        public DateTime DateTimeEnd { get => dateTimeEnd; set => dateTimeEnd = value; }
-        public Pattern Pattern { get => pattern; set => pattern = value; }
-        public bool IsAccessisAccessibility { get => isAccessisAccessibility; set => isAccessisAccessibility = value; }
-        public int Id { get => id; set => id = value; }
+        public string Name { get; set; }
+        public DateTime DateTimeStart { get; set; }
+        public DateTime DateTimeEnd { get; set; }
+        public Pattern Pattern { get; set; }
+        public bool IsAccessisAccessibility { get; set; }
+        public int Id { get; set; }
     }
 }

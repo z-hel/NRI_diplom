@@ -7,14 +7,14 @@ namespace NRI.Models
 {
     public class Pattern
     {
-        private String name;
-        private DateTime dateTimeStart;
-        private DateTime dateTimeEnd;
-        private int id;
+        //private String name;
+        //private DateTime dateTimeStart;
+        //private DateTime dateTimeEnd;
+        //private int id;
 
-        public string Name { get => name; set => name = value; }
-        public DateTime DateTimeStart { get => dateTimeStart; set => dateTimeStart = value; }
-        public DateTime DateTimeEnd { get => dateTimeEnd; set => dateTimeEnd = value; }
-        public int Id { get => id; set => id = value; }
+        public string Name { get; set; }
+        public DateTime DateTimeStart { get; set ; }
+        public DateTime DateTimeEnd { get; set; }
+        public int Id { get; set; }
     }
 }

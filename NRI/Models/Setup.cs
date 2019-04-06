@@ -7,14 +7,14 @@ namespace NRI.Models
 {
     public class Setup
     {
-        private int id;
-        private Mode currentMode;
-        private Mode previousMode;
-        private Mode nextMode;
+        //private int id;
+        //private Mode currentMode;
+        //private Mode previousMode;
+        //private Mode nextMode;
 
-        public Mode CurrentMode { get => currentMode; set => currentMode = value; }
-        public Mode PreviousMode { get => previousMode; set => previousMode = value; }
-        public Mode NextMode { get => nextMode; set => nextMode = value; }
-        public int Id { get => id; set => id = value; }
+        public Mode CurrentMode { get; set; }
+        public Mode PreviousMode { get; set; }
+        public Mode NextMode { get; set; }
+        public int Id { get; set; }
     }
 }
