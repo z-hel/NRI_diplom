@@ -20,5 +20,21 @@ namespace NRI.Models
         public NomenclatureType NomenclatureType { get; set; }
         public Nomenclature ParentNomenclature { get; set; }
         public int Id { get ; set; }
+
+        //public Nomenclature(string name, List<TechProcess> processes, string receiptType, NomenclatureType nType, Nomenclature nomParent, int id)
+        //{
+        //    this.Id = id;
+        //    this.Name = name;
+        //    this.NomenclatureType = nType;
+        //    this.ParentNomenclature = nomParent;
+        //    this.ReceiptType = receiptType;
+        //    this.TechProcesses = processes;
+        //}
+
+        //public Nomenclature(string name, int id)
+        //{
+        //    this.Name = name;
+        //    this.Id = id;
+        //}
     }
 }

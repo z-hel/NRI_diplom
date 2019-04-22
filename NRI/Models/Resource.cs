@@ -19,7 +19,7 @@ namespace NRI.Models
         //    private float setupCost;
         //    private float downtimeCost;
 
-        public string Name { get; set; }
+        public ResourceType ResourceType { get; set; }
         public Personal Personal { get; set; }
         public Equipment Equipment { get; set; }
         public Tool Tool { get; set; }
@@ -31,4 +31,5 @@ namespace NRI.Models
         public float DowntimeCost { get; set; }
         public int Id { get; set; }
     }
+    
 }

@@ -15,6 +15,7 @@ namespace NRI.Models
         public Mode CurrentMode { get; set; }
         public Mode PreviousMode { get; set; }
         public Mode NextMode { get; set; }
+        public int Duration { get; set; }
         public int Id { get; set; }
     }
 }

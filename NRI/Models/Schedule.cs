@@ -18,7 +18,7 @@ namespace NRI.Models
         public DateTime DateTimeStart { get; set; }
         public DateTime DateTimeEnd { get; set; }
         public Pattern Pattern { get; set; }
-        public bool IsAccessisAccessibility { get; set; }
+        public bool IsAccessibility { get; set; }
         public int Id { get; set; }
     }
 }
