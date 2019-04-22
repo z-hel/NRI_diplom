@@ -56,13 +56,13 @@ namespace NRI.Controllers
         {
             Nomenclature nomenclature;
 
-            try {
-                nomenclature = appContext.nomenclatures.FirstOrDefault(x => x.Id == id);
-            } catch (ArgumentNullException e) {
-                return NotFound();
-            }
-            //if (nomenclature == null)
+            //try {
+            nomenclature = appContext.nomenclatures.FirstOrDefault(x => x.Id == id);
+            //} catch (ArgumentNullException e) {
             //    return NotFound();
+            //}
+            if (nomenclature == null)
+                return NotFound();
             return new ObjectResult(nomenclature);
         }
 
@@ -73,32 +73,33 @@ namespace NRI.Controllers
             if (nomenclature == null)
                 return BadRequest();
             appContext.nomenclatures.Add(nomenclature);
-            //appContext.SaveChanges();
-            return Ok(nomenclature);
+            appContext.SaveChanges();
+            return Ok();
         }
 
         // PUT: api/Nomenclature/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Nomenclature nomenclature)
         {
-            try
-            {
-                nomenclature = appContext.nomenclatures.FirstOrDefault(x => x.Id == id);
-            }
-            catch (ArgumentNullException e)
-            {
-                return NotFound();
-            }
+            //Nomenclature nomenclatureFind;
+            //try
+            //{
+            //    nomenclatureFind = appContext.nomenclatures.FirstOrDefault(x => x.Id == id);
+            //}
+            //catch (ArgumentNullException e)
+            //{
+            //    return NotFound();
+            //}
 
-            //if (nomenclature == null)
-            //    return BadRequest();
+            if (nomenclature == null)
+                return BadRequest();
 
             if (!appContext.nomenclatures.Any(x=>x.Id == nomenclature.Id))
                 return NotFound();
 
             appContext.Update(nomenclature);
             appContext.SaveChanges();
-            return Ok(nomenclature);
+            return Ok();
         }
 
         // DELETE: api/ApiWithActions/5
@@ -120,7 +121,7 @@ namespace NRI.Controllers
             //    return NotFound();
             appContext.nomenclatures.Remove(nomenclature);
             appContext.SaveChanges();
-            return Ok(nomenclature);
+            return Ok();
         }
     }
 }
