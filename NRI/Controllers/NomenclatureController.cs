@@ -51,7 +51,7 @@ namespace NRI.Controllers
         }
 
         // GET: api/Nomenclature/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}", Name = "GetNomenclature")]
         public IActionResult Get(int id)
         {
             Nomenclature nomenclature;
@@ -102,7 +102,7 @@ namespace NRI.Controllers
             return Ok();
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api/nomenclature/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
