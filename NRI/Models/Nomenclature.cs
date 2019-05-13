@@ -16,7 +16,7 @@ namespace NRI.Models
 
         public string Name { get; set; }
         public List<TechProcess> TechProcesses { get; set; }
-        public string ReceiptType { get; set; }
+        public ReceiptType ReceiptType { get; set; }
         public NomenclatureType NomenclatureType { get; set; }
         public Nomenclature ParentNomenclature { get; set; }
         public int Id { get ; set; }

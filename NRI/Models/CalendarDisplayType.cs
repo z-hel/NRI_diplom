@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace NRI.Models
 {
-    public class Calendar
+    public class CalendarDisplayType
     {
         public string Name { get; set; }
-        public List<Schedule> Schedules { get; set; }
-        public CalendarDisplayType DisplayType { get; set; }
         public int Id { get; set; }
     }
 }

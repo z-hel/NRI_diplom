@@ -17,7 +17,6 @@ namespace NRI.Models
 
         public string Name { get; set; }
         public List<TechOperation> TechOperations { get; set; }
-        public string Version { get; set; }
         public int LaunchBatch { get; set; }
         public int MinBatch { get; set; }
         public int MaxBatch { get; set; }

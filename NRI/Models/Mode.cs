@@ -14,7 +14,9 @@ namespace NRI.Models
 
         public string Name { get; set; }
         public List<Resource> Resources { get; set; }
-        public string Time { get; set; }
+        public string SingleProcessingTime { get; set; } //Продолжительность обработки 1 шт. изделия
+        public string ExecOperationTime { get; set; } //Заключительное время выполнения операции
+        public string ExecResourceTime { get; set; } //Заключительное время использования ресурса
         public int Id { get ; set; }
     }
 }
