@@ -24,6 +24,9 @@ namespace NRI
         public  DbSet<TechOperationOut> techOperationOuts { get; set; }
         public  DbSet<TechProcess> techProcesses { get; set; }
         public  DbSet<Tool> tools { get; set; }
+        public  DbSet<ReceiptType> receiptTypes { get; set; }
+        public  DbSet<ResourceUsageType> resourceUsageTypes { get; set; }
+        public  DbSet<CalendarDisplayType> calendarDisplayTypes { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
