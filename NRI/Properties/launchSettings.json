@@ -12,7 +12,8 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/nomenclature",
+      //"launchUrl": "api/nomenclature",
+      "launchUrl": "index",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +21,8 @@
     "NRI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/nomenclature",
+      //"launchUrl": "api/nomenclature",
+      "launchUrl": "index",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

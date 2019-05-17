@@ -22,6 +22,12 @@ namespace NRI.Controllers
             this.appContext = context;
         }
 
+        //public ViewResult TechProcessView(int id)
+        //{
+        //    TechProcess techProcess = appContext.techProcesses.Find(id);
+        //    return View(techProcess);
+        //}
+
         // GET: api/techProcess
         [HttpGet]
         public List<TechProcess> Get()
