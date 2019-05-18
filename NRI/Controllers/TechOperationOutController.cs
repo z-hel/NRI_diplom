@@ -11,13 +11,19 @@ namespace NRI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TechOperationOutController : ControllerBase
+    public class TechOperationOutController : Controller
     {
         ApplicationContext appContext;
 
         public TechOperationOutController(ApplicationContext context)
         {
             this.appContext = context;
+        }
+
+        public ActionResult Index()
+        {
+            TechOperationOut techOperationOut = new TechOperationOut();
+            return View(techOperationOut);
         }
 
         // GET: api/TechOperationOut

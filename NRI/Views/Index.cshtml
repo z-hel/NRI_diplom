@@ -5,151 +5,111 @@
 }
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <title>NRI</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <style type="text/css">
-        /*.navbar {
-            width: 100%;
-            height: 100px;
-
-            background: rgb(98, 77, 134);
-        }
-        .navbar-menu {
-            width: 20%;
-            float: left;
-            background: rgb(128, 128, 128);
-        }
-        .navbar-directory {
-            width: 80%;
-            float: right;
-            background: rgb(233, 233, 205);
+        table {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            text-align: left;
+            border-collapse: separate;
+            border-spacing: 3px;
+            background: #337ab7;
+            color: #656665;
+            /*color: rgb(162, 212, 255);*/
+            border: 3px solid #337ab7;
+            border-radius: 3px;
         }
 
-        .menu {
-            width: 200px;
-            height: 100px;
-            float: left;
-            background: rgb(156, 167, 169);
-        }*/
-        /*.dropdown {
-            float: left;
-            width: 20%;
-            height: 100%;
+        th {
+            font-size: 18px;
             padding: 10px;
         }
 
-        .body-content {
-            float: left;
-            width: 100%;
-            height: 100%;
-            display: inline-block;
+        td {
+            background: #ffffff;
             padding: 10px;
         }
-
-        .content {
-            width: 80%;
-            height: 100%;
-            float: right;
-            padding: 10px;
-        }
-
-        .container {
-            float: left;
-        }
-
-        .h4 {
-            text-align: center;
+        .table {
             
-        }
-        .menu-divider {
-            border-right-color: dimgray;
-            border-right: 1px solid;
-        }*/
+         }
     </style>
 </head>
+
+
 <body>
-    @*<div class="body-content">
-            <div class="dropdown">
-                <h4>Меню</h4>
-                <div class="menu">
-                    Номенклатура
-                </div>
-                <div class="menu">
-                    Технологические процессы
-                </div>
-                <div class="menu">
-                    Технологические операции
-                </div>
-                <div class="menu">
-                    Режимы
-                </div>
-                <div class="menu">
-                    Потребности
-                </div>
-                <div class="menu">
-                    Выходы
-                </div>
-                <div class="menu">
-                    Персонал
-                </div>
-                <div class="menu">
-                    Оборудование
-                </div>
-                <div class="menu">
-                    Инструменты
-                </div>
-                <div class="menu">
-                    Ресурсы
-                </div>
-                <div class="menu">
-                    Наладки
-                </div>
-                <div class="menu">
-                    Производственные подразделения
-                </div>
-                <div class="menu">
-                    Графики
-                </div>
-                <div class="menu">
-                    Шаблоны
-                </div>
-            </div>
+    <div class="table">
+        <table>
+            <tr>
+                <th>Company INDEX</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Q4</th>
+            </tr>
+            <tr>
+                <td>Microsoft</td>
+                <td>20.3</td>
+                <td>30.5</td>
+                <td>23.5</td>
+                <td>40.3</td>
+            </tr>
+            <tr>
+                <td>Google</td>
+                <td>50.2</td>
+                <td>40.63</td>
+                <td>45.23</td>
+                <td>39.3</td>
+            </tr>
+            <tr>
+                <td>Apple</td>
+                <td>25.4</td>
+                <td>30.2</td>
+                <td>33.3</td>
+                <td>36.7</td>
+            </tr>
+            <tr>
+                <td>IBM</td>
+                <td>20.4</td>
+                <td>15.6</td>
+                <td>22.3</td>
+                <td>29.3</td>
+            </tr>
+        </table>
+    </div>
+</body>
 
-            <div class="menu-divider"></div>
 
-            <div class="content">BODY</div>
-
-        </div>*@
-
-    <body class="is-preload">
+    @*<body class="is-preload">
 
         <!-- Wrapper -->
         <div id="wrapper">
 
-            
-
             <!-- Sidebar -->
             <div id="sidebar">
                 <div class="inner">
-
-                    <!-- Search -->
-                    @*<section id="search" class="alt">
-                        <form method="post" action="#">
-                            <input type="text" name="query" id="query" placeholder="Search" />
-                        </form>
-                    </section>*@
-
-                    <!-- Menu -->
                     <nav id="menu">
                         <header class="major">
-                            <h2>Menu</h2>
+                            <h2>Меню</h2>
                         </header>
                         <ul>
-                            <li><a href="index.html">Homepage</a></li>
-                            <li><a href="generic.html">Generic</a></li>
-                            <li><a href="elements.html">Elements</a></li>
+                            <li id="TechOperationOut"><a asp-page="/TechOperationOut">Выходы</a></li>
+                            <li id="Schedule"><a asp-page="/Schedule">Графики</a></li>
+                            <li id="Tool"><a asp-page="/Tool">Инструменты</a></li>
+                            <li id="Setup"><a asp-page="/Setup">Наладки</a></li>
+                            <li id="Nomenclature"><a asp-page="/Nomenclature">Номенклатура</a></li>
+                            <li id="Equipment"><a asp-page="/Equipment">Оборудование</a></li>
+                            <li id="Personal"><a asp-page="/Personal">Персонал</a></li>
+                            <li id="TechOperationNeed"><a asp-page="/TechOperationNeed">Потребности</a></li>
+                            <li id="ProductionUnit"><a asp-page="/ProductionUnit">Производственные подразделения</a></li>
+                            <li id="Mode"><a asp-page="/Mode">Режимы</a></li>
+                            <li id="Resource"><a asp-page="/Resource">Ресурсы</a></li>
+                            <li id="TechOperation"><a asp-page="/TechOperation">Технологические операции</a></li>
+                            <li id="TechProcess"><a asp-page="/TechProcess">Технологические процессы</a></li>
+                            <li id="Pattern"><a asp-page="/Pattern">Шаблоны</a></li>
                             <li>
                                 <span class="opener">Submenu</span>
                                 <ul>
@@ -159,42 +119,31 @@
                                     <li><a href="#">Feugiat Veroeros</a></li>
                                 </ul>
                             </li>
-                            <li><a href="#">Etiam Dolore</a></li>
-                            <li><a href="#">Adipiscing</a></li>
-                            <li>
-                                <span class="opener">Another Submenu</span>
-                                <ul>
-                                    <li><a href="#">Lorem Dolor</a></li>
-                                    <li><a href="#">Ipsum Adipiscing</a></li>
-                                    <li><a href="#">Tempus Magna</a></li>
-                                    <li><a href="#">Feugiat Veroeros</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Maximus Erat</a></li>
-                            <li><a href="#">Sapien Mauris</a></li>
-                            <li><a href="#">Amet Lacinia</a></li>
                         </ul>
                     </nav>
-
-
                     <!-- Footer -->
                     <footer id="footer">
-                        <p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+                        <p class="copyright">&copy; z_hel</p>
                     </footer>
-
                 </div>
+            </div>
+
+            <div class="content">
+                <header class="major">
+                    <h2>Веб-подсистема управления нормативно-справочной информацией > Справочники</h2>
+                </header>
             </div>
 
         </div>
 
         <!-- Scripts -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/js/browser.min.js"></script>
-        <script src="assets/js/breakpoints.min.js"></script>
-        <script src="assets/js/util.js"></script>
-        <script src="assets/js/main.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/browser.min.js"></script>
+        <script src="js/breakpoints.min.js"></script>
+        <script src="js/util.js"></script>
+        <script src="js/main.js"></script>
 
-    </body>
+    </body>*@
 
-</body>
+
 </html>

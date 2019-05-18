@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject NRI.Services.IModelService ModelService
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -7,7 +8,7 @@
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/main.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
@@ -16,36 +17,84 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 </head>
-<body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-page="/index" class="navbar-brand">Веб-подсистема управления нормативно-справочной информацией</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-page="/Index">Home</a></li>
-                    <li><a asp-page="/About">About</a></li>
-                    <li><a asp-page="/Contact">Contact</a></li>
-                </ul>
+
+
+<body class="is-preload">
+
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+
+
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <div class="inner">
+
+                <!-- Search -->
+                @*<section id="search" class="alt">
+                        <form method="post" action="#">
+                            <input type="text" name="query" id="query" placeholder="Search" />
+                        </form>
+                    </section>*@
+
+                <!-- Menu -->
+                <nav id="menu">
+                    <header class="major">
+                        <h2>Меню</h2>
+                    </header>
+                    <ul>
+                        <li id="TechOperationOut"><a asp-page="/TechOperationOut">Выходы</a></li>
+                        <li id="Schedule"><a asp-page="/Schedule">Графики</a></li>
+                        <li id="Tool"><a asp-page="/Tool">Инструменты</a></li>
+                        <li id="Setup"><a asp-page="/Setup">Наладки</a></li>
+                        <li id="Nomenclature"><a asp-page="/Nomenclature">Номенклатура</a></li>
+                        <li id="Equipment"><a asp-page="/Equipment">Оборудование</a></li>
+                        <li id="Personal"><a asp-page="/Personal">Персонал</a></li>
+                        <li id="TechOperationNeed"><a asp-page="/TechOperationNeed">Потребности</a></li>
+                        <li id="ProductionUnit"><a asp-page="/ProductionUnit">Производственные подразделения</a></li>
+                        <li id="Mode"><a asp-page="/Mode">Режимы</a></li>
+                        <li id="Resource"><a asp-page="/Resource">Ресурсы</a></li>
+                        <li id="TechOperation"><a asp-page="/TechOperation">Технологические операции</a></li>
+                        <li id="TechProcess"><a asp-page="/TechProcess">Технологические процессы</a></li>
+                        <li id="Pattern"><a asp-page="/Pattern">Шаблоны</a></li>
+                        <li>
+                            <span class="opener">Submenu</span>
+                            <ul>
+                                <li><a href="#">Lorem Dolor</a></li>
+                                <li><a href="#">Ipsum Adipiscing</a></li>
+                                <li><a href="#">Tempus Magna</a></li>
+                                <li><a href="#">Feugiat Veroeros</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- Footer -->
+                <footer id="footer">
+                    <p class="copyright">&copy; z_hel</p>
+                </footer>
             </div>
         </div>
-    </nav>
+
+        <div class="content">
+            <header class="major">
+                <h2>Веб-подсистема управления нормативно-справочной информацией > @ModelService.List().First()</h2>
+            </header>
+            @{
+                @RenderBody()
+                //Layout = "Index";
+            }
+        </div>
+
+    </div>
+
+
+
+
+
 
     <partial name="_CookieConsentPartial" />
-
     <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2019 - NRI</p>
-        </footer>
+        @*@RenderBody()*@
     </div>
 
     <environment include="Development">
@@ -69,6 +118,46 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
+    <!-- Scripts -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/browser.min.js"></script>
+    <script src="js/breakpoints.min.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/main.js"></script>
+
     @RenderSection("Scripts", required: false)
+
 </body>
+
+
+@*<body>
+
+        <partial name="_CookieConsentPartial" />
+        <div class="container body-content">
+            @RenderBody()
+        </div>
+
+        <environment include="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+        </environment>
+        <environment exclude="Development">
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery"
+                    crossorigin="anonymous"
+                    integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+            </script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                    crossorigin="anonymous"
+                    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
+            </script>
+            <script src="~/js/site.min.js" asp-append-version="true"></script>
+        </environment>
+
+        @RenderSection("Scripts", required: false)
+    </body>*@
 </html>

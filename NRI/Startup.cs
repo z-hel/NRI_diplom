@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NRI.Models;
+using NRI.Services;
 
 namespace NRI
 {
@@ -49,6 +50,9 @@ namespace NRI
             {
                 options.RootDirectory = "/Views";
             });
+
+            services.AddTransient<IModelService, ModelService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
