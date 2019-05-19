@@ -20,17 +20,17 @@ namespace NRI.Controllers
             this.appContext = context;
         }
 
-        public ActionResult Index()
-        {
-            TechOperationOut techOperationOut = new TechOperationOut();
-            return View(techOperationOut);
-        }
-
         // GET: api/TechOperationOut
         [HttpGet]
         public List<TechOperationOut> Get()
         {
             return appContext.techOperationOuts.ToList();
+        }
+
+        public IActionResult Index()
+        {
+            ViewBag.techOperationOuts = appContext.techOperationOuts.ToList();
+            return View();
         }
 
         // GET: api/TechOperationOut/5

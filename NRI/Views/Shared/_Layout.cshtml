@@ -43,20 +43,20 @@
                         <h2>Меню</h2>
                     </header>
                     <ul>
-                        <li id="TechOperationOut"><a asp-page="/TechOperationOut">Выходы</a></li>
-                        <li id="Schedule"><a asp-page="/Schedule">Графики</a></li>
-                        <li id="Tool"><a asp-page="/Tool">Инструменты</a></li>
-                        <li id="Setup"><a asp-page="/Setup">Наладки</a></li>
-                        <li id="Nomenclature"><a asp-page="/Nomenclature">Номенклатура</a></li>
-                        <li id="Equipment"><a asp-page="/Equipment">Оборудование</a></li>
-                        <li id="Personal"><a asp-page="/Personal">Персонал</a></li>
-                        <li id="TechOperationNeed"><a asp-page="/TechOperationNeed">Потребности</a></li>
-                        <li id="ProductionUnit"><a asp-page="/ProductionUnit">Производственные подразделения</a></li>
-                        <li id="Mode"><a asp-page="/Mode">Режимы</a></li>
-                        <li id="Resource"><a asp-page="/Resource">Ресурсы</a></li>
-                        <li id="TechOperation"><a asp-page="/TechOperation">Технологические операции</a></li>
-                        <li id="TechProcess"><a asp-page="/TechProcess">Технологические процессы</a></li>
-                        <li id="Pattern"><a asp-page="/Pattern">Шаблоны</a></li>
+                        <li id="TechOperationOut"><a asp-page="/New">Выходы</a></li> 
+                        <li id="Schedule" class="pageName"><a asp-page="/Schedule">Графики</a></li>
+                        <li id="Tool" class="pageName"><a asp-page="/Tool">Инструменты</a></li>
+                        <li id="Setup" class="pageName"><a asp-page="/Setup">Наладки</a></li>
+                        <li id="Nomenclature" class="pageName"><a asp-page="/Nomenclature">Номенклатура</a></li>
+                        <li id="Equipment" class="pageName"><a asp-page="/Equipment">Оборудование</a></li>
+                        <li id="Personal" class="pageName"><a asp-page="/Personal">Персонал</a></li>
+                        <li id="TechOperationNeed" class="pageName"><a asp-page="/TechOperationNeed">Потребности</a></li>
+                        <li id="ProductionUnit" class="pageName"><a asp-page="/ProductionUnit">Производственные подразделения</a></li>
+                        <li id="Mode" class="pageName"><a asp-page="/Mode">Режимы</a></li>
+                        <li id="Resource" class="pageName"><a asp-page="/Resource">Ресурсы</a></li>
+                        <li id="TechOperation" class="pageName"><a asp-page="/TechOperation">Технологические операции</a></li>
+                        <li id="TechProcess" class="pageName"><a asp-page="/TechProcess">Технологические процессы</a></li>
+                        <li id="Pattern" class="pageName"><a asp-page="/Pattern">Шаблоны</a></li>
                         <li>
                             <span class="opener">Submenu</span>
                             <ul>
@@ -77,7 +77,7 @@
 
         <div class="content">
             <header class="major">
-                <h2>Веб-подсистема управления нормативно-справочной информацией > @ModelService.List().First()</h2>
+                <h2>Веб-подсистема управления нормативно-справочной информацией > @ModelService.List().First()</h2> 
             </header>
             @{
                 @RenderBody()
@@ -124,6 +124,25 @@
     <script src="js/breakpoints.min.js"></script>
     <script src="js/util.js"></script>
     <script src="js/main.js"></script>
+
+    @*<script>
+        //$('ul > li').click(function () {
+        //    var clicked = $(this).text();
+        //    var result;
+        //    switch (clicked) {
+        //        case "TechOperationOut":
+        //            result = "Выходы";
+        //        case "TechOperationNeed":
+        //            result = "Потребности";
+        //        case "TechOperation":
+        //            result = "Технологические операции";
+                
+        //    }
+        //    document.getElementById("pageName").text = result;
+        //});
+
+        
+    </script>*@
 
     @RenderSection("Scripts", required: false)
 

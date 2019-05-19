@@ -1,0 +1,167 @@
+﻿@page
+@{
+
+}
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>NRI</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <style type="text/css">
+        table {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            text-align: left;
+            border-collapse: separate;
+            border-spacing: 3px;
+            background: #337ab7;
+            color: #656665;
+            /*color: rgb(162, 212, 255);*/
+            border: 3px solid #337ab7;
+            border-radius: 3px;
+        }
+
+        th {
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        td {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        .table {
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="table">
+        <table id="techOperationOutTable">
+            @*<tr>
+                <th>Company NEW</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Q4</th>
+            </tr>*@
+            <thead>
+                <tr>
+                    <th>Технологическая операция</th>
+                    <th>Номенклатура входного изделия</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        // Получение всех techOperationOut
+        function GetTechOperationOuts() {
+            $.ajax({
+                url: '/api/TechOperationOut',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (techOperationOuts) {
+                    
+                    //var rows = "";
+                    $.each(techOperationOuts, function (index, techOperationOut) {
+                        var transactionList = techOperationOut;
+                        addRow("techOperationOutTable", transactionList);
+                        // добавляем полученные элементы в таблицу
+                        //rows += row(techOperationOut);
+                    })
+                    //$("table tbody").append(rows);
+                }
+            });
+        }
+        function addRow(tableID, data) {
+
+            var table = document.getElementById(tableID);
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            var cell1 = row.insertCell(0);
+            cell1.innerHtml = data.TechOperation;
+
+            var cell2 = row.insertCell(1);
+            cell2.innerHTML = data.NomenclatureOut;
+
+            var cell3 = row.insertCell(2);
+            cell3.innerHTML = data.count;
+        }
+        GetTechOperationOuts();
+    </script>
+</body>
+
+
+    @*<body class="is-preload">
+
+        <!-- Wrapper -->
+        <div id="wrapper">
+
+            <!-- Sidebar -->
+            <div id="sidebar">
+                <div class="inner">
+                    <nav id="menu">
+                        <header class="major">
+                            <h2>Меню</h2>
+                        </header>
+                        <ul>
+                            <li id="TechOperationOut"><a asp-page="/TechOperationOut">Выходы</a></li>
+                            <li id="Schedule"><a asp-page="/Schedule">Графики</a></li>
+                            <li id="Tool"><a asp-page="/Tool">Инструменты</a></li>
+                            <li id="Setup"><a asp-page="/Setup">Наладки</a></li>
+                            <li id="Nomenclature"><a asp-page="/Nomenclature">Номенклатура</a></li>
+                            <li id="Equipment"><a asp-page="/Equipment">Оборудование</a></li>
+                            <li id="Personal"><a asp-page="/Personal">Персонал</a></li>
+                            <li id="TechOperationNeed"><a asp-page="/TechOperationNeed">Потребности</a></li>
+                            <li id="ProductionUnit"><a asp-page="/ProductionUnit">Производственные подразделения</a></li>
+                            <li id="Mode"><a asp-page="/Mode">Режимы</a></li>
+                            <li id="Resource"><a asp-page="/Resource">Ресурсы</a></li>
+                            <li id="TechOperation"><a asp-page="/TechOperation">Технологические операции</a></li>
+                            <li id="TechProcess"><a asp-page="/TechProcess">Технологические процессы</a></li>
+                            <li id="Pattern"><a asp-page="/Pattern">Шаблоны</a></li>
+                            <li>
+                                <span class="opener">Submenu</span>
+                                <ul>
+                                    <li><a href="#">Lorem Dolor</a></li>
+                                    <li><a href="#">Ipsum Adipiscing</a></li>
+                                    <li><a href="#">Tempus Magna</a></li>
+                                    <li><a href="#">Feugiat Veroeros</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- Footer -->
+                    <footer id="footer">
+                        <p class="copyright">&copy; z_hel</p>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="content">
+                <header class="major">
+                    <h2>Веб-подсистема управления нормативно-справочной информацией > Справочники</h2>
+                </header>
+            </div>
+
+        </div>
+
+        <!-- Scripts -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/browser.min.js"></script>
+        <script src="js/breakpoints.min.js"></script>
+        <script src="js/util.js"></script>
+        <script src="js/main.js"></script>
+
+    </body>*@
+
+
+</html>

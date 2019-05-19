@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace NRI.Views
 {
-    public class IndexModel : PageModel
+    public class NewModel : PageModel
     {
         public void OnGet()
         {
