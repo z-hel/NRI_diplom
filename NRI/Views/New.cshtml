@@ -55,21 +55,15 @@
 
 <body>
     <INPUT type="button" value="Добавить" data-modal="addModal" />
+    <INPUT type="button" value="Редактировать" onclick="Edit()" />
+    <INPUT type="button" value="Удалить" data-modal="deleteModal" />
     <div class="table">
         <table id="techOperationOutTable">
-            @*<tr>
-                    <th>Company NEW</th>
-                    <th>Q1</th>
-                    <th>Q2</th>
-                    <th>Q3</th>
-                    <th>Q4</th>
-                </tr>*@
             <thead>
                 <tr>
                     <th>Технологическая операция</th>
                     <th>Номенклатура выходного изделия</th>
                     <th>Количество</th>
-                    <th><INPUT type="checkbox" id="id" /></th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -80,14 +74,11 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" data-close=""></span>
         <div id="addModal">
-            @*class="dlg-modal"*@
             <form name="techOperationOutForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
                     <label for="techOperation">Технологическая операция:</label>
                     <select name="to" id="selectTechOperation"></select>
-
-                    @*<input class="form-control" name="techOperation" />*@
                 </div>
                 <div class="form-group">
                     <label for="nomOut">Номенклатура выходного изделия:</label>
@@ -95,22 +86,77 @@
                 </div>
                 <div class="form-group">
                     <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="count"/>
+                    <input class="form-control" name="count" id="count" />
                 </div>
                 <div class="panel-body">
-                    
+
                     <input type="button" value="Добавить" onclick="AddTechOperationOut()" />
                     <input type="button" value="Сбросить" onclick="reset()" />
-                    @*<button type="button" class="btn btn-sm btn-primary">Добавить</button>*@
-                    @*<a id="reset" class="btn btn-sm btn-primary">Сбросить</a>*@
+                </div>
+            </form>
+        </div>
+
+
+        <div id="editModal">
+            <form name="techOperationOutEditForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="techOperation">Технологическая операция:</label>
+                    <select name="to" id="selectTechOperation"></select>
+                </div>
+                <div class="form-group">
+                    <label for="nomOut">Номенклатура выходного изделия:</label>
+                    <select name="nomOut" id="selectNomOut"></select>
+                </div>
+                <div class="form-group">
+                    <label for="count">Количество:</label>
+                    <input class="form-control" name="count" id="count" />
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Изменить" onclick="" /> 
+                    @*TODO*@
+                    <input type="button" value="Сбросить" onclick="reset()" />
                 </div>
             </form>
         </div>
     </div>
 
 
+
     <script>
-        
+
+        function Edit() {
+            //document.addEventListener('change', function () {
+            //    var chk = event.target;
+
+            //    if (chk.tagName === 'INPUT' && chk.type === 'checkbox') {
+            //        alert(chk.name + " " + chk.value + " " + chk.checked);
+            //    }
+            //})
+
+            //var selectedCheckbox;
+            //$('input[type=checkbox]').each(function () {
+            //    if ($(this).prop('checked')) {
+            //        selectedCheckbox = $(this);
+            //        $("#editModal").show();
+            //    }
+            //    else {
+            //        return false;
+            //    }
+            //});
+            //selectedCheckbox.style = "class";
+
+
+            if ($("#cbx").prop("checked") != 'checked') {  // #agree - селектор чекбокса. Если не сработало замените prop на attr
+                window.alert('Не выбрана ни одна запись');
+                return false;
+            }
+            else {
+                // Переход на страницу покупки
+                $("#editModal").show();
+            }
+        }
 
         // сброс формы
         function reset() {
@@ -184,8 +230,10 @@
                 }),
                 success: function (techOperationOut) {
                     reset();
-                    modalClose(event);
-                    $("table tbody").append(row(techOperationOut));
+                    alert('Запись успешно добавлена');
+                    addRow('techOperationOutTable', techOperationOut);
+                    //var table = document.getElementById('techOperationOutTable');
+                    //$("table tbody").append(row(techOperationOut));
                 }
             })
         }
@@ -273,25 +321,10 @@
             var cell3 = row.insertCell(2);
             cell3.innerText = data.count;
 
-            //var cell4 = row.insertCell(3);
-
-            //var checkbox = document.createElement('input');
-            //checkbox.type = "checkbox";
-            //checkbox.name = "name";
-            //checkbox.value = "value";
-
-            //cell4.appendChild(checkbox);
-
-
             var cell4 = row.insertCell(3);
-            var element1 = document.createElement('input');
-            element1.type = 'checkbox';
-            element1.name = 'chkname';
-            element1.id = 'chkid';
-            var el = document.createElement('div');
-            el.appendChild(element1);
+            var el = document.createElement('label');
+            el.innerHTML = '<input type="checkbox" id="cbx" style="display: none;"><label for="cbx" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             cell4.appendChild(el);
-            //cell4.appendChild(element1);
         }
         GetTechOperationOuts();
         GetTechOperations();

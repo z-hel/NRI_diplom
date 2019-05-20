@@ -53,7 +53,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.techOperationOuts.Add(techOperationOut);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(techOperationOut);
         }
 
         // PUT: api/TechOperationOut/5
@@ -69,7 +69,7 @@ namespace NRI.Controllers
 
             appContext.Update(techOperationOut);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(techOperationOut);
         }
 
         // DELETE: api/TechOperationOut/5
@@ -89,7 +89,7 @@ namespace NRI.Controllers
             
             appContext.techOperationOuts.Remove(techOperationOut);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(techOperationOut);
         }
     }
 }
