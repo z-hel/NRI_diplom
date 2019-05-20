@@ -1,5 +1,9 @@
-@import url(css/font-awesome.min.css);
+@import url(font-awesome.min.css);
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic,600italic|Roboto+Slab:400,700");
+
+.form-group {
+    margin: 10px 20px 10px 20px;
+}
 
 .container body-content {
     float: left;
@@ -76,6 +80,339 @@
     width: 100%;
     height: 100%;*/
 }
+
+/* reset */
+html, body, div, span, h1, h2, h3, p, ul, li {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+}
+
+*, :after, :before {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+ol, ul {
+    list-style: none;
+    display: block;
+}
+
+a, button, div, input, select, textarea, :focus, :active {
+    outline: none;
+}
+
+/* grid */
+html, body, .wrap {
+    height: 100%;
+    line-height: 1;
+}
+
+.wrap {
+    max-width: 1024px;
+    position: relative;
+    margin: 0 auto;
+    padding: 50px 24px 36px;
+}
+
+/* typography */
+body {
+    font-size: 16px;
+    line-height: 24px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+
+h1 {
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 30px;
+    margin-bottom: 24px;
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 30px;
+    color: #058cd0;
+    margin: -5px 0 27px;
+    padding-top: 12px;
+    border-bottom: dashed 1px;
+}
+
+h3 {
+    font-weight: normal;
+    font-size: 22px;
+    line-height: 24px;
+    margin-bottom: 12px;
+}
+
+p {
+    line-height: 20px;
+    color: #656565;
+    text-align: justify;
+}
+
+/* transition */
+.btn, .closer, .overlay {
+    transition: all 0.2s;
+}
+
+/* buttons */
+.btn-box {
+    overflow: hidden;
+}
+
+.btn {
+    height: 36px;
+    display: inline-block;
+    font-size: 13px;
+    line-height: 36px;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    float: left;
+    margin: 0 12px 12px 0;
+    padding: 0 24px;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-align: center;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-default {
+    border: solid 1px #357ebd;
+    background: #428bca;
+}
+
+.btn-success {
+    border: solid 1px #4cae4c;
+    background: #5cb85c;
+}
+
+.btn-default:hover {
+    border-color: #285e8e;
+    background: #3276b1;
+}
+
+.btn-success:hover {
+    border-color: #398439;
+    background: #47a447;
+}
+
+/*--- CONTENT ---*/
+
+.overlay {
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 110;
+    background: rgba(0,0,0,0.87);
+}
+
+.dlg-modal {
+    width: 576px;
+    height: 300px;
+    opacity: 0;
+    visibility: hidden;
+    text-align: center;
+    position: fixed;
+    left: 50%;
+    top: 180px;
+    z-index: 130;
+    margin-left: -288px;
+    padding: 47px 36px;
+    background: #efa200;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.85);
+    box-shadow: 0 0 20px rgba(0,0,0,0.85);
+    filter: alpha(opacity=0);
+}
+
+.dlg-modal-slide {
+    top: -320px;
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-outer {
+    width: 760px;
+    min-height: 460px;
+    position: fixed;
+    left: 50%;
+    z-index: 120;
+    margin-left: -380px;
+    padding: 80px 0;
+    background: #ffffff;
+    border-radius: 0.75em;
+}
+
+    .modal-outer > div {
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        position: static;
+        margin: 0 auto;
+    }
+
+.closer {
+    width: 40px;
+    height: 40px;
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    background: url("..//images/cross.png") no-repeat;
+    cursor: pointer;
+}
+
+    .closer:hover {
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+
+/* animation */
+.fadeIn, .fadeOut, .slideInDown, .slideOutUp {
+    -webkit-animation-duration: 0.4s;
+    animation-duration: 0.4s;
+    animation-timing-function: ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.fadeIn {
+    -webkit-animation-name: fadeIn;
+    animation-name: fadeIn;
+    opacity: 1;
+    visibility: visible;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.fadeOut {
+    -webkit-animation-name: fadeOut;
+    animation-name: fadeOut;
+    opacity: 0;
+    visibility: hidden;
+}
+
+@keyframes slideInDown {
+    from {
+        top: -320px;
+    }
+
+    to {
+        top: 180px;
+    }
+}
+
+.slideInDown {
+    -webkit-animation-name: slideInDown;
+    animation-name: slideInDown;
+    top: 180px;
+}
+
+@keyframes slideOutUp {
+    from {
+        top: 180px;
+    }
+
+    to {
+        top: -320px;
+    }
+}
+
+.slideOutUp {
+    -webkit-animation-name: slideOutUp;
+    animation-name: slideOutUp;
+    top: -320px;
+}
+
+@media screen and (max-width: 800px) {
+    .modal-outer {
+        width: 620px;
+        min-height: auto;
+        margin-left: -310px;
+        padding: 50px 0;
+    }
+
+        .modal-outer .dlg-modal {
+            width: 420px;
+        }
+}
+
+@media screen and (max-width: 640px) {
+    .btn {
+        height: 48px;
+        line-height: 48px;
+        padding: 0 36px;
+    }
+
+    .dlg-modal {
+        width: 420px;
+        margin-left: -210px;
+    }
+
+    .modal-outer {
+        width: 480px;
+        margin-left: -240px;
+    }
+
+        .modal-outer .dlg-modal {
+            width: 300px;
+            height: 150px;
+        }
+}
+
+@media screen and (max-width: 480px) {
+    .dlg-modal {
+        width: 300px;
+        margin-left: -150px;
+    }
+
+    .modal-outer {
+        width: 320px;
+        margin-left: -155px;
+    }
+
+        .modal-outer .dlg-modal {
+            width: 290px;
+            height: 150px;
+        }
+}
+
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
@@ -2568,7 +2905,7 @@ button,
     input[type="button"]:hover,
     button:hover,
     .button:hover {
-        background-color: rgba(245, 106, 106, 0.05);
+        background-color: rgba(51, 122, 183, 0.75);
     }
 
     input[type="submit"]:active,
@@ -2576,7 +2913,7 @@ button,
     input[type="button"]:active,
     button:active,
     .button:active {
-        background-color: rgba(245, 106, 106, 0.15);
+        background-color: rgba(51, 122, 183, 0.42);
     }
 
     input[type="submit"].icon:before,
@@ -2655,7 +2992,7 @@ button,
 /* Mini Posts */
 
 .mini-posts article {
-    border-top: solid 1px rgba(210, 215, 217, 0.75);
+    border-top: solid 1px rgba(211, 215, 217, 0.75);
     margin-top: 2em;
     padding-top: 2em;
 }
@@ -3231,7 +3568,7 @@ button,
             line-height: inherit;
             position: absolute;
             text-indent: 0;
-            top: 0;
+            top: 0.5em;
             width: inherit;
         }
 

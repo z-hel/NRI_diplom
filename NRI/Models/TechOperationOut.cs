@@ -12,8 +12,10 @@ namespace NRI.Models
         //private Nomenclature nomenclatureOut;
         //private int count;
 
-        public TechOperation TechOperation { get; set; }
-        public Nomenclature NomenclatureOut { get; set; }
+        //public TechOperation TechOperation { get; set; }
+        //public Nomenclature NomenclatureOut { get; set; }
+        public int TechOperationId { get; set; }
+        public int NomenclatureOutId { get; set; }
         public int Count { get; set; }
         public int Id { get; set; }
         public string Name = "Выходы";

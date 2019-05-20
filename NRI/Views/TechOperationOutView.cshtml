@@ -1,7 +1,7 @@
 ﻿@using NRI.Models
 @model NRI.Views.TechOperationOutViewModel
 @{
-    List<TechOperationOut> list = Model.OnGet();
+//List<TechOperationOut> list = Model.OnGet();
 }
 <!DOCTYPE html>
 
@@ -48,14 +48,14 @@
                 <th>Номенклатура входного изделия</th>
                 <th>Количество</th>
             </tr>
-            @foreach (TechOperationOut obj in list)
+            @*@foreach (TechOperationOut obj in list)
             {
             <tr>
                 <th>@obj.TechOperation</th>
                 <th>@obj.NomenclatureOut</th>
                 <th>@obj.Count</th>
             </tr>
-            }
+            }*@
         </table>
     </div>
 </body>

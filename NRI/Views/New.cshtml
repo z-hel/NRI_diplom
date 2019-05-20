@@ -18,10 +18,17 @@
             border-collapse: separate;
             border-spacing: 3px;
             background: #337ab7;
-            color: #656665;
+            /*color: #656665;*/
             /*color: rgb(162, 212, 255);*/
+            /*border: 3px solid #337ab7;*/
+            background-color: #337ab7;
+            border-radius: 0.375em;
+            box-shadow: inset 0 0 0 2px #337ab7;
+            color: #337ab7 !important;
+        }
+        tr {
+            background: #ffffff;
             border: 3px solid #337ab7;
-            border-radius: 3px;
         }
 
         th {
@@ -34,33 +41,156 @@
             padding: 10px;
         }
 
+        INPUT {
+            margin: 10px 10px 10px 0;
+        }
+
         .table {
         }
+
+
     </style>
 </head>
 
 
 <body>
+    <INPUT type="button" value="Добавить" data-modal="addModal" />
     <div class="table">
         <table id="techOperationOutTable">
             @*<tr>
-                <th>Company NEW</th>
-                <th>Q1</th>
-                <th>Q2</th>
-                <th>Q3</th>
-                <th>Q4</th>
-            </tr>*@
+                    <th>Company NEW</th>
+                    <th>Q1</th>
+                    <th>Q2</th>
+                    <th>Q3</th>
+                    <th>Q4</th>
+                </tr>*@
             <thead>
                 <tr>
                     <th>Технологическая операция</th>
-                    <th>Номенклатура входного изделия</th>
+                    <th>Номенклатура выходного изделия</th>
                     <th>Количество</th>
+                    <th><INPUT type="checkbox" id="id" /></th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
+
+    <div id="overlay" class="overlay fadeOut" data-close=""></div>
+    <div class="modal-outer" style="top: -460px;">
+        <span class="closer" data-close=""></span>
+        <div id="addModal">
+            @*class="dlg-modal"*@
+            <form name="techOperationOutForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="techOperation">Технологическая операция:</label>
+                    <select name="to" id="selectTechOperation"></select>
+
+                    @*<input class="form-control" name="techOperation" />*@
+                </div>
+                <div class="form-group">
+                    <label for="nomOut">Номенклатура выходного изделия:</label>
+                    <select name="nomOut" id="selectNomOut"></select>
+                </div>
+                <div class="form-group">
+                    <label for="count">Количество:</label>
+                    <input class="form-control" name="count" id="count"/>
+                </div>
+                <div class="panel-body">
+                    
+                    <input type="button" value="Добавить" onclick="AddTechOperationOut()" />
+                    <input type="button" value="Сбросить" onclick="reset()" />
+                    @*<button type="button" class="btn btn-sm btn-primary">Добавить</button>*@
+                    @*<a id="reset" class="btn btn-sm btn-primary">Сбросить</a>*@
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <script>
+        
+
+        // сброс формы
+        function reset() {
+            var form = document.forms["techOperationOutForm"];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+
+        function GetTechOperations() {
+            var select = document.getElementById('selectTechOperation');
+            $.ajax({
+                url: '/api/TechOperation',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (techOperations) {
+                    $.each(techOperations, function (index, techOperation) {
+                        var ooption = document.createElement('option');
+                        ooption.value = techOperation.id;
+                        ooption.innerText = techOperation.name
+                        select.appendChild(ooption);
+
+                        //document.getElementById('selectTechOperation').createElement('option').append(techOperation.name);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        function GetNomenclatures() {
+            var select = document.getElementById('selectNomOut');
+            $.ajax({
+                url: '/api/Nomenclature',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (nomenclatures) {
+                    $.each(nomenclatures, function (index, nomenclature) {
+                        
+                        var ooption = document.createElement('option');
+                        ooption.value = nomenclature.id;
+                        ooption.innerText = nomenclature.name
+                        select.appendChild(ooption);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        
+
+        function AddTechOperationOut() {
+            var indexTOSelected = document.getElementById("selectTechOperation").options.selectedIndex;
+            var techOperationId = document.getElementById("selectTechOperation").options[indexTOSelected].value;
+
+            var indexNomOutSelected = document.getElementById("selectNomOut").options.selectedIndex;
+            var nomOutId = document.getElementById("selectNomOut").options[indexNomOutSelected].value;
+
+            var count = document.getElementById("count").value;
+            if (count.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
+
+            
+            $.ajax({
+                url: "api/TechOperationOut",
+                contentType: "application/json",
+                method: "POST",
+                data: JSON.stringify({
+                    techOperationId: techOperationId,
+                    nomenclatureOutId: nomOutId,
+                    count: count
+                }),
+                success: function (techOperationOut) {
+                    reset();
+                    modalClose(event);
+                    $("table tbody").append(row(techOperationOut));
+                }
+            })
+        }
+
+
         // Получение всех techOperationOut
         function GetTechOperationOuts() {
             $.ajax({
@@ -68,100 +198,204 @@
                 type: 'GET',
                 contentType: "application/json",
                 success: function (techOperationOuts) {
-                    
+
                     //var rows = "";
                     $.each(techOperationOuts, function (index, techOperationOut) {
                         var transactionList = techOperationOut;
+                        //var result = '';
+                        //result = GetTechOperationName(techOperationOut.techOperationId) + GetNomenclatureOutName(techOperationOut.nomenclatureOutId) + techOperationOut.count;
+
                         addRow("techOperationOutTable", transactionList);
                         // добавляем полученные элементы в таблицу
                         //rows += row(techOperationOut);
                     })
                     //$("table tbody").append(rows);
+                },
+                error: function (e) {
+                    console.log(e.message);
                 }
             });
         }
-        function addRow(tableID, data) {
+
+        async function GetTechOperationName(id) {
+            var name;
+            var urlstr = '/api/TechOperation/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (techOperation) {
+                    name = techOperation.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetNomenclatureOutName(id) {
+            var name;
+            var urlstr = '/api/Nomenclature/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (nomenclatureOut) {
+                    name = nomenclatureOut.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function addRow(tableID, data) {
 
             var table = document.getElementById(tableID);
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
 
+            var toId = data.techOperationId;
+            var techOperationName = await GetTechOperationName(toId);
+
+            var nomId = data.nomenclatureOutId;
+            var nomenclatureOutName = await GetNomenclatureOutName(nomId);
+
             var cell1 = row.insertCell(0);
-            cell1.innerHtml = data.TechOperation;
+            cell1.innerText = techOperationName;
 
             var cell2 = row.insertCell(1);
-            cell2.innerHTML = data.NomenclatureOut;
+            cell2.innerText = nomenclatureOutName;
 
             var cell3 = row.insertCell(2);
-            cell3.innerHTML = data.count;
+            cell3.innerText = data.count;
+
+            //var cell4 = row.insertCell(3);
+
+            //var checkbox = document.createElement('input');
+            //checkbox.type = "checkbox";
+            //checkbox.name = "name";
+            //checkbox.value = "value";
+
+            //cell4.appendChild(checkbox);
+
+
+            var cell4 = row.insertCell(3);
+            var element1 = document.createElement('input');
+            element1.type = 'checkbox';
+            element1.name = 'chkname';
+            element1.id = 'chkid';
+            var el = document.createElement('div');
+            el.appendChild(element1);
+            cell4.appendChild(el);
+            //cell4.appendChild(element1);
         }
         GetTechOperationOuts();
+        GetTechOperations();
+        GetNomenclatures();
+    </script>
+
+    <script>var typeAnimate = 'slide';</script>
+    <script>
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
     </script>
 </body>
-
-
-    @*<body class="is-preload">
-
-        <!-- Wrapper -->
-        <div id="wrapper">
-
-            <!-- Sidebar -->
-            <div id="sidebar">
-                <div class="inner">
-                    <nav id="menu">
-                        <header class="major">
-                            <h2>Меню</h2>
-                        </header>
-                        <ul>
-                            <li id="TechOperationOut"><a asp-page="/TechOperationOut">Выходы</a></li>
-                            <li id="Schedule"><a asp-page="/Schedule">Графики</a></li>
-                            <li id="Tool"><a asp-page="/Tool">Инструменты</a></li>
-                            <li id="Setup"><a asp-page="/Setup">Наладки</a></li>
-                            <li id="Nomenclature"><a asp-page="/Nomenclature">Номенклатура</a></li>
-                            <li id="Equipment"><a asp-page="/Equipment">Оборудование</a></li>
-                            <li id="Personal"><a asp-page="/Personal">Персонал</a></li>
-                            <li id="TechOperationNeed"><a asp-page="/TechOperationNeed">Потребности</a></li>
-                            <li id="ProductionUnit"><a asp-page="/ProductionUnit">Производственные подразделения</a></li>
-                            <li id="Mode"><a asp-page="/Mode">Режимы</a></li>
-                            <li id="Resource"><a asp-page="/Resource">Ресурсы</a></li>
-                            <li id="TechOperation"><a asp-page="/TechOperation">Технологические операции</a></li>
-                            <li id="TechProcess"><a asp-page="/TechProcess">Технологические процессы</a></li>
-                            <li id="Pattern"><a asp-page="/Pattern">Шаблоны</a></li>
-                            <li>
-                                <span class="opener">Submenu</span>
-                                <ul>
-                                    <li><a href="#">Lorem Dolor</a></li>
-                                    <li><a href="#">Ipsum Adipiscing</a></li>
-                                    <li><a href="#">Tempus Magna</a></li>
-                                    <li><a href="#">Feugiat Veroeros</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </nav>
-                    <!-- Footer -->
-                    <footer id="footer">
-                        <p class="copyright">&copy; z_hel</p>
-                    </footer>
-                </div>
-            </div>
-
-            <div class="content">
-                <header class="major">
-                    <h2>Веб-подсистема управления нормативно-справочной информацией > Справочники</h2>
-                </header>
-            </div>
-
-        </div>
-
-        <!-- Scripts -->
-        <script src="js/jquery.min.js"></script>
-        <script src="js/browser.min.js"></script>
-        <script src="js/breakpoints.min.js"></script>
-        <script src="js/util.js"></script>
-        <script src="js/main.js"></script>
-
-    </body>*@
 
 
 </html>

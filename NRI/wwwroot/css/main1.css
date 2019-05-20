@@ -2493,7 +2493,7 @@ input, select, textarea {
 		input[type="button"]:active,
 		button:active,
 		.button:active {
-			background-color: rgba(245, 106, 106, 0.15);
+			background-color: rgba(51, 122, 183, 0.42);
 		}
 
 		input[type="submit"].icon:before,
