@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.tools.Add(tool);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(tool);
         }
 
         // PUT: api/tool/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(tool);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(tool);
         }
 
         // DELETE: api/tool/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.tools.Remove(tool);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(tool);
         }
     }
 }

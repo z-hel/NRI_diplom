@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.productionUnits.Add(productionUnit);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(productionUnit);
         }
 
         // PUT: api/productionUnit/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(productionUnit);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(productionUnit);
         }
 
         // DELETE: api/productionUnit/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.productionUnits.Remove(productionUnit);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(productionUnit);
         }
     }
 }

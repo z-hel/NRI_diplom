@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.personals.Add(personal);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(personal);
         }
 
         // PUT: api/personal/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(personal);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(personal);
         }
 
         // DELETE: api/personal/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.personals.Remove(personal);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(personal);
         }
     }
 }

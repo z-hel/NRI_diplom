@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.schedules.Add(schedule);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(schedule);
         }
 
         // PUT: api/schedule/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(schedule);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(schedule);
         }
 
         // DELETE: api/schedule/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.schedules.Remove(schedule);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(schedule);
         }
     }
 }

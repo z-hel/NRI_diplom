@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.resourceUsageTypes.Add(resourceUsageType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(resourceUsageType);
         }
 
         // PUT: api/resourceUsageType/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(resourceUsageType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(resourceUsageType);
         }
 
         // DELETE: api/resourceUsageType/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.resourceUsageTypes.Remove(resourceUsageType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(resourceUsageType);
         }
     }
 }

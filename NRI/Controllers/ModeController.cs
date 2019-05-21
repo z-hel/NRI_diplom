@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.modes.Add(mode);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(mode);
         }
 
         // PUT: api/Mode/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(mode);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(mode);
         }
 
         // DELETE: api/Mode/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.modes.Remove(mode);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(mode);
         }
     }
 }

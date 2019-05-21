@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.calendarDisplayTypes.Add(calendarDisplayType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(calendarDisplayType);
         }
 
         // PUT: api/calendarDisplayType/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(calendarDisplayType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(calendarDisplayType);
         }
 
         // DELETE: api/calendarDisplayType/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.calendarDisplayTypes.Remove(calendarDisplayType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(calendarDisplayType);
         }
     }
 }

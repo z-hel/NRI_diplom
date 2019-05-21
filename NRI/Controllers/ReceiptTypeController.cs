@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.receiptTypes.Add(receiptType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(receiptType);
         }
 
         // PUT: api/receiptType/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(receiptType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(receiptType);
         }
 
         // DELETE: api/receiptType/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.receiptTypes.Remove(receiptType);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(receiptType);
         }
     }
 }

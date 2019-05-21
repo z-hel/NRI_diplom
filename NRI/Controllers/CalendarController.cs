@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.calendars.Add(calendar);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(calendar);
         }
 
         // PUT: api/calendar/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(calendar);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(calendar);
         }
 
         // DELETE: api/calendar/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.calendars.Remove(calendar);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(calendar);
         }
     }
 }

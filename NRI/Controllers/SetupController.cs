@@ -48,7 +48,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.setups.Add(setup);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(setup);
         }
 
         // PUT: api/setup/5
@@ -63,7 +63,7 @@ namespace NRI.Controllers
 
             appContext.Update(setup);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(setup);
         }
 
         // DELETE: api/setup/5
@@ -83,7 +83,7 @@ namespace NRI.Controllers
             
             appContext.setups.Remove(setup);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(setup);
         }
     }
 }

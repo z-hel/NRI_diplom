@@ -74,7 +74,7 @@ namespace NRI.Controllers
                 return BadRequest();
             appContext.nomenclatures.Add(nomenclature);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(nomenclature);
         }
 
         // PUT: api/Nomenclature/5
@@ -99,7 +99,7 @@ namespace NRI.Controllers
 
             appContext.Update(nomenclature);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(nomenclature);
         }
 
         // DELETE: api/nomenclature/5
@@ -121,7 +121,7 @@ namespace NRI.Controllers
             //    return NotFound();
             appContext.nomenclatures.Remove(nomenclature);
             appContext.SaveChanges();
-            return Ok();
+            return Ok(nomenclature);
         }
     }
 }
