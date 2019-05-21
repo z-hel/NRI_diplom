@@ -17,7 +17,7 @@ namespace NRI.Models
         public string Name { get; set; }
         public int ReceiptTypeId { get; set; }
         public int NomenclatureTypeId { get; set; }
-        public int ParentNomenclatureId { get; set; }
+        public int? ParentNomenclatureId { get; set; }
         public int Id { get ; set; }
 
         //public Nomenclature(string name, List<TechProcess> processes, string receiptType, NomenclatureType nType, Nomenclature nomParent, int id)

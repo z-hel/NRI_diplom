@@ -13,7 +13,7 @@ namespace NRI.Models
         //private ProductionUnit parentProductionUnit;
 
         public string Name { get; set; }
-        public int ParentProductionUnitId { get; set; }
+        public int? ParentProductionUnitId { get; set; }
         public int Id { get; set; }
     }
 }

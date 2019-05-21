@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace NRI.Views
 {
-    public class TechOperationOutViewModel : PageModel
+    public class TechOperationViewModel : PageModel
     {
         public void OnGet()
         {

@@ -63,13 +63,13 @@
 <body>
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
-    <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()"/>
     <div class="table">
-        <table id="techOperationOutTable">
+        <table id="techOperationNeedTable">
             <thead>
                 <tr>
                     <th>Технологическая операция</th>
-                    <th>Номенклатура выходного изделия</th>
+                    <th>Номенклатура входного изделия</th>
                     <th>Количество</th>
                 </tr>
             </thead>
@@ -81,15 +81,15 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="techOperationOutForm">
+            <form name="techOperationNeedForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
                     <label for="techOperation">Технологическая операция:</label>
                     <select name="to" id="selectTechOperation"></select>
                 </div>
                 <div class="form-group">
-                    <label for="nomOut">Номенклатура выходного изделия:</label>
-                    <select name="nomOut" id="selectNomOut"></select>
+                    <label for="nomNeed">Номенклатура входного изделия:</label>
+                    <select name="nomNeed" id="selectNomOut"></select>
                 </div>
                 <div class="form-group">
                     <label for="count">Количество:</label>
@@ -97,23 +97,23 @@
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddTechOperationOut()" />
-                    <input type="button" value="Сбросить" onclick="reset('techOperationOutForm')" />
+                    <input type="button" value="Добавить" onclick="AddTechOperationNeed()" />
+                    <input type="button" value="Сбросить" onclick="reset('techOperationNeedForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="techOperationOutEditForm">
+            <form name="techOperationNeedEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
                     <label for="techOperation">Технологическая операция:</label>
                     <select name="to" id="selectTechOperationEdit"></select>
                 </div>
                 <div class="form-group">
-                    <label for="nomOut">Номенклатура выходного изделия:</label>
-                    <select name="nomOut" id="selectNomOutEdit"></select>
+                    <label for="nomNeed">Номенклатура входного изделия:</label>
+                    <select name="nomNeed" id="selectNomOutEdit"></select>
                 </div>
                 <div class="form-group">
                     <label for="count">Количество:</label>
@@ -121,20 +121,20 @@
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditTechOperationOut()" />
+                    <input type="button" value="Изменить" onclick="EditTechOperationNeed()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('techOperationOutEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('techOperationNeedEditForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="deleteModal">
-            <div class="panel-body">
-                <h3>Вы уверены, что хотите удалить запись?</h3>
-                <input type="button" value="Удалить" onclick="DeleteTechOperationOut()" />
-                <input type="button" value="Отменить" onclick="CloseModal()" />
-            </div>
+                <div class="panel-body">
+                    <h3>Вы уверены, что хотите удалить запись?</h3>
+                    <input type="button" value="Удалить" onclick="DeleteTechOperationNeed()" />
+                    <input type="button" value="Отменить" onclick="CloseModal()" />
+                </div>
         </div>
     </div>
 
@@ -145,42 +145,42 @@
         var selectedForDelete = [];
         var resultForDelete = new Map();
 
-        function EditTechOperationOut() {
-
+        function EditTechOperationNeed() {
+            
 
             var indexTOSelected = document.getElementById("selectTechOperationEdit").options.selectedIndex;
             var techOperationIdPUT = document.getElementById("selectTechOperationEdit").options[indexTOSelected].value;
 
             var indexNomOutSelected = document.getElementById("selectNomOutEdit").options.selectedIndex;
-            var nomOutIdPUT = document.getElementById("selectNomOutEdit").options[indexNomOutSelected].value;
+            var nomNeedIdPUT = document.getElementById("selectNomOutEdit").options[indexNomOutSelected].value;
 
             var countPUT = document.getElementById("countEdit").value;
             if (countPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/TechOperationOut/" + idPUT;
+            var urlstr = "api/TechOperationNeed/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
                     techOperationId: techOperationIdPUT,
-                    nomenclatureOutId: nomOutIdPUT,
+                    nomenclatureNeedId: nomNeedIdPUT,
                     count: countPUT,
                     id: idPUT
                 }),
-                success: async function (techOperationOut) {
-                    reset('techOperationOutEditForm');
+                success: async function (techOperationNeed) {
+                    reset('techOperationNeedEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('techOperationOutTable');
-
+                    var table = document.getElementById('techOperationNeedTable');
+                    
                     for (var i = 1; i < table.rows.length;) {
-                        table.deleteRow(i);
+                            table.deleteRow(i);
                     }
-                    await GetTechOperationOuts();
+                    await GetTechOperationNeeds();
                     CloseModal();
                 },
                 error: function (e) {
@@ -190,7 +190,7 @@
         }
 
         function openEditModal() {
-
+            
             $('input[type=checkbox]').each(async function () {
                 //if ($(this).is(':checked')) {
                 if (this.checked) {
@@ -206,8 +206,8 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetTechOperationOutById(id);
-
+                    await GetTechOperationNeedById(id);
+                    
                     return false;
                 }
             });
@@ -216,7 +216,7 @@
             }
             return false;
         }
-
+        
         // сброс формы
         function reset(formId) {
             var form = document.forms[formId];
@@ -245,7 +245,7 @@
                 alert('Не выбрана ни одна запись');
                 return false;
             }
-
+            
 
             var deleteModal = document.getElementById('deleteModal');
             //TODO SHOW DELETE MODAL
@@ -254,34 +254,35 @@
             return false;
         }
 
-        async function DeleteTechOperationOut() {
+        async function DeleteTechOperationNeed() {
             selectedForDelete.forEach(async function (elem) {
-                await GetTechOperationOutById(elem);
+                await GetTechOperationNeedById(elem);
                 var idDEL = elem;
                 var techOperationIdDEL = resultForDelete.get('techOperationId');
-                var nomOutIdDEL = resultForDelete.get('nomenclatureOutId');
+                var nomNeedIdDEL = resultForDelete.get('nomenclatureNeedId');
                 var countDEL = resultForDelete.get('count');
 
-                var urlstr = "api/TechOperationOut/" + idDEL;
+                var urlstr = "api/TechOperationNeed/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
                         techOperationId: techOperationIdDEL,
-                        nomenclatureOutId: nomOutIdDEL,
+                        nomenclatureNeedId: nomNeedIdDEL,
                         count: countDEL,
                         id: idDEL
                     }),
-                    success: async function (techOperationOut) {
+                    success: async function (techOperationNeed) {
                         alert('Запись удалена');
-                        
-                        var table = document.getElementById('techOperationOutTable');
+
+                        //update table
+                        var table = document.getElementById('techOperationNeedTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetTechOperationOuts();
+                        await GetTechOperationNeeds();
                         CloseModal();
                     },
                     error: function (e) {
@@ -289,44 +290,39 @@
                     }
                 });
             })
+            //await GetTechOperationNeeds();
             //alert('Запись удалена');
-            //CloseModal();
-            //if (res) {
-            //    alert('Запись удалена');
 
-            //    var table = document.getElementById('techOperationOutTable');
+            //var table = document.getElementById('techOperationNeedTable');
 
-            //    for (var i = 1; i < table.rows.length;) {
-            //        table.deleteRow(i);
-            //    }
-            //    await GetTechOperationOuts();
-            //    CloseModal();
+            //for (var i = 1; i < table.rows.length;) {
+            //    table.deleteRow(i);
             //}
+            //await GetTechOperationNeeds();
 
-
-
+            //CloseModal();
         }
 
 
-        async function GetTechOperationOutById(id) {
-            var urlstr = "api/TechOperationOut/" + id;
+        async function GetTechOperationNeedById(id) {
+            var urlstr = "api/TechOperationNeed/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (techOperationOut) {
+                success: async function (techOperationNeed) {
                     var previousTO = document.getElementById('selectTechOperationEdit');
-                    previousTO.value = techOperationOut.techOperationId;
+                    previousTO.value = techOperationNeed.techOperationId;
 
                     var previousNomOut = document.getElementById('selectNomOutEdit');
-                    previousNomOut.value = techOperationOut.nomenclatureOutId;
+                    previousNomOut.value = techOperationNeed.nomenclatureNeedId;
 
                     var previousCount = document.getElementById('countEdit');
-                    previousCount.value = techOperationOut.count;
+                    previousCount.value = techOperationNeed.count;
 
-                    resultForDelete.set('techOperationId', techOperationOut.techOperationId);
-                    resultForDelete.set('nomenclatureOutId', techOperationOut.nomenclatureOutId);
-                    resultForDelete.set('count', techOperationOut.count);
+                    resultForDelete.set('techOperationId', techOperationNeed.techOperationId);
+                    resultForDelete.set('nomenclatureNeedId', techOperationNeed.nomenclatureNeedId);
+                    resultForDelete.set('count', techOperationNeed.count);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -387,47 +383,47 @@
         }
 
 
-        function AddTechOperationOut() {
+        function AddTechOperationNeed() {
             var indexTOSelected = document.getElementById("selectTechOperation").options.selectedIndex;
             var techOperationId = document.getElementById("selectTechOperation").options[indexTOSelected].value;
 
             var indexNomOutSelected = document.getElementById("selectNomOut").options.selectedIndex;
-            var nomOutId = document.getElementById("selectNomOut").options[indexNomOutSelected].value;
+            var nomNeedId = document.getElementById("selectNomOut").options[indexNomOutSelected].value;
 
             var count = document.getElementById("count").value;
             if (count.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
 
 
             $.ajax({
-                url: "api/TechOperationOut",
+                url: "api/TechOperationNeed",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
                     techOperationId: techOperationId,
-                    nomenclatureOutId: nomOutId,
+                    nomenclatureNeedId: nomNeedId,
                     count: count
                 }),
-                success: function (techOperationOut) {
-                    reset('techOperationOutForm');
+                success: function (techOperationNeed) {
+                    reset('techOperationNeedForm');
                     alert('Запись успешно добавлена');
-                    addRow('techOperationOutTable', techOperationOut);
+                    addRow('techOperationNeedTable', techOperationNeed);
                 }
             })
         }
 
 
-        // Получение всех techOperationOut
-        function GetTechOperationOuts() {
+        // Получение всех techOperationNeed
+        function GetTechOperationNeeds() {
             $.ajax({
-                url: '/api/TechOperationOut',
+                url: '/api/TechOperationNeed',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (techOperationOuts) {
+                success: function (techOperationNeeds) {
+                    
+                    $.each(techOperationNeeds, function (index, techOperationNeed) {
+                        var transactionList = techOperationNeed;
 
-                    $.each(techOperationOuts, function (index, techOperationOut) {
-                        var transactionList = techOperationOut;
-
-                        addRow("techOperationOutTable", transactionList);
+                        addRow("techOperationNeedTable", transactionList);
                     })
                 },
                 error: function (e) {
@@ -453,15 +449,15 @@
             return name;
         }
 
-        async function GetNomenclatureOutName(id) {
+        async function GetNomenclatureNeedName(id) {
             var name;
             var urlstr = '/api/Nomenclature/' + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclatureOut) {
-                    name = nomenclatureOut.name;
+                success: function (nomenclatureNeed) {
+                    name = nomenclatureNeed.name;
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -480,14 +476,14 @@
             var toId = data.techOperationId;
             var techOperationName = await GetTechOperationName(toId);
 
-            var nomId = data.nomenclatureOutId;
-            var nomenclatureOutName = await GetNomenclatureOutName(nomId);
+            var nomId = data.nomenclatureNeedId;
+            var nomenclatureNeedName = await GetNomenclatureNeedName(nomId);
 
             var cell1 = row.insertCell(0);
             cell1.innerText = techOperationName;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = nomenclatureOutName;
+            cell2.innerText = nomenclatureNeedName;
 
             var cell3 = row.insertCell(2);
             cell3.innerText = data.count;
@@ -499,7 +495,7 @@
             cell4.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetTechOperationOuts();
+        GetTechOperationNeeds();
         GetTechOperations();
         GetNomenclatures();
 
@@ -517,7 +513,7 @@
             mStatus = false,
             h = null;
 
-
+        
 
         setTopOuter();
 
@@ -527,7 +523,7 @@
 
 
         function somebodyShow(modal) {
-
+           
             mStatus = true;
             overlay.classList.remove('fadeOut');
             overlay.classList.add('fadeIn');
@@ -567,7 +563,7 @@
                 });
             });
         }());
-
+        
 
         [].forEach.call(mClose, function (el) {
             el.addEventListener('click', modalClose);
@@ -707,101 +703,101 @@
 
     <script>var typeAnimate = 'slide';</script>
     @*<script>
-            ; (function () {
-                var overlay = document.getElementById('overlay'),
-                    mOpen = document.querySelectorAll('[data-modal]'),
-                    mClose = document.querySelectorAll('[data-close]'),
-                    outer = document.querySelector('.modal-outer'),
-                    modals = document.querySelectorAll('.modal-outer > div'),
-                    duration = 400,
-                    mStatus = false,
-                    h = null;
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
 
-                if (mOpen.length == 0) return;
+            if (mOpen.length == 0) return;
 
-                setTopOuter();
+            setTopOuter();
 
-                function setTopOuter() {
-                    outer.style.top = -outer.offsetHeight + 'px';
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
                 }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
 
-                [].forEach.call(mOpen, function (el) {
-                    el.addEventListener('click', function (e) {
-                        var modalId = el.getAttribute('data-modal'),
-                            modal = document.getElementById(modalId);
-                        modalShow(modal);
-                    });
-                });
-
-                [].forEach.call(mClose, function (el) {
-                    el.addEventListener('click', modalClose);
-                });
-
-                document.addEventListener('keydown', modalClose);
-
-                function modalShow(modal) {
-                    mStatus = true;
-                    overlay.classList.remove('fadeOut');
-                    overlay.classList.add('fadeIn');
-                    modal.style.display = 'block';
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
 
                     var start = new Date().getTime(),
                         startTop = outer.getBoundingClientRect().top,
-                        finalTop = (window.innerHeight - outer.offsetHeight) / 2,
-                        offset = outer.offsetHeight + finalTop;
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
 
                     var fn = function () {
                         var now = new Date().getTime() - start,
-                            currTop = Math.round(startTop + offset * now / duration);
+                            currTop = Math.round(startTop - offset * now / duration);
 
-                        currTop = (currTop > finalTop) ? finalTop : currTop;
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
                         outer.style.top = currTop + 'px';
 
-                        if (currTop < finalTop) {
+                        if (currTop > finalTop) {
                             requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
                         }
                     }
                     requestAnimationFrame(fn);
-                    window.addEventListener('resize', setTopOpenOuter);
+                    window.removeEventListener('resize', setTopOpenOuter);
                 }
+            }
 
-                function modalClose(event) {
-                    if (mStatus && (!event.keyCode || event.keyCode === 27)) {
-                        mStatus = false;
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
 
-                        var start = new Date().getTime(),
-                            startTop = outer.getBoundingClientRect().top,
-                            finalTop = -outer.offsetHeight,
-                            offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
-
-                        var fn = function () {
-                            var now = new Date().getTime() - start,
-                                currTop = Math.round(startTop - offset * now / duration);
-
-                            currTop = (currTop < finalTop) ? finalTop : currTop;
-                            outer.style.top = currTop + 'px';
-
-                            if (currTop > finalTop) {
-                                requestAnimationFrame(fn);
-                            } else {
-                                overlay.classList.remove('fadeIn');
-                                overlay.classList.add('fadeOut');
-                                [].forEach.call(modals, function (modal) {
-                                    modal.removeAttribute('style');
-                                });
-                            }
-                        }
-                        requestAnimationFrame(fn);
-                        window.removeEventListener('resize', setTopOpenOuter);
-                    }
-                }
-
-                function setTopOpenOuter() {
-                    outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
-                }
-            })();
-
-        </script>*@
+    </script>*@
 </body>
 
 

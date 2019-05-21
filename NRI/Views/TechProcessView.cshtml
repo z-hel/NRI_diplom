@@ -65,12 +65,14 @@
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
-        <table id="techOperationOutTable">
+        <table id="techProcessTable">
             <thead>
                 <tr>
-                    <th>Технологическая операция</th>
-                    <th>Номенклатура выходного изделия</th>
-                    <th>Количество</th>
+                    <th>Технологический процесс</th>
+                    <th>Номенклатура изделия</th>
+                    <th>Количество в партии запуска</th>
+                    <th>Минимальное количество в партии</th>
+                    <th>Максимальное количество в партии</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -81,49 +83,65 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="techOperationOutForm">
+            <form name="techProcessForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperation"></select>
+                    <label for="techProcess">Технологический процесс:</label>
+                    <input class="form-control" name="techProcess" id="techProcess" />
                 </div>
                 <div class="form-group">
-                    <label for="nomOut">Номенклатура выходного изделия:</label>
-                    <select name="nomOut" id="selectNomOut"></select>
+                    <label for="nomenclature">Номенклатура изделия:</label>
+                    <select name="nomenclature" id="selectNomenclature"></select>
                 </div>
                 <div class="form-group">
-                    <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="count" />
+                    <label for="launchBatch">Количество в партии запуска:</label>
+                    <input class="form-control" name="launchBatch" id="launchBatch" />
+                </div>
+                <div class="form-group">
+                    <label for="minBatch">Минимальное количество в партии:</label>
+                    <input class="form-control" name="minBatch" id="minBatch" />
+                </div>
+                <div class="form-group">
+                    <label for="maxBatch">Максимальное количество в партии:</label>
+                    <input class="form-control" name="maxBatch" id="maxBatch" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddTechOperationOut()" />
-                    <input type="button" value="Сбросить" onclick="reset('techOperationOutForm')" />
+                    <input type="button" value="Добавить" onclick="AddTechProcess()" />
+                    <input type="button" value="Сбросить" onclick="reset('techProcessForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="techOperationOutEditForm">
+            <form name="techProcessEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperationEdit"></select>
+                    <label for="techProcess">Технологический процесс:</label>
+                    <input class="form-control" name="techProcessEdit" id="techProcessEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="nomOut">Номенклатура выходного изделия:</label>
-                    <select name="nomOut" id="selectNomOutEdit"></select>
+                    <label for="nomenclature">Номенклатура изделия:</label>
+                    <select name="nomenclatureEdit" id="selectNomenclatureEdit"></select>
                 </div>
                 <div class="form-group">
-                    <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="countEdit" />
+                    <label for="launchBatch">Количество в партии запуска:</label>
+                    <input class="form-control" name="launchBatchEdit" id="launchBatchEdit" />
+                </div>
+                <div class="form-group">
+                    <label for="minBatch">Минимальное количество в партии:</label>
+                    <input class="form-control" name="minBatchEdit" id="minBatchEdit" />
+                </div>
+                <div class="form-group">
+                    <label for="maxBatch">Максимальное количество в партии:</label>
+                    <input class="form-control" name="maxBatchEdit" id="maxBatchEdit" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditTechOperationOut()" />
+                    <input type="button" value="Изменить" onclick="EditTechProcess()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('techOperationOutEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('techProcessEditForm')" />
                 </div>
             </form>
         </div>
@@ -132,7 +150,7 @@
         <div id="deleteModal">
             <div class="panel-body">
                 <h3>Вы уверены, что хотите удалить запись?</h3>
-                <input type="button" value="Удалить" onclick="DeleteTechOperationOut()" />
+                <input type="button" value="Удалить" onclick="DeleteTechProcess()" />
                 <input type="button" value="Отменить" onclick="CloseModal()" />
             </div>
         </div>
@@ -145,42 +163,48 @@
         var selectedForDelete = [];
         var resultForDelete = new Map();
 
-        function EditTechOperationOut() {
+        function EditTechProcess() {
+            
+            var techProcessNamePUT = document.getElementById("techProcessEdit").value;
 
+            var indexNomenclatureSelected = document.getElementById("selectNomenclatureEdit").options.selectedIndex;
+            var nomenclatureIdPUT = document.getElementById("selectNomenclatureEdit").options[indexNomenclatureSelected].value;
 
-            var indexTOSelected = document.getElementById("selectTechOperationEdit").options.selectedIndex;
-            var techOperationIdPUT = document.getElementById("selectTechOperationEdit").options[indexTOSelected].value;
+            var launchBatchPUT = document.getElementById("launchBatchEdit").value;
+            if (launchBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
 
-            var indexNomOutSelected = document.getElementById("selectNomOutEdit").options.selectedIndex;
-            var nomOutIdPUT = document.getElementById("selectNomOutEdit").options[indexNomOutSelected].value;
+            var minBatchPUT = document.getElementById("minBatchEdit").value;
+            if (minBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
 
-            var countPUT = document.getElementById("countEdit").value;
-            if (countPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
+            var maxBatchPUT = document.getElementById("maxBatchEdit").value;
+            if (maxBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/TechOperationOut/" + idPUT;
+            var urlstr = "api/TechProcess/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    techOperationId: techOperationIdPUT,
-                    nomenclatureOutId: nomOutIdPUT,
-                    count: countPUT,
+                    name: techProcessNamePUT,
+                    nomenclatureId: nomenclatureIdPUT,
+                    launchBatch: launchBatchPUT,
+                    minBatch: minBatchPUT,
+                    maxBatch: maxBatchPUT,
                     id: idPUT
                 }),
-                success: async function (techOperationOut) {
-                    reset('techOperationOutEditForm');
+                success: async function (techProcess) {
+                    reset('techProcessEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('techOperationOutTable');
+                    var table = document.getElementById('techProcessTable');
 
                     for (var i = 1; i < table.rows.length;) {
                         table.deleteRow(i);
                     }
-                    await GetTechOperationOuts();
+                    await GetTechProcesss();
                     CloseModal();
                 },
                 error: function (e) {
@@ -206,7 +230,7 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetTechOperationOutById(id);
+                    await GetTechProcessById(id);
 
                     return false;
                 }
@@ -254,34 +278,38 @@
             return false;
         }
 
-        async function DeleteTechOperationOut() {
+        async function DeleteTechProcess() {
             selectedForDelete.forEach(async function (elem) {
-                await GetTechOperationOutById(elem);
+                await GetTechProcessById(elem);
                 var idDEL = elem;
-                var techOperationIdDEL = resultForDelete.get('techOperationId');
-                var nomOutIdDEL = resultForDelete.get('nomenclatureOutId');
-                var countDEL = resultForDelete.get('count');
+                var techProcessNameDEL = resultForDelete.get('techProcessName');
+                var nomenclatureIdDEL = resultForDelete.get('nomenclatureId');
+                var launchBatchDEL = resultForDelete.get('launchBatch');
+                var minBatchDEL = resultForDelete.get('minBatch');
+                var maxBatchDEL = resultForDelete.get('maxBatch');
 
-                var urlstr = "api/TechOperationOut/" + idDEL;
+                var urlstr = "api/TechProcess/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        techOperationId: techOperationIdDEL,
-                        nomenclatureOutId: nomOutIdDEL,
-                        count: countDEL,
+                        name: techProcessNameDEL,
+                        nomenclatureId: nomenclatureIdDEL,
+                        launchBatch: launchBatchDEL,
+                        minBatch: minBatchDEL,
+                        maxBatch: maxBatchDEL,
                         id: idDEL
                     }),
-                    success: async function (techOperationOut) {
+                    success: async function (techProcess) {
                         alert('Запись удалена');
                         
-                        var table = document.getElementById('techOperationOutTable');
+                        var table = document.getElementById('techProcessTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetTechOperationOuts();
+                        await GetTechProcesss();
                         CloseModal();
                     },
                     error: function (e) {
@@ -294,12 +322,12 @@
             //if (res) {
             //    alert('Запись удалена');
 
-            //    var table = document.getElementById('techOperationOutTable');
+            //    var table = document.getElementById('techProcessTable');
 
             //    for (var i = 1; i < table.rows.length;) {
             //        table.deleteRow(i);
             //    }
-            //    await GetTechOperationOuts();
+            //    await GetTechProcesss();
             //    CloseModal();
             //}
 
@@ -308,25 +336,33 @@
         }
 
 
-        async function GetTechOperationOutById(id) {
-            var urlstr = "api/TechOperationOut/" + id;
+        async function GetTechProcessById(id) {
+            var urlstr = "api/TechProcess/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (techOperationOut) {
-                    var previousTO = document.getElementById('selectTechOperationEdit');
-                    previousTO.value = techOperationOut.techOperationId;
+                success: async function (techProcess) {
+                    var previousTO = document.getElementById('techProcessEdit');
+                    previousTO.value = techProcess.name;
 
-                    var previousNomOut = document.getElementById('selectNomOutEdit');
-                    previousNomOut.value = techOperationOut.nomenclatureOutId;
+                    var previousNomenclature = document.getElementById('selectNomenclatureEdit');
+                    previousNomenclature.value = techProcess.nomenclatureId;
 
-                    var previousCount = document.getElementById('countEdit');
-                    previousCount.value = techOperationOut.count;
+                    var previousLaunchBatch = document.getElementById('launchBatchEdit');
+                    previousLaunchBatch.value = techProcess.launchBatch;
 
-                    resultForDelete.set('techOperationId', techOperationOut.techOperationId);
-                    resultForDelete.set('nomenclatureOutId', techOperationOut.nomenclatureOutId);
-                    resultForDelete.set('count', techOperationOut.count);
+                    var previousMinBatch = document.getElementById('minBatchEdit');
+                    previousMinBatch.value = techProcess.minBatch;
+
+                    var previousMaxBatch = document.getElementById('maxBatchEdit');
+                    previousMaxBatch.value = techProcess.maxBatch;
+
+                    resultForDelete.set('techProcessName', techProcess.name);
+                    resultForDelete.set('nomenclatureId', techProcess.NomenclatureId);
+                    resultForDelete.set('launchBatch', techProcess.launchBatch);
+                    resultForDelete.set('minBatch', techProcess.minBatch);
+                    resultForDelete.set('maxBatch', techProcess.maxBatch);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -334,41 +370,15 @@
             });
         }
 
-        function GetTechOperations() {
-            var select = document.getElementById('selectTechOperation');
-            var selectEdit = document.getElementById('selectTechOperationEdit');
-            $.ajax({
-                url: '/api/TechOperation',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techOperations) {
-                    $.each(techOperations, function (index, techOperation) {
-                        var ooption = document.createElement('option');
-                        ooption.value = techOperation.id;
-                        ooption.innerText = techOperation.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = techOperation.id;
-                        ooptionEdit.innerText = techOperation.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
         function GetNomenclatures() {
-            var select = document.getElementById('selectNomOut');
-            var selectEdit = document.getElementById('selectNomOutEdit');
+            var select = document.getElementById('selectNomenclature');
+            var selectEdit = document.getElementById('selectNomenclatureEdit');
             $.ajax({
                 url: '/api/Nomenclature',
                 type: 'GET',
                 contentType: "application/json",
                 success: function (nomenclatures) {
                     $.each(nomenclatures, function (index, nomenclature) {
-
                         var ooption = document.createElement('option');
                         ooption.value = nomenclature.id;
                         ooption.innerText = nomenclature.name
@@ -385,49 +395,60 @@
                 }
             });
         }
+        
 
 
-        function AddTechOperationOut() {
-            var indexTOSelected = document.getElementById("selectTechOperation").options.selectedIndex;
-            var techOperationId = document.getElementById("selectTechOperation").options[indexTOSelected].value;
+        function AddTechProcess() {
+            var techProcessName = document.getElementById("techProcess").value;
 
-            var indexNomOutSelected = document.getElementById("selectNomOut").options.selectedIndex;
-            var nomOutId = document.getElementById("selectNomOut").options[indexNomOutSelected].value;
+            var indexNomenclatureSelected = document.getElementById("selectNomenclature").options.selectedIndex;
+            var nomenclatureId = document.getElementById("selectNomenclature").options[indexNomenclatureSelected].value;
 
-            var count = document.getElementById("count").value;
-            if (count.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
+            var launchBatch = document.getElementById("launchBatch").value;
+            if (launchBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
+
+            var minBatch = document.getElementById("minBatch").value;
+            if (minBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
+
+            var maxBatch = document.getElementById("maxBatch").value;
+            if (maxBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
 
 
             $.ajax({
-                url: "api/TechOperationOut",
+                url: "api/techProcess",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    techOperationId: techOperationId,
-                    nomenclatureOutId: nomOutId,
-                    count: count
+                    name: techProcessName,
+                    nomenclatureId: nomenclatureId,
+                    launchBatch: launchBatch,
+                    minBatch: minBatch,
+                    maxBatch: maxBatch
                 }),
-                success: function (techOperationOut) {
-                    reset('techOperationOutForm');
+                success: function (techProcess) {
+                    reset('techProcessForm');
                     alert('Запись успешно добавлена');
-                    addRow('techOperationOutTable', techOperationOut);
+                    addRow('techProcessTable', techProcess);
+                },
+                error: function (e) {
+                    console.log(e.message);
                 }
             })
         }
 
 
-        // Получение всех techOperationOut
-        function GetTechOperationOuts() {
+        // Получение всех techProcess
+        function GetTechProcesss() {
             $.ajax({
-                url: '/api/TechOperationOut',
+                url: '/api/TechProcess',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (techOperationOuts) {
+                success: function (techProcesss) {
 
-                    $.each(techOperationOuts, function (index, techOperationOut) {
-                        var transactionList = techOperationOut;
+                    $.each(techProcesss, function (index, techProcess) {
+                        var transactionList = techProcess;
 
-                        addRow("techOperationOutTable", transactionList);
+                        addRow("techProcessTable", transactionList);
                     })
                 },
                 error: function (e) {
@@ -436,32 +457,15 @@
             });
         }
 
-        async function GetTechOperationName(id) {
-            var name;
-            var urlstr = '/api/TechOperation/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techOperation) {
-                    name = techOperation.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function GetNomenclatureOutName(id) {
+        async function GetNomenclatureName(id) {
             var name;
             var urlstr = '/api/Nomenclature/' + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclatureOut) {
-                    name = nomenclatureOut.name;
+                success: function (nomenclature) {
+                    name = nomenclature.name;
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -476,31 +480,35 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
+            
+            var techProcessName = data.name;
 
-            var toId = data.techOperationId;
-            var techOperationName = await GetTechOperationName(toId);
-
-            var nomId = data.nomenclatureOutId;
-            var nomenclatureOutName = await GetNomenclatureOutName(nomId);
+            var nomenclatureId = data.nomenclatureId;
+            var nomenclatureName = await GetNomenclatureName(nomenclatureId);
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = techOperationName;
+            cell1.innerText = techProcessName;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = nomenclatureOutName;
+            cell2.innerText = nomenclatureName;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = data.count;
+            cell3.innerText = data.launchBatch;
 
             var cell4 = row.insertCell(3);
+            cell4.innerText = data.minBatch;
+
+            var cell5 = row.insertCell(4);
+            cell5.innerText = data.maxBatch;
+
+            var cell6 = row.insertCell(5);
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell4.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetTechOperationOuts();
-        GetTechOperations();
+        GetTechProcesss();
         GetNomenclatures();
 
 

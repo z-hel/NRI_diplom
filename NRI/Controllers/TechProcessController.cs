@@ -96,63 +96,63 @@ namespace NRI.Controllers
 
 
 
-        [HttpPost]
-        public ActionResult Import(IFormFile fileExcel)
-        {
-            //Stream stream = fileExcel.OpenReadStream();
+        //[HttpPost]
+        //public ActionResult Import(IFormFile fileExcel)
+        //{
+        //    //Stream stream = fileExcel.OpenReadStream();
 
-            if (ModelState.IsValid)
-            {
-                //PriceViewModel viewModel = new PriceViewModel();
+        //    if (ModelState.IsValid)
+        //    {
+        //        //PriceViewModel viewModel = new PriceViewModel();
 
-                List<TechProcess> techProcesses = new List<TechProcess>();
+        //        List<TechProcess> techProcesses = new List<TechProcess>();
 
-                using (XLWorkbook workBook = new XLWorkbook(fileExcel.OpenReadStream(), XLEventTracking.Disabled)) // TODO ??? fileExcel.InputStream
-                {
-                    IXLWorksheet worksheet = workBook.Worksheets.First();
+        //        using (XLWorkbook workBook = new XLWorkbook(fileExcel.OpenReadStream(), XLEventTracking.Disabled)) // TODO ??? fileExcel.InputStream
+        //        {
+        //            IXLWorksheet worksheet = workBook.Worksheets.First();
 
-                    foreach (IXLColumn column in worksheet.ColumnsUsed())
-                    {
-                        foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
-                        {
-                            try
-                            {
-                                TechProcess techProcess = new TechProcess();
-                                techProcess.Id = int.Parse(row.Cell(0).Value.ToString());
-                                techProcess.Name = row.Cell(1).Value.ToString();
+        //            foreach (IXLColumn column in worksheet.ColumnsUsed())
+        //            {
+        //                foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
+        //                {
+        //                    try
+        //                    {
+        //                        TechProcess techProcess = new TechProcess();
+        //                        techProcess.Id = int.Parse(row.Cell(0).Value.ToString());
+        //                        techProcess.Name = row.Cell(1).Value.ToString();
 
-                                TechOperation techOperation = new TechOperation();
-                                techOperation.Id = int.Parse(row.Cell(2).Value.ToString());
-                                techOperation.Name = row.Cell(3).Value.ToString();
-                                techOperation.SerialNumber = int.Parse(row.Cell(4).Value.ToString());
+        //                        TechOperation techOperation = new TechOperation();
+        //                        techOperation.Id = int.Parse(row.Cell(2).Value.ToString());
+        //                        techOperation.Name = row.Cell(3).Value.ToString();
+        //                        techOperation.SerialNumber = int.Parse(row.Cell(4).Value.ToString());
 
-                                techProcess.TechOperations.Add(techOperation);
+        //                        //techProcess.TechOperations.Add(techOperation);
 
-                                techProcesses.Add(techProcess);
-                                //PricePosition pricePosition = new PricePosition();
-                                //pricePosition.Problem = row.Cell(1).Value.ToString();
-                                //pricePosition.Price = row.Cell(column.ColumnNumber()).Value.ToString();
-                                //phoneModel.PricePositions.Add(pricePosition);
+        //                        techProcesses.Add(techProcess);
+        //                        //PricePosition pricePosition = new PricePosition();
+        //                        //pricePosition.Problem = row.Cell(1).Value.ToString();
+        //                        //pricePosition.Price = row.Cell(column.ColumnNumber()).Value.ToString();
+        //                        //phoneModel.PricePositions.Add(pricePosition);
 
-                            }
-                            catch (Exception e)
-                            {
-                                //logging
-                                //viewModel.ErrorsTotal++;
-                            }
-                        }
+        //                    }
+        //                    catch (Exception e)
+        //                    {
+        //                        //logging
+        //                        //viewModel.ErrorsTotal++;
+        //                    }
+        //                }
 
-                        //phoneBrand.PhoneModels.Add(phoneModel);
-                    }
-                    //viewModel.PhoneBrands.Add(phoneBrand);
-                    //}
-                }
-                //например, здесь сохраняем все позиции из прайса в БД
+        //                //phoneBrand.PhoneModels.Add(phoneModel);
+        //            }
+        //            //viewModel.PhoneBrands.Add(phoneBrand);
+        //            //}
+        //        }
+        //        //например, здесь сохраняем все позиции из прайса в БД
 
-                //return View(viewModel);
-                return Ok();
-            }
-            return RedirectToAction("Index");
-        }
+        //        //return View(viewModel);
+        //        return Ok();
+        //    }
+        //    return RedirectToAction("Index");
+        //}
     }
 }
