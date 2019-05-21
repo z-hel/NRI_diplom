@@ -12,8 +12,8 @@ namespace NRI.Models
         //private Nomenclature nomenclatureNeed;
         //private int count;
 
-        public TechOperation TechOperation { get; set; }
-        public Nomenclature NomenclatureNeed { get; set; }
+        public int TechOperationId { get; set; }
+        public int NomenclatureNeedId { get; set; }
         public int Count { get; set; }
         public int Id { get; set; }
     }

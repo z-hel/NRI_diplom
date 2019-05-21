@@ -13,7 +13,7 @@ namespace NRI.Models
         //private String time; //TODO время подготовки, штучной обработки и т.д.
 
         public string Name { get; set; }
-        public List<Resource> Resources { get; set; }
+        public int TechOperationId { get; set; }
         public string SingleProcessingTime { get; set; } //Продолжительность обработки 1 шт. изделия
         public string ExecOperationTime { get; set; } //Заключительное время выполнения операции
         public string ExecResourceTime { get; set; } //Заключительное время использования ресурса

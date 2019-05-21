@@ -15,9 +15,10 @@ namespace NRI.Models
         //private bool isAccessisAccessibility;
 
         public string Name { get; set; }
-        public DateTime DateTimeStart { get; set; }
-        public DateTime DateTimeEnd { get; set; }
-        public Pattern Pattern { get; set; }
+        public string DateTimeStart { get; set; }
+        public string DateTimeEnd { get; set; }
+        public int PatternId { get; set; }
+        public int CalendarId { get; set; }
         public bool IsAccessibility { get; set; }
         public int Id { get; set; }
     }

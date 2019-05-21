@@ -13,8 +13,8 @@ namespace NRI.Models
         //private int id;
 
         public string Name { get; set; }
-        public DateTime DateTimeStart { get; set ; }
-        public DateTime DateTimeEnd { get; set; }
+        public string DateTimeStart { get; set ; }
+        public string DateTimeEnd { get; set; }
         public int Id { get; set; }
     }
 }

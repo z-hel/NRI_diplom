@@ -15,10 +15,8 @@ namespace NRI.Models
         //private List<TechOperationOut> techOperationOuts;
         
         public string Name { get; set; }
-        public List<Mode> Modes { get; set; }
+        public int TechProcessId { get; set; }
         public int SerialNumber { get; set; }
-        public List<TechOperationNeed> TechOperationNeeds { get; set; }
-        public List<TechOperationOut> TechOperationOuts { get; set; }
         public int Id { get; set; }
     }
 }

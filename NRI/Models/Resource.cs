@@ -19,11 +19,13 @@ namespace NRI.Models
         //    private float setupCost;
         //    private float downtimeCost;
         
-        public Personal Personal { get; set; }
-        public Equipment Equipment { get; set; }
-        public Tool Tool { get; set; }
-        public Calendar Calendar { get; set; }
-        public ResourceUsageType UsageType { get; set; }
+        public int PersonalId { get; set; }
+        public int EquipmentId { get; set; }
+        public int ToolId { get; set; }
+        public int CalendarId { get; set; }
+        public int UsageTypeId { get; set; }
+        public int ModeId { get; set; }
+        public int ProductionUnitId { get; set; }
         public bool IsAccessibility { get; set; }
         public float WorkCost { get; set; }
         public float SetupCost { get; set ; }
