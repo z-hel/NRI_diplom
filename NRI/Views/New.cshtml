@@ -10,7 +10,15 @@
     <title>NRI</title>
     <link rel="stylesheet" href="css/main.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    @*<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>*@
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap -->
+    @*<script src="/examples/vendors/bootstrap-3.3.7/js/bootstrap.min.js"></script>*@
+
+    @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
+
     <style type="text/css">
         table {
             font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -26,6 +34,7 @@
             box-shadow: inset 0 0 0 2px #337ab7;
             color: #337ab7 !important;
         }
+
         tr {
             background: #ffffff;
             border: 3px solid #337ab7;
@@ -47,16 +56,14 @@
 
         .table {
         }
-
-
     </style>
 </head>
 
 
 <body>
     <INPUT type="button" value="Добавить" data-modal="addModal" />
-    <INPUT type="button" value="Редактировать" onclick="Edit()" />
-    <INPUT type="button" value="Удалить" data-modal="deleteModal" />
+    <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()"/>
     <div class="table">
         <table id="techOperationOutTable">
             <thead>
@@ -72,7 +79,7 @@
 
     <div id="overlay" class="overlay fadeOut" data-close=""></div>
     <div class="modal-outer" style="top: -460px;">
-        <span class="closer" data-close=""></span>
+        <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
             <form name="techOperationOutForm">
                 <input type="hidden" name="id" value="0" />
@@ -91,7 +98,7 @@
                 <div class="panel-body">
 
                     <input type="button" value="Добавить" onclick="AddTechOperationOut()" />
-                    <input type="button" value="Сбросить" onclick="reset()" />
+                    <input type="button" value="Сбросить" onclick="reset('techOperationOutForm')" />
                 </div>
             </form>
         </div>
@@ -102,71 +109,219 @@
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
                     <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperation"></select>
+                    <select name="to" id="selectTechOperationEdit"></select>
                 </div>
                 <div class="form-group">
                     <label for="nomOut">Номенклатура выходного изделия:</label>
-                    <select name="nomOut" id="selectNomOut"></select>
+                    <select name="nomOut" id="selectNomOutEdit"></select>
                 </div>
                 <div class="form-group">
                     <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="count" />
+                    <input class="form-control" name="count" id="countEdit" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="" /> 
+                    <input type="button" value="Изменить" onclick="EditTechOperationOut()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset()" />
+                    <input type="button" value="Сбросить" onclick="reset('techOperationOutEditForm')" />
                 </div>
             </form>
+        </div>
+
+
+        <div id="deleteModal">
+                <div class="panel-body">
+                    <h3>Вы уверены, что хотите удалить запись?</h3>
+                    <input type="button" value="Удалить" onclick="DeleteTechOperationOut()" />
+                    <input type="button" value="Отменить" onclick="CloseModal()" />
+                </div>
         </div>
     </div>
 
 
 
     <script>
+        var selectedCheckbox;
+        var selectedForDelete = [];
+        var resultForDelete = new Map();
 
-        function Edit() {
-            //document.addEventListener('change', function () {
-            //    var chk = event.target;
+        function EditTechOperationOut() {
+            
 
-            //    if (chk.tagName === 'INPUT' && chk.type === 'checkbox') {
-            //        alert(chk.name + " " + chk.value + " " + chk.checked);
-            //    }
-            //})
+            var indexTOSelected = document.getElementById("selectTechOperationEdit").options.selectedIndex;
+            var techOperationIdPUT = document.getElementById("selectTechOperationEdit").options[indexTOSelected].value;
 
-            //var selectedCheckbox;
-            //$('input[type=checkbox]').each(function () {
-            //    if ($(this).prop('checked')) {
-            //        selectedCheckbox = $(this);
-            //        $("#editModal").show();
-            //    }
-            //    else {
-            //        return false;
-            //    }
-            //});
-            //selectedCheckbox.style = "class";
+            var indexNomOutSelected = document.getElementById("selectNomOutEdit").options.selectedIndex;
+            var nomOutIdPUT = document.getElementById("selectNomOutEdit").options[indexNomOutSelected].value;
 
+            var countPUT = document.getElementById("countEdit").value;
+            if (countPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
 
-            if ($("#cbx").prop("checked") != 'checked') {  // #agree - селектор чекбокса. Если не сработало замените prop на attr
-                window.alert('Не выбрана ни одна запись');
-                return false;
-            }
-            else {
-                // Переход на страницу покупки
-                $("#editModal").show();
-            }
+            var idPUT = selectedCheckbox;
+
+            var urlstr = "api/TechOperationOut/" + idPUT;
+            $.ajax({
+                url: urlstr,
+                contentType: "application/json",
+                method: "PUT",
+                data: JSON.stringify({
+                    techOperationId: techOperationIdPUT,
+                    nomenclatureOutId: nomOutIdPUT,
+                    count: countPUT,
+                    id: idPUT
+                }),
+                success: async function (techOperationOut) {
+                    reset('techOperationOutEditForm');
+                    alert('Запись успешно изменена');
+                    //update table
+
+                    var table = document.getElementById('techOperationOutTable');
+                    
+                    for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                    }
+                    await GetTechOperationOuts();
+                    CloseModal();
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            })
         }
 
+        function openEditModal() {
+            
+            $('input[type=checkbox]').each(async function () {
+                //if ($(this).is(':checked')) {
+                if (this.checked) {
+                    selectedCheckbox = this.value;
+                    var editModal = document.getElementById('editModal');
+
+                    somebodyShow(editModal);
+                    //TODO SHOW EDIT MODAL
+
+
+                    //editButton.setAttribute('data-modal', 'editModal');
+                    //showForEdit(editModal);
+                    //modalShow(editModal);
+                    //$("#editModal").show();
+                    var id = selectedCheckbox;
+                    await GetTechOperationOutById(id);
+                    
+                    return false;
+                }
+            });
+            if (selectedCheckbox == null) {
+                alert('Не выбрана ни одна запись');
+            }
+            return false;
+        }
+        
         // сброс формы
-        function reset() {
-            var form = document.forms["techOperationOutForm"];
+        function reset(formId) {
+            var form = document.forms[formId];
             form.reset();
             form.elements["id"].value = 0;
         }
 
+
+        function CloseModal() {
+            var closer = document.getElementById('closer');
+            closer.click();
+        }
+
+
+        function openDeleteModal() {
+            selectedForDelete = [];
+
+            $('input[type=checkbox]').each(function () {
+                if (this.checked) {
+                    selectedForDelete.push(this.value)
+                }
+            });
+
+
+            if (selectedForDelete.length == 0) {
+                alert('Не выбрана ни одна запись');
+                return false;
+            }
+            
+
+            var deleteModal = document.getElementById('deleteModal');
+            //TODO SHOW DELETE MODAL
+            somebodyShow(deleteModal);
+
+            return false;
+        }
+
+        function DeleteTechOperationOut() {
+            selectedForDelete.forEach(async function (elem) {
+                await GetTechOperationOutById(elem);
+                var idDEL = elem;
+                var techOperationIdDEL = resultForDelete.get('techOperationId');
+                var nomOutIdDEL = resultForDelete.get('nomenclatureOutId');
+                var countDEL = resultForDelete.get('count');
+
+                var urlstr = "api/TechOperationOut/" + idDEL;
+                $.ajax({
+                    url: urlstr,
+                    contentType: "application/json",
+                    method: "DELETE",
+                    data: JSON.stringify({
+                        techOperationId: techOperationIdDEL,
+                        nomenclatureOutId: nomOutIdDEL,
+                        count: countDEL,
+                        id: idDEL
+                    }),
+                    success: async function (techOperationOut) {
+                        alert('Запись удалена');
+
+                        //update table
+                        var table = document.getElementById('techOperationOutTable');
+
+                        for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                        }
+                        await GetTechOperationOuts();
+                        CloseModal();
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            });
+        }
+
+
+        async function GetTechOperationOutById(id) {
+            var urlstr = "api/TechOperationOut/" + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (techOperationOut) {
+                    var previousTO = document.getElementById('selectTechOperationEdit');
+                    previousTO.value = techOperationOut.techOperationId;
+
+                    var previousNomOut = document.getElementById('selectNomOutEdit');
+                    previousNomOut.value = techOperationOut.nomenclatureOutId;
+
+                    var previousCount = document.getElementById('countEdit');
+                    previousCount.value = techOperationOut.count;
+
+                    resultForDelete.set('techOperationId', techOperationOut.techOperationId);
+                    resultForDelete.set('nomenclatureOutId', techOperationOut.nomenclatureOutId);
+                    resultForDelete.set('count', techOperationOut.count);
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
         function GetTechOperations() {
             var select = document.getElementById('selectTechOperation');
+            var selectEdit = document.getElementById('selectTechOperationEdit');
             $.ajax({
                 url: '/api/TechOperation',
                 type: 'GET',
@@ -178,7 +333,10 @@
                         ooption.innerText = techOperation.name
                         select.appendChild(ooption);
 
-                        //document.getElementById('selectTechOperation').createElement('option').append(techOperation.name);
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = techOperation.id;
+                        ooptionEdit.innerText = techOperation.name
+                        selectEdit.appendChild(ooptionEdit);
                     })
                 },
                 error: function (e) {
@@ -188,17 +346,23 @@
         }
         function GetNomenclatures() {
             var select = document.getElementById('selectNomOut');
+            var selectEdit = document.getElementById('selectNomOutEdit');
             $.ajax({
                 url: '/api/Nomenclature',
                 type: 'GET',
                 contentType: "application/json",
                 success: function (nomenclatures) {
                     $.each(nomenclatures, function (index, nomenclature) {
-                        
+
                         var ooption = document.createElement('option');
                         ooption.value = nomenclature.id;
                         ooption.innerText = nomenclature.name
                         select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = nomenclature.id;
+                        ooptionEdit.innerText = nomenclature.name
+                        selectEdit.appendChild(ooptionEdit);
                     })
                 },
                 error: function (e) {
@@ -206,7 +370,7 @@
                 }
             });
         }
-        
+
 
         function AddTechOperationOut() {
             var indexTOSelected = document.getElementById("selectTechOperation").options.selectedIndex;
@@ -218,7 +382,7 @@
             var count = document.getElementById("count").value;
             if (count.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
 
-            
+
             $.ajax({
                 url: "api/TechOperationOut",
                 contentType: "application/json",
@@ -229,11 +393,9 @@
                     count: count
                 }),
                 success: function (techOperationOut) {
-                    reset();
+                    reset('techOperationOutForm');
                     alert('Запись успешно добавлена');
                     addRow('techOperationOutTable', techOperationOut);
-                    //var table = document.getElementById('techOperationOutTable');
-                    //$("table tbody").append(row(techOperationOut));
                 }
             })
         }
@@ -246,18 +408,12 @@
                 type: 'GET',
                 contentType: "application/json",
                 success: function (techOperationOuts) {
-
-                    //var rows = "";
+                    
                     $.each(techOperationOuts, function (index, techOperationOut) {
                         var transactionList = techOperationOut;
-                        //var result = '';
-                        //result = GetTechOperationName(techOperationOut.techOperationId) + GetNomenclatureOutName(techOperationOut.nomenclatureOutId) + techOperationOut.count;
 
                         addRow("techOperationOutTable", transactionList);
-                        // добавляем полученные элементы в таблицу
-                        //rows += row(techOperationOut);
                     })
-                    //$("table tbody").append(rows);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -322,17 +478,122 @@
             cell3.innerText = data.count;
 
             var cell4 = row.insertCell(3);
-            var el = document.createElement('label');
-            el.innerHTML = '<input type="checkbox" id="cbx" style="display: none;"><label for="cbx" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
-            cell4.appendChild(el);
+            //var el = document.createElement('label');
+            //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
+            //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
+            cell4.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            //cell4.appendChild(el);
         }
         GetTechOperationOuts();
         GetTechOperations();
         GetNomenclatures();
-    </script>
 
-    <script>var typeAnimate = 'slide';</script>
-    <script>
+
+
+
+
+
+        var overlay = document.getElementById('overlay'),
+            mOpen = document.querySelectorAll('[data-modal]'),
+            mClose = document.querySelectorAll('[data-close]'),
+            outer = document.querySelector('.modal-outer'),
+            modals = document.querySelectorAll('.modal-outer > div'),
+            duration = 400,
+            mStatus = false,
+            h = null;
+
+        
+
+        setTopOuter();
+
+        function setTopOuter() {
+            outer.style.top = -outer.offsetHeight + 'px';
+        }
+
+
+        function somebodyShow(modal) {
+           
+            mStatus = true;
+            overlay.classList.remove('fadeOut');
+            overlay.classList.add('fadeIn');
+            modal.style.display = 'block';
+
+            var start = new Date().getTime(),
+                startTop = outer.getBoundingClientRect().top,
+                finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                offset = outer.offsetHeight + finalTop;
+
+            var fn = function () {
+                var now = new Date().getTime() - start,
+                    currTop = Math.round(startTop + offset * now / duration);
+
+                currTop = (currTop > finalTop) ? finalTop : currTop;
+                outer.style.top = currTop + 'px';
+
+                if (currTop < finalTop) {
+                    requestAnimationFrame(fn);
+                }
+            }
+            requestAnimationFrame(fn);
+            window.addEventListener('resize', setTopOpenOuter);
+        }
+
+        function setTopOpenOuter() {
+            outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+        }
+
+        (function () {
+            if (mOpen.length == 0) return;
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+        }());
+        
+
+        [].forEach.call(mClose, function (el) {
+            el.addEventListener('click', modalClose);
+        });
+
+        document.addEventListener('keydown', modalClose);
+
+
+        function modalClose(event) {
+            if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                mStatus = false;
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = -outer.offsetHeight,
+                    offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop - offset * now / duration);
+
+                    currTop = (currTop < finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop > finalTop) {
+                        requestAnimationFrame(fn);
+                    } else {
+                        overlay.classList.remove('fadeIn');
+                        overlay.classList.add('fadeOut');
+                        [].forEach.call(modals, function (modal) {
+                            modal.removeAttribute('style');
+                        });
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.removeEventListener('resize', setTopOpenOuter);
+            }
+        }
+
+
+
         ; (function () {
             var overlay = document.getElementById('overlay'),
                 mOpen = document.querySelectorAll('[data-modal]'),
@@ -428,6 +689,104 @@
         })();
 
     </script>
+
+    <script>var typeAnimate = 'slide';</script>
+    @*<script>
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
+    </script>*@
 </body>
 
 
