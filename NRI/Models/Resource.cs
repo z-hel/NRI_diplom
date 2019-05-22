@@ -19,10 +19,9 @@ namespace NRI.Models
         //    private float setupCost;
         //    private float downtimeCost;
         
-        public int PersonalId { get; set; }
-        public int EquipmentId { get; set; }
-        public int ToolId { get; set; }
-        public int CalendarId { get; set; }
+        public int? PersonalId { get; set; }
+        public int? EquipmentId { get; set; }
+        public int? ToolId { get; set; }
         public int UsageTypeId { get; set; }
         public int ModeId { get; set; }
         public int ProductionUnitId { get; set; }
@@ -31,6 +30,7 @@ namespace NRI.Models
         public float SetupCost { get; set ; }
         public float DowntimeCost { get; set; }
         public int Id { get; set; }
+        public string Name { get; set; }
     }
     
 }

@@ -1,0 +1,955 @@
+﻿@page
+@{
+
+}
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>NRI</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    @*<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>*@
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap -->
+    @*<script src="/examples/vendors/bootstrap-3.3.7/js/bootstrap.min.js"></script>*@
+
+    @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
+
+    <style type="text/css">
+        table {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            text-align: left;
+            border-collapse: separate;
+            border-spacing: 3px;
+            background: #337ab7;
+            /*color: #656665;*/
+            /*color: rgb(162, 212, 255);*/
+            /*border: 3px solid #337ab7;*/
+            background-color: #337ab7;
+            border-radius: 0.375em;
+            box-shadow: inset 0 0 0 2px #337ab7;
+            color: #337ab7 !important;
+        }
+
+        tr {
+            background: #ffffff;
+            border: 3px solid #337ab7;
+        }
+
+        th {
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        td {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        INPUT {
+            margin: 10px 10px 10px 0;
+        }
+
+        .table {
+        }
+    </style>
+</head>
+
+
+<body>
+    <INPUT type="button" value="Добавить" data-modal="addModal" />
+    <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()"/>
+    <div class="table">
+        <table id="setupTable">
+            <thead>
+                <tr>
+                    <th>Оборудование</th>
+                    <th>Текущий режим</th>
+                    <th>Предыдущий режим</th>
+                    <th>Следующий режим</th>
+                    <th>Длительность</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="overlay" class="overlay fadeOut" data-close=""></div>
+    <div class="modal-outer" style="top: -460px;">
+        <span class="closer" id="closer" data-close=""></span>
+        <div id="addModal">
+            <form name="setupForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="equipment">Оборудование:</label>
+                    <select name="to" id="selectEquipment"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectCurrentMode">Текущий режим:</label>
+                    <select name="selectCurrentMode" id="selectCurrentMode"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectPreviousMode">Предыдущий режим:</label>
+                    <select name="selectPreviousMode" id="selectPreviousMode"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectNextMode">Следующий режим:</label>
+                    <select name="selectNextMode" id="selectNextMode"></select>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Длительность:</label>
+                    <input class="form-control" name="duration" id="duration" />
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Добавить" onclick="AddSetup()" />
+                    <input type="button" value="Сбросить" onclick="reset('setupForm')" />
+                </div>
+            </form>
+        </div>
+
+
+        <div id="editModal">
+            <form name="setupEditForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="selectEquipmentEdit">Оборудование:</label>
+                    <select name="to" id="selectEquipmentEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectCurrentModeEdit">Текущий режим:</label>
+                    <select name="selectCurrentModeEdit" id="selectCurrentModeEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectPreviousModeEdit">Предыдущий режим:</label>
+                    <select name="selectPreviousModeEdit" id="selectPreviousModeEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectNextModeEdit">Следующий режим:</label>
+                    <select name="selectNextModeEdit" id="selectNextModeEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="durationEdit">Длительность:</label>
+                    <input class="form-control" name="durationEdit" id="durationEdit" />
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Изменить" onclick="EditSetup()" />
+                    @*TODO*@
+                    <input type="button" value="Сбросить" onclick="reset('setupEditForm')" />
+                </div>
+            </form>
+        </div>
+
+
+        <div id="deleteModal">
+                <div class="panel-body">
+                    <h3>Вы уверены, что хотите удалить запись?</h3>
+                    <input type="button" value="Удалить" onclick="DeleteSetup()" />
+                    <input type="button" value="Отменить" onclick="CloseModal()" />
+                </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var selectedCheckbox;
+        var selectedForDelete = [];
+        var resultForDelete = new Map();
+
+        function EditSetup() {
+            
+
+            var indexTOSelected = document.getElementById("selectEquipmentEdit").options.selectedIndex;
+            var equipmentIdPUT = document.getElementById("selectEquipmentEdit").options[indexTOSelected].value;
+
+            var indexCurrentModeSelected = document.getElementById("selectCurrentModeEdit").options.selectedIndex;
+            var currentModePUT = document.getElementById("selectCurrentModeEdit").options[indexCurrentModeSelected].value;
+
+            var indexPreviousModeSelected = document.getElementById("selectPreviousModeEdit").options.selectedIndex;
+            var previousModePUT = document.getElementById("selectPreviousModeEdit").options[indexPreviousModeSelected].value;
+
+            var indexNextModeSelected = document.getElementById("selectNextModeEdit").options.selectedIndex;
+            var nextModePUT = document.getElementById("selectNextModeEdit").options[indexNextModeSelected].value;
+
+            var durationPUT = document.getElementById("durationEdit").value;
+            if (durationPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Длительность"'); }
+
+            if (previousModePUT == 0) {
+                previousModePUT = null;
+            }
+            if (nextModePUT == 0) {
+                nextModePUT = null;
+            }
+
+            var idPUT = selectedCheckbox;
+
+            var urlstr = "api/Setup/" + idPUT;
+            $.ajax({
+                url: urlstr,
+                contentType: "application/json",
+                method: "PUT",
+                data: JSON.stringify({
+                    equipmentId: equipmentIdPUT,
+                    currentModeId: currentModePUT,
+                    previousModeId: previousModePUT,
+                    nextModeId: nextModePUT,
+                    duration: durationPUT,
+                    id: idPUT
+                }),
+                success: async function (setup) {
+                    reset('setupEditForm');
+                    alert('Запись успешно изменена');
+                    //update table
+
+                    var table = document.getElementById('setupTable');
+                    
+                    for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                    }
+                    await GetSetups();
+                    CloseModal();
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            })
+        }
+
+        function openEditModal() {
+            
+            $('input[type=checkbox]').each(async function () {
+                //if ($(this).is(':checked')) {
+                if (this.checked) {
+                    selectedCheckbox = this.value;
+                    var editModal = document.getElementById('editModal');
+
+                    somebodyShow(editModal);
+                    //TODO SHOW EDIT MODAL
+
+
+                    //editButton.setAttribute('data-modal', 'editModal');
+                    //showForEdit(editModal);
+                    //modalShow(editModal);
+                    //$("#editModal").show();
+                    var id = selectedCheckbox;
+                    await GetSetupById(id);
+                    
+                    return false;
+                }
+            });
+            if (selectedCheckbox == null) {
+                alert('Не выбрана ни одна запись');
+            }
+            return false;
+        }
+        
+        // сброс формы
+        function reset(formId) {
+            var form = document.forms[formId];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+
+
+        function CloseModal() {
+            var closer = document.getElementById('closer');
+            closer.click();
+        }
+
+
+        function openDeleteModal() {
+            selectedForDelete = [];
+
+            $('input[type=checkbox]').each(function () {
+                if (this.checked) {
+                    selectedForDelete.push(this.value)
+                }
+            });
+
+
+            if (selectedForDelete.length == 0) {
+                alert('Не выбрана ни одна запись');
+                return false;
+            }
+            
+
+            var deleteModal = document.getElementById('deleteModal');
+            //TODO SHOW DELETE MODAL
+            somebodyShow(deleteModal);
+
+            return false;
+        }
+
+        async function DeleteSetup() {
+            selectedForDelete.forEach(async function (elem) {
+                await GetSetupById(elem);
+                var idDEL = elem;
+                var equipmentIdDEL = resultForDelete.get('equipmentId');
+                var currentModeDEL = resultForDelete.get('currentModeId');
+                var previousModeDEL = resultForDelete.get('previousModeId');
+                var nextModeDEL = resultForDelete.get('nextModeId');
+                var durationDEL = resultForDelete.get('duration');
+
+                var urlstr = "api/Setup/" + idDEL;
+                $.ajax({
+                    url: urlstr,
+                    contentType: "application/json",
+                    method: "DELETE",
+                    data: JSON.stringify({
+                        equipmentId: equipmentIdDEL,
+                        currentModeId: currentModeDEL,
+                        previousModeId: previousModeDEL,
+                        nextModeId: nextModeDEL,
+                        duration: durationDEL,
+                        id: idDEL
+                    }),
+                    success: async function (setup) {
+                        alert('Запись удалена');
+
+                        //update table
+                        var table = document.getElementById('setupTable');
+
+                        for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                        }
+                        await GetSetups();
+                        CloseModal();
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            })
+            //await GetSetups();
+            //alert('Запись удалена');
+
+            //var table = document.getElementById('setupTable');
+
+            //for (var i = 1; i < table.rows.length;) {
+            //    table.deleteRow(i);
+            //}
+            //await GetSetups();
+
+            //CloseModal();
+        }
+
+
+        async function GetSetupById(id) {
+            var urlstr = "api/Setup/" + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (setup) {
+                    var previousTO = document.getElementById('selectEquipmentEdit');
+                    previousTO.value = setup.equipmentId;
+
+                    var previousCurrentMode = document.getElementById('selectCurrentModeEdit');
+                    previousCurrentMode.value = setup.currentModeId;
+
+                    var previousPreviousMode = document.getElementById('selectPreviousModeEdit');
+                    previousPreviousMode.value = setup.previousModeId;
+
+                    var previousNextMode = document.getElementById('selectNextModeEdit');
+                    previousNextMode.value = setup.nextModeId;
+
+                    var previousDuration = document.getElementById('durationEdit');
+                    previousDuration.value = setup.duration;
+
+                    resultForDelete.set('equipmentId', setup.equipmentId);
+                    resultForDelete.set('currentModeId', setup.currentModeId);
+                    resultForDelete.set('previousModeId', setup.previousModeId);
+                    resultForDelete.set('nextModeId', setup.nextModeId);
+                    resultForDelete.set('duration', setup.duration);
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetEquipments() {
+            var select = document.getElementById('selectEquipment');
+            var selectEdit = document.getElementById('selectEquipmentEdit');
+            $.ajax({
+                url: '/api/Equipment',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (equipments) {
+                    $.each(equipments, function (index, equipment) {
+                        var ooption = document.createElement('option');
+                        ooption.value = equipment.id;
+                        ooption.innerText = equipment.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = equipment.id;
+                        ooptionEdit.innerText = equipment.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+
+        function GetModes() {
+            var selectCurrent = document.getElementById('selectCurrentMode');
+            var selectCurrentEdit = document.getElementById('selectCurrentModeEdit');
+
+            var selectPrevious = document.getElementById('selectPreviousMode');
+            var selectPreviousEdit = document.getElementById('selectPreviousModeEdit');
+
+            var selectNext = document.getElementById('selectNextMode');
+            var selectNextEdit = document.getElementById('selectNextModeEdit');
+
+
+            var ooptionNullCurrent = document.createElement('option');
+            ooptionNullCurrent.value = 0;
+            ooptionNullCurrent.innerText = '-';
+            selectCurrent.appendChild(ooptionNullCurrent);
+
+            var ooptionNullPrevious = document.createElement('option');
+            ooptionNullPrevious.value = 0;
+            ooptionNullPrevious.innerText = '-';
+            selectPrevious.appendChild(ooptionNullPrevious);
+
+            var ooptionNullNext = document.createElement('option');
+            ooptionNullNext.value = 0;
+            ooptionNullNext.innerText = '-';
+            selectNext.appendChild(ooptionNullNext);
+            
+
+           var ooptionNullCurrentEdit = document.createElement('option');
+            ooptionNullCurrentEdit.value = 0;
+            ooptionNullCurrentEdit.innerText = '-';
+            selectCurrentEdit.appendChild(ooptionNullCurrentEdit);
+
+            var ooptionNullPreviousEdit = document.createElement('option');
+            ooptionNullPreviousEdit.value = 0;
+            ooptionNullPreviousEdit.innerText = '-';
+            selectPreviousEdit.appendChild(ooptionNullPreviousEdit);
+
+            var ooptionNullNextEdit = document.createElement('option');
+            ooptionNullNextEdit.value = 0;
+            ooptionNullNextEdit.innerText = '-';
+            selectNextEdit.appendChild(ooptionNullNextEdit);
+            
+
+            $.ajax({
+                url: '/api/Mode',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (modes) {
+                    $.each(modes, function (index, modeObj) {
+
+                        var ooptionCurrent = document.createElement('option');
+                        ooptionCurrent.value = modeObj.id;
+                        ooptionCurrent.innerText = modeObj.name;
+
+                        var ooptionPrevious = document.createElement('option');
+                        ooptionPrevious.value = modeObj.id;
+                        ooptionPrevious.innerText = modeObj.name;
+
+                        var ooptionNext = document.createElement('option');
+                        ooptionNext.value = modeObj.id;
+                        ooptionNext.innerText = modeObj.name;
+
+
+                        var ooptionCurrentEdit = document.createElement('option');
+                        ooptionCurrentEdit.value = modeObj.id;
+                        ooptionCurrentEdit.innerText = modeObj.name;
+
+                        var ooptionPreviousEdit = document.createElement('option');
+                        ooptionPreviousEdit.value = modeObj.id;
+                        ooptionPreviousEdit.innerText = modeObj.name;
+
+                        var ooptionNextEdit = document.createElement('option');
+                        ooptionNextEdit.value = modeObj.id;
+                        ooptionNextEdit.innerText = modeObj.name;
+
+                        selectCurrent.appendChild(ooptionCurrent);
+                        selectPrevious.appendChild(ooptionPrevious);
+                        selectNext.appendChild(ooptionNext);
+
+                        selectCurrentEdit.appendChild(ooptionCurrentEdit);
+                        selectPreviousEdit.appendChild(ooptionPreviousEdit);
+                        selectNextEdit.appendChild(ooptionNextEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+
+        function AddSetup() {
+            var indexTOSelected = document.getElementById("selectEquipment").options.selectedIndex;
+            var equipmentId = document.getElementById("selectEquipment").options[indexTOSelected].value;
+
+            var indexCurrentModeSelected = document.getElementById("selectCurrentModeEdit").options.selectedIndex;
+            var currentMode = document.getElementById("selectCurrentModeEdit").options[indexCurrentModeSelected].value;
+
+            var indexPreviousModeSelected = document.getElementById("selectPreviousModeEdit").options.selectedIndex;
+            var previousMode = document.getElementById("selectPreviousModeEdit").options[indexPreviousModeSelected].value;
+
+            var indexNextModeSelected = document.getElementById("selectNextModeEdit").options.selectedIndex;
+            var nextMode = document.getElementById("selectNextModeEdit").options[indexNextModeSelected].value;
+
+            var duration = document.getElementById("durationEdit").value;
+            if (duration.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Длительность"'); }
+
+            if (previousMode == 0) {
+                previousMode = null;
+            }
+            if (nextMode == 0) {
+                nextMode = null;
+            }
+
+
+            $.ajax({
+                url: "api/Setup",
+                contentType: "application/json",
+                method: "POST",
+                data: JSON.stringify({
+                    equipmentId: equipmentId,
+                    currentModeId: currentMode,
+                    previousModeId: previousMode,
+                    nextModeId: nextMode,
+                    duration: duration
+                }),
+                success: function (setup) {
+                    reset('setupForm');
+                    alert('Запись успешно добавлена');
+                    addRow('setupTable', setup);
+                }
+            })
+        }
+
+
+        // Получение всех setup
+        function GetSetups() {
+            $.ajax({
+                url: '/api/Setup',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (setups) {
+                    
+                    $.each(setups, function (index, setup) {
+                        var transactionList = setup;
+
+                        addRow("setupTable", transactionList);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        async function GetEquipmentName(id) {
+            var name;
+            var urlstr = '/api/Equipment/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (equipment) {
+                    name = equipment.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetModeName(id) {
+            var name;
+            var urlstr = '/api/Mode/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (mode) {
+                    name = mode.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function addRow(tableID, data) {
+
+            var table = document.getElementById(tableID);
+
+            var rowDuration = table.rows.length;
+            var row = table.insertRow(rowDuration);
+
+            var toId = data.equipmentId;
+            var equipmentName = await GetEquipmentName(toId);
+
+            var currentModeId = data.currentModeId;
+            var currentModeName = await GetModeName(currentModeId);
+
+            var previousModeId = data.previousModeId;
+            var previousModeName;
+
+            var nextModeId = data.nextModeId;
+            var nextModeName;
+
+            if (previousModeId == null) {
+                previousModeName = '-';
+            }
+            else {
+                previousModeName = await GetModeName(previousModeId);
+            }
+
+            if (nextModeId == null) {
+                nextModeName = '-';
+            }
+            else {
+                nextModeName = await GetModeName(nextModeId);
+            }
+
+            var cell1 = row.insertCell(0);
+            cell1.innerText = equipmentName;
+
+            var cell2 = row.insertCell(1);
+            cell2.innerText = currentModeName;
+
+            var cell3 = row.insertCell(2);
+            cell3.innerText = previousModeName;
+
+            var cell4 = row.insertCell(3);
+            cell4.innerText = nextModeName;
+
+            var cell5 = row.insertCell(4);
+            cell5.innerText = data.duration;
+
+            var cell6 = row.insertCell(5);
+            //var el = document.createElement('label');
+            //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
+            //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
+            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            //cell4.appendChild(el);
+        }
+        GetSetups();
+        GetEquipments();
+        GetModes();
+
+
+
+
+
+
+        var overlay = document.getElementById('overlay'),
+            mOpen = document.querySelectorAll('[data-modal]'),
+            mClose = document.querySelectorAll('[data-close]'),
+            outer = document.querySelector('.modal-outer'),
+            modals = document.querySelectorAll('.modal-outer > div'),
+            duration = 400,
+            mStatus = false,
+            h = null;
+
+        
+
+        setTopOuter();
+
+        function setTopOuter() {
+            outer.style.top = -outer.offsetHeight + 'px';
+        }
+
+
+        function somebodyShow(modal) {
+           
+            mStatus = true;
+            overlay.classList.remove('fadeOut');
+            overlay.classList.add('fadeIn');
+            modal.style.display = 'block';
+
+            var start = new Date().getTime(),
+                startTop = outer.getBoundingClientRect().top,
+                finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                offset = outer.offsetHeight + finalTop;
+
+            var fn = function () {
+                var now = new Date().getTime() - start,
+                    currTop = Math.round(startTop + offset * now / duration);
+
+                currTop = (currTop > finalTop) ? finalTop : currTop;
+                outer.style.top = currTop + 'px';
+
+                if (currTop < finalTop) {
+                    requestAnimationFrame(fn);
+                }
+            }
+            requestAnimationFrame(fn);
+            window.addEventListener('resize', setTopOpenOuter);
+        }
+
+        function setTopOpenOuter() {
+            outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+        }
+
+        (function () {
+            if (mOpen.length == 0) return;
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    somebodyShow(modal);
+                });
+            });
+        }());
+        
+
+        [].forEach.call(mClose, function (el) {
+            el.addEventListener('click', modalClose);
+        });
+
+        document.addEventListener('keydown', modalClose);
+
+
+        function modalClose(event) {
+            if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                mStatus = false;
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = -outer.offsetHeight,
+                    offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop - offset * now / duration);
+
+                    currTop = (currTop < finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop > finalTop) {
+                        requestAnimationFrame(fn);
+                    } else {
+                        overlay.classList.remove('fadeIn');
+                        overlay.classList.add('fadeOut');
+                        [].forEach.call(modals, function (modal) {
+                            modal.removeAttribute('style');
+                        });
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.removeEventListener('resize', setTopOpenOuter);
+            }
+        }
+
+
+
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
+    </script>
+
+    <script>var typeAnimate = 'slide';</script>
+    @*<script>
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
+    </script>*@
+</body>
+
+
+</html>

@@ -65,13 +65,13 @@
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
-        <table id="nomenclatureTable">
+        <table id="patternTable">
             <thead>
                 <tr>
-                    <th>Номенклатура</th>
-                    <th>Тип получения</th>
-                    <th>Тип номенклатуры</th>
-                    <th>Номенклатура родительского изделия</th>
+                    <th>Шаблон</th>
+                    <th>Дата начала работы</th>
+                    <th>Дата окончания работы</th>
+                    <th>Время работы</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -82,57 +82,57 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="nomenclatureForm">
+            <form name="patternForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="nomenclature">Номенклатура:</label>
-                    <input class="form-control" name="nomenclature" id="nomenclature" />
+                    <label for="name">Шаблон:</label>
+                    <input class="form-control" name="name" id="name" />
                 </div>
                 <div class="form-group">
-                    <label for="selectReceiptType">Тип получения:</label>
-                    <select name="selectReceiptType" id="selectReceiptType"></select>
+                    <label for="dateTimeStart">Дата начала работы:</label>
+                    <input type="datetime-local" class="form-control" name="dateTimeStart" id="dateTimeStart" />
                 </div>
                 <div class="form-group">
-                    <label for="selectNomenclatureType">Тип номенклатуры:</label>
-                    <select name="selectNomenclatureType" id="selectNomenclatureType"></select>
+                    <label for="dateTimeEnd">Дата окончания работы:</label>
+                    <input type="date" class="form-control" name="dateTimeEnd" id="dateTimeEnd" />
                 </div>
                 <div class="form-group">
-                    <label for="selectParentNomenclature">Номенклатура родительского изделия:</label>
-                    <select name="selectParentNomenclature" id="selectParentNomenclature"></select>
+                    <label for="workHour">Время работы:</label>
+                    <input class="form-control" name="workHour" id="workHour" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddNomenclature()" />
-                    <input type="button" value="Сбросить" onclick="reset('nomenclatureForm')" />
+                    <input type="button" value="Добавить" onclick="AddPattern()" />
+                    <input type="button" value="Сбросить" onclick="reset('patternForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="nomenclatureEditForm">
+            <form name="patternEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="nomenclatureEdit">Номенклатура:</label>
-                    <input class="form-control" name="nomenclatureEdit" id="nomenclatureEdit" />
+                    <label for="nameEdit">Шаблон:</label>
+                    <input class="form-control" name="nameEdit" id="nameEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="selectReceiptTypeEdit">Тип получения:</label>
-                    <select name="selectReceiptTypeEdit" id="selectReceiptTypeEdit"></select>
+                    <label for="dateTimeStartEdit">Дата начала работы:</label>
+                    <input type="datetime-local" class="form-control" name="dateTimeStartEdit" id="dateTimeStartEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="selectNomenclatureTypeEdit">Тип номенклатуры:</label>
-                    <select name="selectNomenclatureTypeEdit" id="selectNomenclatureTypeEdit"></select>
+                    <label for="dateTimeEndEdit">Дата окончания работы:</label>
+                    <input type="datetime-local" class="form-control" name="dateTimeEndEdit" id="dateTimeEndEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="selectParentNomenclatureEdit">Номенклатура родительского изделия:</label>
-                    <select name="selectParentNomenclatureEdit" id="selectParentNomenclatureEdit"></select>
+                    <label for="workHourEdit">Время работы:</label>
+                    <input class="form-control" name="workHourEdit" id="workHourEdit" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditNomenclature()" />
+                    <input type="button" value="Изменить" onclick="EditPattern()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('nomenclatureEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('patternEditForm')" />
                 </div>
             </form>
         </div>
@@ -141,7 +141,7 @@
         <div id="deleteModal">
             <div class="panel-body">
                 <h3>Вы уверены, что хотите удалить запись?</h3>
-                <input type="button" value="Удалить" onclick="DeleteNomenclature()" />
+                <input type="button" value="Удалить" onclick="DeletePattern()" />
                 <input type="button" value="Отменить" onclick="CloseModal()" />
             </div>
         </div>
@@ -153,57 +153,46 @@
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
-        
 
-        function EditNomenclature() {
-            
-            var nomenclatureNamePUT = document.getElementById("nomenclatureEdit").value;
+        function EditPattern() {
+            var namePUT = document.getElementById("nameEdit").value;
+            var workHourPUT = document.getElementById("workHourEdit").value;
+            var dateTimeStartPUT = document.getElementById("dateTimeStartEdit").value;
+            var dateTimeEndPUT = document.getElementById("dateTimeEndEdit").value;
 
-            var indexReceiptTypeSelected = document.getElementById("selectReceiptTypeEdit").options.selectedIndex;
-            var receiptTypeIdPUT = document.getElementById("selectReceiptTypeEdit").options[indexReceiptTypeSelected].value;
-
-            var indexNomenclatureTypeSelected = document.getElementById("selectNomenclatureTypeEdit").options.selectedIndex;
-            var nomenclatureTypeIdPUT = document.getElementById("selectNomenclatureTypeEdit").options[indexNomenclatureTypeSelected].value;
-
-            var indexParentNomenclatureSelected = document.getElementById("selectParentNomenclatureEdit").options.selectedIndex;
-            var parentNomenclatureIdPUT = document.getElementById("selectParentNomenclatureEdit").options[indexParentNomenclatureSelected].value;
-            if (parentNomenclatureIdPUT == 0) {
-                parentNomenclatureIdPUT = null;
-            }
+            if (workHourPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Время работы"'); }
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/Nomenclature/" + idPUT;
+            var urlstr = "api/Pattern/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    name: nomenclatureNamePUT,
-                    parentNomenclatureId: parentNomenclatureIdPUT,
-                    receiptTypeId: receiptTypeIdPUT,
-                    nomenclatureTypeId: nomenclatureTypeIdPUT,
+                    name: namePUT,
+                    dateTimeStart: dateTimeStartPUT,
+                    dateTimeEnd: dateTimeEndPUT,
+                    workHour: workHourPUT,
                     id: idPUT
                 }),
-                success: async function (nomenclature) {
-                    reset('nomenclatureEditForm');
+                success: async function (pattern) {
+                    reset('patternEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('nomenclatureTable');
+                    var table = document.getElementById('patternTable');
 
                     for (var i = 1; i < table.rows.length;) {
                         table.deleteRow(i);
                     }
-                    await GetNomenclatures();
+                    await GetPatterns();
                     CloseModal();
-                    await GetParentNomenclature();
                 },
                 error: function (e) {
                     console.log(e.message);
                 }
             })
-            
         }
 
         function openEditModal() {
@@ -223,7 +212,7 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetNomenclatureById(id);
+                    await GetPatternById(id);
 
                     return false;
                 }
@@ -271,38 +260,37 @@
             return false;
         }
 
-        async function DeleteNomenclature() {
+        async function DeletePattern() {
             selectedForDelete.forEach(async function (elem) {
-                await GetNomenclatureById(elem);
+                await GetPatternById(elem);
                 var idDEL = elem;
-                var nomenclatureNameDEL = resultForDelete.get('nomenclatureName');
-                var parentNomenclatureIdDEL = resultForDelete.get('parentNomenclatureId');
-                var receiptTypeIdDEL = resultForDelete.get('receiptTypeId');
-                var nomenclatureTypeIdDEL = resultForDelete.get('nomenclatureTypeId');
+                var nameDEL = resultForDelete.get('name');
+                var workHourDEL = resultForDelete.get('workHour');
+                var dateTimeStartDEL = resultForDelete.get('dateTimeStart');
+                var dateTimeEndDEL = resultForDelete.get('dateTimeEnd');
 
-                var urlstr = "api/Nomenclature/" + idDEL;
+                var urlstr = "api/Pattern/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: nomenclatureNameDEL,
-                        parentNomenclatureId: parentNomenclatureIdDEL,
-                        receiptTypeId: receiptTypeIdDEL,
-                        nomenclatureTypeId: nomenclatureTypeIdDEL,
+                        name: nameDEL,
+                        workHour: workHourDEL,
+                        dateTimeStart: dateTimeStartDEL,
+                        dateTimeEnd: dateTimeEndDEL,
                         id: idDEL
                     }),
-                    success: async function (nomenclature) {
+                    success: async function (pattern) {
                         alert('Запись удалена');
                         
-                        var table = document.getElementById('nomenclatureTable');
+                        var table = document.getElementById('patternTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetNomenclatures();
+                        await GetPatterns();
                         CloseModal();
-                        await GetParentNomenclature();
                     },
                     error: function (e) {
                         console.log(e.message);
@@ -314,12 +302,12 @@
             //if (res) {
             //    alert('Запись удалена');
 
-            //    var table = document.getElementById('techProcessTable');
+            //    var table = document.getElementById('patternTable');
 
             //    for (var i = 1; i < table.rows.length;) {
             //        table.deleteRow(i);
             //    }
-            //    await GetTechProcesss();
+            //    await GetPatterns();
             //    CloseModal();
             //}
 
@@ -328,29 +316,29 @@
         }
 
 
-        async function GetNomenclatureById(id) {
-            var urlstr = "api/Nomenclature/" + id;
+        async function GetPatternById(id) {
+            var urlstr = "api/Pattern/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (nomenclature) {
-                    var previousTO = document.getElementById('nomenclatureEdit');
-                    previousTO.value = nomenclature.name;
+                success: async function (pattern) {
+                    var name = document.getElementById('nameEdit');
+                    name.value = pattern.name;
 
-                    var previousParentNomenclature = document.getElementById('selectParentNomenclatureEdit');
-                    previousParentNomenclature.value = nomenclature.parentNomenclatureId;
+                    var previousdateTimeStart = document.getElementById('dateTimeStartEdit');
+                    previousdateTimeStart.value = pattern.dateTimeStart;
 
-                    var previousReceiptType = document.getElementById('receiptTypeEdit');
-                    previousReceiptType.value = nomenclature.receiptTypeId;
+                    var previousdateTimeEnd = document.getElementById('dateTimeEndEdit');
+                    previousdateTimeEnd.value = pattern.dateTimeEnd;
 
-                    var previousNomenclatureType = document.getElementById('nomenclatureTypeEdit');
-                    previousNomenclatureType.value = nomenclature.nomenclatureTypeId;
+                    var previousworkHour = document.getElementById('workHourEdit');
+                    previousworkHour.value = pattern.workHour;
 
-                    resultForDelete.set('nomenclatureName', nomenclature.name);
-                    resultForDelete.set('parentNomenclatureId', nomenclature.parentNomenclatureId);
-                    resultForDelete.set('receiptTypeId', nomenclature.receiptTypeId);
-                    resultForDelete.set('nomenclatureTypeId', nomenclature.nomenclatureTypeId);
+                    resultForDelete.set('name', pattern.name);
+                    resultForDelete.set('workHour', pattern.workHour);
+                    resultForDelete.set('dateTimeStart', pattern.dateTimeStart);
+                    resultForDelete.set('dateTimeEnd', pattern.dateTimeEnd);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -358,216 +346,51 @@
             });
         }
 
-        function GetParentNomenclature() {
-            var select = document.getElementById('selectParentNomenclature');
-            var selectEdit = document.getElementById('selectParentNomenclatureEdit');
+        function AddPattern() {
+            var name = document.getElementById("name").value;
+            var workHour = document.getElementById("workHour").value;
+            var dateTimeStart = document.getElementById("dateTimeStart").value;
+            var dateTimeEnd = document.getElementById("dateTimeEnd").value;
 
-            var optsSelect = select.options;
-            while (optsSelect.length > 0) {
-                optsSelect[optsSelect.length - 1] = null;
-            }
-
-            var optsSelectEdit = selectEdit.options;
-            while (optsSelectEdit.length > 0) {
-                optsSelectEdit[optsSelectEdit.length - 1] = null;
-            }
-
-            var ooptionNull = document.createElement('option');
-            ooptionNull.value = 0;
-            ooptionNull.innerText = '-';
-            select.appendChild(ooptionNull);
-
-            var ooptionEditNull = document.createElement('option');
-            ooptionEditNull.value = 0;
-            ooptionEditNull.innerText = '-';
-            selectEdit.appendChild(ooptionEditNull);
-
+            if (workHour.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Время работы"'); }
 
             $.ajax({
-                url: '/api/Nomenclature',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatures) {
-                    $.each(nomenclatures, function (index, nomenclature) {
-                        var ooption = document.createElement('option');
-                        ooption.value = nomenclature.id;
-                        ooption.innerText = nomenclature.name
-                        select.appendChild(ooption);
-                        
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclature.id;
-                        ooptionEdit.innerText = nomenclature.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        
-        function GetReceiptType() {
-            var select = document.getElementById('selectReceiptType');
-            var selectEdit = document.getElementById('selectReceiptTypeEdit');
-            $.ajax({
-                url: '/api/ReceiptType',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (receiptTypes) {
-                    $.each(receiptTypes, function (index, receiptType) {
-                        var ooption = document.createElement('option');
-                        ooption.value = receiptType.id;
-                        ooption.innerText = receiptType.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = receiptType.id;
-                        ooptionEdit.innerText = receiptType.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        
-        function GetNomenclatureType() {
-            var select = document.getElementById('selectNomenclatureType');
-            var selectEdit = document.getElementById('selectNomenclatureTypeEdit');
-            $.ajax({
-                url: '/api/NomenclatureType',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatureTypes) {
-                    $.each(nomenclatureTypes, function (index, nomenclatureType) {
-                        var ooption = document.createElement('option');
-                        ooption.value = nomenclatureType.id;
-                        ooption.innerText = nomenclatureType.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclatureType.id;
-                        ooptionEdit.innerText = nomenclatureType.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        
-
-
-        async function AddNomenclature() {
-            var nomenclatureName = document.getElementById("nomenclature").value;
-
-            var indexReceiptTypeSelected = document.getElementById("selectReceiptType").options.selectedIndex;
-            var receiptTypeId = document.getElementById("selectReceiptType").options[indexReceiptTypeSelected].value;
-
-            var indexNomenclatureTypeSelected = document.getElementById("selectNomenclatureType").options.selectedIndex;
-            var nomenclatureTypeId = document.getElementById("selectNomenclatureType").options[indexNomenclatureTypeSelected].value;
-
-            var indexParentNomenclatureSelected = document.getElementById("selectParentNomenclature").options.selectedIndex;
-            var parentNomenclatureId = document.getElementById("selectParentNomenclature").options[indexParentNomenclatureSelected].value;
-            if (parentNomenclatureId == 0) {
-                parentNomenclatureId = null;
-            }
-            
-
-            $.ajax({
-                url: "api/Nomenclature",
+                url: "api/Pattern",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    name: nomenclatureName,
-                    parentNomenclatureId: parentNomenclatureId,
-                    nomenclatureTypeId: nomenclatureTypeId,
-                    receiptTypeId: receiptTypeId
+                    name: name,
+                    workHour: workHour,
+                    dateTimeStart: dateTimeStart,
+                    dateTimeEnd: dateTimeEnd
                 }),
-                success: async function (nomenclature) {
-                    reset('nomenclatureForm');
+                success: function (pattern) {
+                    reset('patternForm');
                     alert('Запись успешно добавлена');
-                    await GetParentNomenclature();
-                    addRow('nomenclatureTable', nomenclature);
-                },
-                error: function (e) {
-                    console.log(e.message);
+                    addRow('patternTable', pattern);
                 }
             })
         }
 
 
-        // Получение всех Nomenclature
-        function GetNomenclatures() {
+        // Получение всех pattern
+        function GetPatterns() {
             $.ajax({
-                url: '/api/Nomenclature',
+                url: '/api/Pattern',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclatures) {
+                success: function (patterns) {
 
-                    $.each(nomenclatures, function (index, nomenclature) {
-                        var transactionList = nomenclature;
+                    $.each(patterns, function (index, pattern) {
+                        var transactionList = pattern;
 
-                        addRow("nomenclatureTable", transactionList);
+                        addRow("patternTable", transactionList);
                     })
                 },
                 error: function (e) {
                     console.log(e.message);
                 }
             });
-        }
-
-        async function GetParentNomenclatureName(id) {
-            var name;
-            var urlstr = '/api/Nomenclature/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclature) {
-                    name = nomenclature.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function GetReceiptTypeName(id) {
-            var name;
-            var urlstr = '/api/ReceiptType/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (receiptType) {
-                    name = receiptType.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function GetNomenclatureTypeName(id) {
-            var name;
-            var urlstr = '/api/NomenclatureType/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatureType) {
-                    name = nomenclatureType.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
         }
 
         async function addRow(tableID, data) {
@@ -576,31 +399,25 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
-            
-            var nomenclatureName = data.name;
 
-            var parentNomenclatureId = data.parentNomenclatureId;
-            var parentNomenclatureName;
-            if (parentNomenclatureId == null) {
-                parentNomenclatureName = '-';
-            }
-            else {
-                parentNomenclatureName = await GetParentNomenclatureName(parentNomenclatureId);
-            }
-            var receiptTypeName = await GetReceiptTypeName(data.receiptTypeId);
-            var nomenclatureTypeName = await GetNomenclatureTypeName(data.nomenclatureTypeId);
+            var dateTimeStartDATA = data.dateTimeStart;
+            var dateTimeStart = dateTimeStartDATA.replace('T', ' ');
+            
+            //var dateTimeEndDATA = data.dateTimeEnd;
+            //var dateTimeEnd = dateTimeEndDATA.replace('T', ' ');
+            
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = nomenclatureName;
+            cell1.innerText = data.name;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = receiptTypeName;
+            cell2.innerText = dateTimeStart;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = nomenclatureTypeName;
+            cell3.innerText = data.dateTimeEnd;
 
             var cell4 = row.insertCell(3);
-            cell4.innerText = parentNomenclatureName;
+            cell4.innerText = data.workHour;
 
             var cell5 = row.insertCell(4);
             //var el = document.createElement('label');
@@ -609,10 +426,7 @@
             cell5.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetParentNomenclature();
-        GetReceiptType();
-        GetNomenclatureType();
-        GetNomenclatures();
+        GetPatterns();
 
 
 

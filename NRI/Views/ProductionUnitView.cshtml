@@ -65,13 +65,11 @@
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
-        <table id="nomenclatureTable">
+        <table id="productionUnitTable">
             <thead>
                 <tr>
-                    <th>Номенклатура</th>
-                    <th>Тип получения</th>
-                    <th>Тип номенклатуры</th>
-                    <th>Номенклатура родительского изделия</th>
+                    <th>Производственное подразделение</th>
+                    <th>Родительское производственное подразделение</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -82,57 +80,41 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="nomenclatureForm">
+            <form name="productionUnitForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="nomenclature">Номенклатура:</label>
-                    <input class="form-control" name="nomenclature" id="nomenclature" />
+                    <label for="productionUnit">Производственное подразделение:</label>
+                    <input class="form-control" name="productionUnit" id="productionUnit" />
                 </div>
                 <div class="form-group">
-                    <label for="selectReceiptType">Тип получения:</label>
-                    <select name="selectReceiptType" id="selectReceiptType"></select>
-                </div>
-                <div class="form-group">
-                    <label for="selectNomenclatureType">Тип номенклатуры:</label>
-                    <select name="selectNomenclatureType" id="selectNomenclatureType"></select>
-                </div>
-                <div class="form-group">
-                    <label for="selectParentNomenclature">Номенклатура родительского изделия:</label>
-                    <select name="selectParentNomenclature" id="selectParentNomenclature"></select>
+                    <label for="selectParentProductionUnit">Родительское производственное подразделение:</label>
+                    <select name="selectParentProductionUnit" id="selectParentProductionUnit"></select>
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddNomenclature()" />
-                    <input type="button" value="Сбросить" onclick="reset('nomenclatureForm')" />
+                    <input type="button" value="Добавить" onclick="AddProductionUnit()" />
+                    <input type="button" value="Сбросить" onclick="reset('productionUnitForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="nomenclatureEditForm">
+            <form name="productionUnitEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="nomenclatureEdit">Номенклатура:</label>
-                    <input class="form-control" name="nomenclatureEdit" id="nomenclatureEdit" />
+                    <label for="productionUnitEdit">Производственное подразделение:</label>
+                    <input class="form-control" name="productionUnitEdit" id="productionUnitEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="selectReceiptTypeEdit">Тип получения:</label>
-                    <select name="selectReceiptTypeEdit" id="selectReceiptTypeEdit"></select>
-                </div>
-                <div class="form-group">
-                    <label for="selectNomenclatureTypeEdit">Тип номенклатуры:</label>
-                    <select name="selectNomenclatureTypeEdit" id="selectNomenclatureTypeEdit"></select>
-                </div>
-                <div class="form-group">
-                    <label for="selectParentNomenclatureEdit">Номенклатура родительского изделия:</label>
-                    <select name="selectParentNomenclatureEdit" id="selectParentNomenclatureEdit"></select>
+                    <label for="selectParentProductionUnitEdit">Родительское производственное подразделение:</label>
+                    <select name="selectParentProductionUnitEdit" id="selectParentProductionUnitEdit"></select>
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditNomenclature()" />
+                    <input type="button" value="Изменить" onclick="EditProductionUnit()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('nomenclatureEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('productionUnitEditForm')" />
                 </div>
             </form>
         </div>
@@ -141,7 +123,7 @@
         <div id="deleteModal">
             <div class="panel-body">
                 <h3>Вы уверены, что хотите удалить запись?</h3>
-                <input type="button" value="Удалить" onclick="DeleteNomenclature()" />
+                <input type="button" value="Удалить" onclick="DeleteProductionUnit()" />
                 <input type="button" value="Отменить" onclick="CloseModal()" />
             </div>
         </div>
@@ -155,49 +137,41 @@
         var resultForDelete = new Map();
         
 
-        function EditNomenclature() {
+        function EditProductionUnit() {
             
-            var nomenclatureNamePUT = document.getElementById("nomenclatureEdit").value;
-
-            var indexReceiptTypeSelected = document.getElementById("selectReceiptTypeEdit").options.selectedIndex;
-            var receiptTypeIdPUT = document.getElementById("selectReceiptTypeEdit").options[indexReceiptTypeSelected].value;
-
-            var indexNomenclatureTypeSelected = document.getElementById("selectNomenclatureTypeEdit").options.selectedIndex;
-            var nomenclatureTypeIdPUT = document.getElementById("selectNomenclatureTypeEdit").options[indexNomenclatureTypeSelected].value;
-
-            var indexParentNomenclatureSelected = document.getElementById("selectParentNomenclatureEdit").options.selectedIndex;
-            var parentNomenclatureIdPUT = document.getElementById("selectParentNomenclatureEdit").options[indexParentNomenclatureSelected].value;
-            if (parentNomenclatureIdPUT == 0) {
-                parentNomenclatureIdPUT = null;
+            var productionUnitNamePUT = document.getElementById("productionUnitEdit").value;
+            
+            var indexParentProductionUnitSelected = document.getElementById("selectParentProductionUnitEdit").options.selectedIndex;
+            var parentProductionUnitIdPUT = document.getElementById("selectParentProductionUnitEdit").options[indexParentProductionUnitSelected].value;
+            if (parentProductionUnitIdPUT == 0) {
+                parentProductionUnitIdPUT = null;
             }
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/Nomenclature/" + idPUT;
+            var urlstr = "api/ProductionUnit/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    name: nomenclatureNamePUT,
-                    parentNomenclatureId: parentNomenclatureIdPUT,
-                    receiptTypeId: receiptTypeIdPUT,
-                    nomenclatureTypeId: nomenclatureTypeIdPUT,
+                    name: productionUnitNamePUT,
+                    parentProductionUnitId: parentProductionUnitIdPUT,
                     id: idPUT
                 }),
-                success: async function (nomenclature) {
-                    reset('nomenclatureEditForm');
+                success: async function (productionUnit) {
+                    reset('productionUnitEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('nomenclatureTable');
+                    var table = document.getElementById('productionUnitTable');
 
                     for (var i = 1; i < table.rows.length;) {
                         table.deleteRow(i);
                     }
-                    await GetNomenclatures();
+                    await GetProductionUnits();
                     CloseModal();
-                    await GetParentNomenclature();
+                    await GetParentProductionUnit();
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -223,7 +197,7 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetNomenclatureById(id);
+                    await GetProductionUnitById(id);
 
                     return false;
                 }
@@ -271,38 +245,34 @@
             return false;
         }
 
-        async function DeleteNomenclature() {
+        async function DeleteProductionUnit() {
             selectedForDelete.forEach(async function (elem) {
-                await GetNomenclatureById(elem);
+                await GetProductionUnitById(elem);
                 var idDEL = elem;
-                var nomenclatureNameDEL = resultForDelete.get('nomenclatureName');
-                var parentNomenclatureIdDEL = resultForDelete.get('parentNomenclatureId');
-                var receiptTypeIdDEL = resultForDelete.get('receiptTypeId');
-                var nomenclatureTypeIdDEL = resultForDelete.get('nomenclatureTypeId');
+                var productionUnitNameDEL = resultForDelete.get('productionUnitName');
+                var parentProductionUnitIdDEL = resultForDelete.get('parentProductionUnitId');
 
-                var urlstr = "api/Nomenclature/" + idDEL;
+                var urlstr = "api/ProductionUnit/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: nomenclatureNameDEL,
-                        parentNomenclatureId: parentNomenclatureIdDEL,
-                        receiptTypeId: receiptTypeIdDEL,
-                        nomenclatureTypeId: nomenclatureTypeIdDEL,
+                        name: productionUnitNameDEL,
+                        parentProductionUnitId: parentProductionUnitIdDEL,
                         id: idDEL
                     }),
-                    success: async function (nomenclature) {
+                    success: async function (productionUnit) {
                         alert('Запись удалена');
                         
-                        var table = document.getElementById('nomenclatureTable');
+                        var table = document.getElementById('productionUnitTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetNomenclatures();
+                        await GetProductionUnits();
                         CloseModal();
-                        await GetParentNomenclature();
+                        await GetParentProductionUnit();
                     },
                     error: function (e) {
                         console.log(e.message);
@@ -328,29 +298,22 @@
         }
 
 
-        async function GetNomenclatureById(id) {
-            var urlstr = "api/Nomenclature/" + id;
+        async function GetProductionUnitById(id) {
+            var urlstr = "api/ProductionUnit/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (nomenclature) {
-                    var previousTO = document.getElementById('nomenclatureEdit');
-                    previousTO.value = nomenclature.name;
+                success: async function (productionUnit) {
+                    var previousTO = document.getElementById('productionUnitEdit');
+                    previousTO.value = productionUnit.name;
 
-                    var previousParentNomenclature = document.getElementById('selectParentNomenclatureEdit');
-                    previousParentNomenclature.value = nomenclature.parentNomenclatureId;
+                    var previousParentProductionUnit = document.getElementById('selectParentProductionUnitEdit');
+                    previousParentProductionUnit.value = productionUnit.parentProductionUnitId;
+                    
 
-                    var previousReceiptType = document.getElementById('receiptTypeEdit');
-                    previousReceiptType.value = nomenclature.receiptTypeId;
-
-                    var previousNomenclatureType = document.getElementById('nomenclatureTypeEdit');
-                    previousNomenclatureType.value = nomenclature.nomenclatureTypeId;
-
-                    resultForDelete.set('nomenclatureName', nomenclature.name);
-                    resultForDelete.set('parentNomenclatureId', nomenclature.parentNomenclatureId);
-                    resultForDelete.set('receiptTypeId', nomenclature.receiptTypeId);
-                    resultForDelete.set('nomenclatureTypeId', nomenclature.nomenclatureTypeId);
+                    resultForDelete.set('productionUnitName', productionUnit.name);
+                    resultForDelete.set('parentProductionUnitId', productionUnit.parentProductionUnitId);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -358,9 +321,9 @@
             });
         }
 
-        function GetParentNomenclature() {
-            var select = document.getElementById('selectParentNomenclature');
-            var selectEdit = document.getElementById('selectParentNomenclatureEdit');
+        function GetParentProductionUnit() {
+            var select = document.getElementById('selectParentProductionUnit');
+            var selectEdit = document.getElementById('selectParentProductionUnitEdit');
 
             var optsSelect = select.options;
             while (optsSelect.length > 0) {
@@ -375,80 +338,28 @@
             var ooptionNull = document.createElement('option');
             ooptionNull.value = 0;
             ooptionNull.innerText = '-';
-            select.appendChild(ooptionNull);
+            var ooptionNullEdit = document.createElement('option');
+            ooptionNullEdit.value = 0;
+            ooptionNullEdit.innerText = '-';
 
-            var ooptionEditNull = document.createElement('option');
-            ooptionEditNull.value = 0;
-            ooptionEditNull.innerText = '-';
-            selectEdit.appendChild(ooptionEditNull);
+            select.appendChild(ooptionNull);
+            selectEdit.appendChild(ooptionNullEdit);
 
 
             $.ajax({
-                url: '/api/Nomenclature',
+                url: '/api/ProductionUnit',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclatures) {
-                    $.each(nomenclatures, function (index, nomenclature) {
+                success: function (productionUnits) {
+                    $.each(productionUnits, function (index, productionUnit) {
                         var ooption = document.createElement('option');
-                        ooption.value = nomenclature.id;
-                        ooption.innerText = nomenclature.name
+                        ooption.value = productionUnit.id;
+                        ooption.innerText = productionUnit.name
                         select.appendChild(ooption);
                         
                         var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclature.id;
-                        ooptionEdit.innerText = nomenclature.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        
-        function GetReceiptType() {
-            var select = document.getElementById('selectReceiptType');
-            var selectEdit = document.getElementById('selectReceiptTypeEdit');
-            $.ajax({
-                url: '/api/ReceiptType',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (receiptTypes) {
-                    $.each(receiptTypes, function (index, receiptType) {
-                        var ooption = document.createElement('option');
-                        ooption.value = receiptType.id;
-                        ooption.innerText = receiptType.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = receiptType.id;
-                        ooptionEdit.innerText = receiptType.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        
-        function GetNomenclatureType() {
-            var select = document.getElementById('selectNomenclatureType');
-            var selectEdit = document.getElementById('selectNomenclatureTypeEdit');
-            $.ajax({
-                url: '/api/NomenclatureType',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatureTypes) {
-                    $.each(nomenclatureTypes, function (index, nomenclatureType) {
-                        var ooption = document.createElement('option');
-                        ooption.value = nomenclatureType.id;
-                        ooption.innerText = nomenclatureType.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclatureType.id;
-                        ooptionEdit.innerText = nomenclatureType.name
+                        ooptionEdit.value = productionUnit.id;
+                        ooptionEdit.innerText = productionUnit.name
                         selectEdit.appendChild(ooptionEdit);
                     })
                 },
@@ -459,38 +370,29 @@
         }
         
 
-
-        async function AddNomenclature() {
-            var nomenclatureName = document.getElementById("nomenclature").value;
-
-            var indexReceiptTypeSelected = document.getElementById("selectReceiptType").options.selectedIndex;
-            var receiptTypeId = document.getElementById("selectReceiptType").options[indexReceiptTypeSelected].value;
-
-            var indexNomenclatureTypeSelected = document.getElementById("selectNomenclatureType").options.selectedIndex;
-            var nomenclatureTypeId = document.getElementById("selectNomenclatureType").options[indexNomenclatureTypeSelected].value;
-
-            var indexParentNomenclatureSelected = document.getElementById("selectParentNomenclature").options.selectedIndex;
-            var parentNomenclatureId = document.getElementById("selectParentNomenclature").options[indexParentNomenclatureSelected].value;
-            if (parentNomenclatureId == 0) {
-                parentNomenclatureId = null;
+        async function AddProductionUnit() {
+            var productionUnitName = document.getElementById("productionUnit").value;
+            
+            var indexParentProductionUnitSelected = document.getElementById("selectParentProductionUnit").options.selectedIndex;
+            var parentProductionUnitId = document.getElementById("selectParentProductionUnit").options[indexParentProductionUnitSelected].value;
+            if (parentProductionUnitId == 0) {
+                parentProductionUnitId = null;
             }
             
 
             $.ajax({
-                url: "api/Nomenclature",
+                url: "api/ProductionUnit",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    name: nomenclatureName,
-                    parentNomenclatureId: parentNomenclatureId,
-                    nomenclatureTypeId: nomenclatureTypeId,
-                    receiptTypeId: receiptTypeId
+                    name: productionUnitName,
+                    parentProductionUnitId: parentProductionUnitId
                 }),
-                success: async function (nomenclature) {
-                    reset('nomenclatureForm');
+                success: async function (productionUnit) {
+                    reset('productionUnitForm');
                     alert('Запись успешно добавлена');
-                    await GetParentNomenclature();
-                    addRow('nomenclatureTable', nomenclature);
+                    await GetParentProductionUnit();
+                    addRow('productionUnitTable', productionUnit);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -499,18 +401,18 @@
         }
 
 
-        // Получение всех Nomenclature
-        function GetNomenclatures() {
+        // Получение всех ProductionUnit
+        function GetProductionUnits() {
             $.ajax({
-                url: '/api/Nomenclature',
+                url: '/api/ProductionUnit',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclatures) {
+                success: function (productionUnits) {
 
-                    $.each(nomenclatures, function (index, nomenclature) {
-                        var transactionList = nomenclature;
+                    $.each(productionUnits, function (index, productionUnit) {
+                        var transactionList = productionUnit;
 
-                        addRow("nomenclatureTable", transactionList);
+                        addRow("productionUnitTable", transactionList);
                     })
                 },
                 error: function (e) {
@@ -519,15 +421,15 @@
             });
         }
 
-        async function GetParentNomenclatureName(id) {
+        async function GetParentProductionUnitName(id) {
             var name;
-            var urlstr = '/api/Nomenclature/' + id;
+            var urlstr = '/api/ProductionUnit/' + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclature) {
-                    name = nomenclature.name;
+                success: function (productionUnit) {
+                    name = productionUnit.name;
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -535,41 +437,7 @@
             });
             return name;
         }
-
-        async function GetReceiptTypeName(id) {
-            var name;
-            var urlstr = '/api/ReceiptType/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (receiptType) {
-                    name = receiptType.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function GetNomenclatureTypeName(id) {
-            var name;
-            var urlstr = '/api/NomenclatureType/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatureType) {
-                    name = nomenclatureType.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
+        
         async function addRow(tableID, data) {
 
             var table = document.getElementById(tableID);
@@ -577,42 +445,32 @@
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
             
-            var nomenclatureName = data.name;
+            var productionUnitName = data.name;
 
-            var parentNomenclatureId = data.parentNomenclatureId;
-            var parentNomenclatureName;
-            if (parentNomenclatureId == null) {
-                parentNomenclatureName = '-';
+            var parentProductionUnitId = data.parentProductionUnitId;
+            var parentProductionUnitName;
+            if (parentProductionUnitId == null) {
+                parentProductionUnitName = '-';
             }
             else {
-                parentNomenclatureName = await GetParentNomenclatureName(parentNomenclatureId);
+                parentProductionUnitName = await GetParentProductionUnitName(parentProductionUnitId);
             }
-            var receiptTypeName = await GetReceiptTypeName(data.receiptTypeId);
-            var nomenclatureTypeName = await GetNomenclatureTypeName(data.nomenclatureTypeId);
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = nomenclatureName;
-
+            cell1.innerText = productionUnitName;
+            
             var cell2 = row.insertCell(1);
-            cell2.innerText = receiptTypeName;
+            cell2.innerText = parentProductionUnitName;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = nomenclatureTypeName;
-
-            var cell4 = row.insertCell(3);
-            cell4.innerText = parentNomenclatureName;
-
-            var cell5 = row.insertCell(4);
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell5.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell3.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetParentNomenclature();
-        GetReceiptType();
-        GetNomenclatureType();
-        GetNomenclatures();
+        GetParentProductionUnit();
+        GetProductionUnits();
 
 
 

@@ -18,7 +18,7 @@ namespace NRI.Models
         public string DateTimeStart { get; set; }
         public string DateTimeEnd { get; set; }
         public int PatternId { get; set; }
-        public int CalendarId { get; set; }
+        public int ResourceId { get; set; }
         public bool IsAccessibility { get; set; }
         public int Id { get; set; }
     }

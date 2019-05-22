@@ -15,6 +15,7 @@ namespace NRI.Models
         public string Name { get; set; }
         public string DateTimeStart { get; set ; }
         public string DateTimeEnd { get; set; }
+        public int WorkHour { get; set; }
         public int Id { get; set; }
     }
 }

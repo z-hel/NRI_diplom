@@ -1,0 +1,1303 @@
+﻿@page
+@{
+
+}
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>NRI</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    @*<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>*@
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap -->
+    @*<script src="/examples/vendors/bootstrap-3.3.7/js/bootstrap.min.js"></script>*@
+
+    @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
+
+    <style type="text/css">
+        table {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            text-align: left;
+            border-collapse: separate;
+            border-spacing: 3px;
+            background: #337ab7;
+            /*color: #656665;*/
+            /*color: rgb(162, 212, 255);*/
+            /*border: 3px solid #337ab7;*/
+            background-color: #337ab7;
+            border-radius: 0.375em;
+            box-shadow: inset 0 0 0 2px #337ab7;
+            color: #337ab7 !important;
+        }
+
+        tr {
+            background: #ffffff;
+            border: 3px solid #337ab7;
+        }
+
+        th {
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        td {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        INPUT {
+            margin: 10px 10px 10px 0;
+        }
+
+        .table {
+        }
+    </style>
+</head>
+
+
+<body>
+    <INPUT type="button" value="Добавить" data-modal="addModal" />
+    <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
+    <div class="table">
+        <table id="resourceTable">
+            <thead>
+                <tr>
+                    <th>Ресурс</th>
+                    <th>Сотрудник</th>
+                    <th>Оборудование</th>
+                    <th>Инструмент</th>
+                    <th>Тип использования</th>
+                    <th>Доступность</th>
+                    <th>Стоимость работы</th>
+                    <th>Стоимость наладки</th>
+                    <th>Стоимость простоя</th>
+                    <th>Режим</th>
+                    <th>Производственное подразделение</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="overlay" class="overlay fadeOut" data-close=""></div>
+    <div class="modal-outer" style="top: -460px;">
+        <span class="closer" id="closer" data-close=""></span>
+        <div id="addModal">
+            <form name="resourceForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="resource">Ресурс:</label>
+                    <input class="form-control" name="resource" id="resource" />
+                </div>
+                <div class="form-group">
+                    <label for="personal">Сотрудник:</label>
+                    <select name="personal" id="selectPersonal"></select>
+                </div>
+                <div class="form-group">
+                    <label for="equipment">Оборудование:</label>
+                    <select name="equipment" id="selectEquipment"></select>
+                </div>
+                <div class="form-group">
+                    <label for="tool">Инструмент:</label>
+                    <select name="tool" id="selectTool"></select>
+                </div>
+                <div class="form-group">
+                    <label for="resourceUsageType">Тип использования:</label>
+                    <select name="resourceUsageType" id="selectResourceUsageType"></select>
+                </div>
+                <div class="form-group">
+                    <label for="isAccessibitity">Доступность:</label>
+                    <select name="isAccessibitity" id="selectIsAccessibitity"></select>
+                </div>
+                <div class="form-group">
+                    <label for="mode">Режим:</label>
+                    <select name="mode" id="selectMode"></select>
+                </div>
+                <div class="form-group">
+                    <label for="productionUnit">Производственное подразделение:</label>
+                    <select name="productionUnit" id="selectProductionUnit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="workCost">Стоимость работы:</label>
+                    <input class="form-control" name="workCost" id="workCost" />
+                </div>
+                <div class="form-group">
+                    <label for="setupCost">Стоимость наладки:</label>
+                    <input class="form-control" name="setupCost" id="setupCost" />
+                </div>
+                <div class="form-group">
+                    <label for="downtimeCost">Стоимость простоя:</label>
+                    <input class="form-control" name="downtimeCost" id="downtimeCost" />
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Добавить" onclick="AddResource()" />
+                    <input type="button" value="Сбросить" onclick="reset('resourceForm')" />
+                </div>
+            </form>
+        </div>
+
+
+        <div id="editModal">
+            <form name="resourceEditForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="resourceEdit">Ресурс:</label>
+                    <input class="form-control" name="resourceEdit" id="resourceEdit" />
+                </div>
+                <div class="form-group">
+                    <label for="personalEdit">Сотрудник:</label>
+                    <select name="personalEdit" id="selectPersonalEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="equipmentEdit">Оборудование:</label>
+                    <select name="equipmentEdit" id="selectEquipmentEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="toolEdit">Инструмент:</label>
+                    <select name="toolEdit" id="selectToolEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="resourceUsageTypeEdit">Тип использования:</label>
+                    <select name="resourceUsageTypeEdit" id="selectResourceUsageTypeEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="isAccessibitityEdit">Доступность:</label>
+                    <select name="isAccessibitityEdit" id="selectIsAccessibitityEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="modeEdit">Режим:</label>
+                    <select name="modeEdit" id="selectModeEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="productionUnitEdit">Производственное подразделение:</label>
+                    <select name="productionUnitEdit" id="selectProductionUnitEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="workCostEdit">Стоимость работы:</label>
+                    <input class="form-control" name="workCostEdit" id="workCostEdit" />
+                </div>
+                <div class="form-group">
+                    <label for="setupCostEdit">Стоимость наладки:</label>
+                    <input class="form-control" name="setupCostEdit" id="setupCostEdit" />
+                </div>
+                <div class="form-group">
+                    <label for="downtimeCostEdit">Стоимость простоя:</label>
+                    <input class="form-control" name="downtimeCostEdit" id="downtimeCostEdit" />
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Изменить" onclick="EditResource()" />
+                    @*TODO*@
+                    <input type="button" value="Сбросить" onclick="reset('resourceEditForm')" />
+                </div>
+            </form>
+        </div>
+
+
+        <div id="deleteModal">
+            <div class="panel-body">
+                <h3>Вы уверены, что хотите удалить запись?</h3>
+                <input type="button" value="Удалить" onclick="DeleteResource()" />
+                <input type="button" value="Отменить" onclick="CloseModal()" />
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var selectedCheckbox;
+        var selectedForDelete = [];
+        var resultForDelete = new Map();
+
+        function EditResource() {
+            
+            var resourceNamePUT = document.getElementById("resourceEdit").value;
+
+            var indexPersonalSelected = document.getElementById("selectPersonalEdit").options.selectedIndex;
+            var personalIdPUT = document.getElementById("selectPersonalEdit").options[indexPersonalSelected].value;
+
+            var indexEquipmentSelected = document.getElementById("selectEquipmentEdit").options.selectedIndex;
+            var equipmentIdPUT = document.getElementById("selectEquipmentEdit").options[indexEquipmentSelected].value;
+
+            var indexToolSelected = document.getElementById("selectToolEdit").options.selectedIndex;
+            var toolIdPUT = document.getElementById("selectToolEdit").options[indexToolSelected].value;
+
+            var indexUsageTypeSelected = document.getElementById("selectUsageTypeEdit").options.selectedIndex;
+            var usageTypeIdPUT = document.getElementById("selectUsageTypeEdit").options[indexUsageTypeSelected].value;
+
+            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibilityEdit").options.selectedIndex;
+            var isAccessibilityIdPUT = document.getElementById("selectIsAccessibilityEdit").options[indexIsAccessibilitySelected].value;
+
+            var indexModeSelected = document.getElementById("selectModeEdit").options.selectedIndex;
+            var modeIdPUT = document.getElementById("selectModeEdit").options[indexModeSelected].value;
+
+            var indexProductionUnitSelected = document.getElementById("selectProductionUnitEdit").options.selectedIndex;
+            var productionUnitIdPUT = document.getElementById("selectProductionUnitEdit").options[indexProductionUnitSelected].value;
+
+            var workCostPUT = document.getElementById("workCostEdit").value;
+            if (workCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость работы"'); }
+
+            var setupCostPUT = document.getElementById("setupCostEdit").value;
+            if (setupCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость наладки"'); }
+
+            var downtimeCostPUT = document.getElementById("downtimeCostEdit").value;
+            if (downtimeCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
+
+            var idPUT = selectedCheckbox;
+
+            var urlstr = "api/Resource/" + idPUT;
+            $.ajax({
+                url: urlstr,
+                contentType: "application/json",
+                method: "PUT",
+                data: JSON.stringify({
+                    name: resourceNamePUT,
+                    personalId: personalIdPUT,
+                    equipmentId: equipmentIdPUT,
+                    toolId: toolIdPUT,
+                    usageTypeId: usageTypeIdPUT,
+                    isAccessibilityId: isAccessibilityIdPUT,
+                    modeId: modeIdPUT,
+                    productionUnitId: productionUnitIdPUT,
+                    workCost: workCostPUT,
+                    setupCost: setupCostPUT,
+                    downtimeCost: downtimeCostPUT,
+                    id: idPUT
+                }),
+                success: async function (resource) {
+                    reset('resourceEditForm');
+                    alert('Запись успешно изменена');
+                    //update table
+
+                    var table = document.getElementById('resourceTable');
+
+                    for (var i = 1; i < table.rows.length;) {
+                        table.deleteRow(i);
+                    }
+                    await GetResources();
+                    CloseModal();
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            })
+        }
+
+        function openEditModal() {
+
+            $('input[type=checkbox]').each(async function () {
+                //if ($(this).is(':checked')) {
+                if (this.checked) {
+                    selectedCheckbox = this.value;
+                    var editModal = document.getElementById('editModal');
+
+                    somebodyShow(editModal);
+                    //TODO SHOW EDIT MODAL
+
+
+                    //editButton.setAttribute('data-modal', 'editModal');
+                    //showForEdit(editModal);
+                    //modalShow(editModal);
+                    //$("#editModal").show();
+                    var id = selectedCheckbox;
+                    await GetResourceById(id);
+
+                    return false;
+                }
+            });
+            if (selectedCheckbox == null) {
+                alert('Не выбрана ни одна запись');
+            }
+            return false;
+        }
+
+        // сброс формы
+        function reset(formId) {
+            var form = document.forms[formId];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+
+
+        function CloseModal() {
+            var closer = document.getElementById('closer');
+            closer.click();
+        }
+
+
+        function openDeleteModal() {
+            selectedForDelete = [];
+
+            $('input[type=checkbox]').each(function () {
+                if (this.checked) {
+                    selectedForDelete.push(this.value)
+                }
+            });
+
+
+            if (selectedForDelete.length == 0) {
+                alert('Не выбрана ни одна запись');
+                return false;
+            }
+
+
+            var deleteModal = document.getElementById('deleteModal');
+            //TODO SHOW DELETE MODAL
+            somebodyShow(deleteModal);
+
+            return false;
+        }
+
+        async function DeleteResource() {
+            selectedForDelete.forEach(async function (elem) {
+                await GetResourceById(elem);
+                var idDEL = elem;
+                var resourceNameDEL = resultForDelete.get('resourceName');
+                var personalIdDEL = resultForDelete.get('personalId');
+                var equipmentIdDEL = resultForDelete.get('equipmentId');
+                var toolIdDEL = resultForDelete.get('toolId');
+                var usageTypeIdDEL = resultForDelete.get('usageTypeId');
+                var isAccessibilityIdDEL = resultForDelete.get('isAccessibilityId');
+                var modeIdDEL = resultForDelete.get('modeId');
+                var productionUnitIdDEL = resultForDelete.get('productionUnitId');
+                var workCostDEL = resultForDelete.get('workCost');
+                var setupCostDEL = resultForDelete.get('setupCost');
+                var downtimeCostDEL = resultForDelete.get('downtimeCost');
+
+                var urlstr = "api/Resource/" + idDEL;
+                $.ajax({
+                    url: urlstr,
+                    contentType: "application/json",
+                    method: "DELETE",
+                    data: JSON.stringify({
+                        name: resourceNameDEL,
+                        personalId: personalIdDEL,
+                        equipmentId: equipmentIdDEL,
+                        toolId: toolIdDEL,
+                        usageTypeId: usageTypeIdDEL,
+                        isAccessibilityId: isAccessibilityIdDEL,
+                        modeId: modeIdDEL,
+                        productionUnitId: productionUnitIdDEL,
+                        workCost: workCostDEL,
+                        setupCost: setupCostDEL,
+                        downtimeCost: downtimeCostDEL,
+                        id: idDEL
+                    }),
+                    success: async function (resource) {
+                        alert('Запись удалена');
+                        
+                        var table = document.getElementById('resourceTable');
+
+                        for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                        }
+                        await GetResources();
+                        CloseModal();
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            })
+            //alert('Запись удалена');
+            //CloseModal();
+            //if (res) {
+            //    alert('Запись удалена');
+
+            //    var table = document.getElementById('resourceTable');
+
+            //    for (var i = 1; i < table.rows.length;) {
+            //        table.deleteRow(i);
+            //    }
+            //    await GetResources();
+            //    CloseModal();
+            //}
+
+
+
+        }
+
+
+        async function GetResourceById(id) {
+            var urlstr = "api/Resource/" + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (resource) {
+                    var previousTO = document.getElementById('resourceEdit');
+                    previousTO.value = resource.name;
+
+                    var previousPersonal = document.getElementById('selectPersonalEdit');
+                    previousPersonal.value = resource.personalId;
+
+                    var previousequipment = document.getElementById('selectEquipmentEdit');
+                    previousequipment.value = resource.equipmentId;
+
+                    var previousTool = document.getElementById('selectToolEdit');
+                    previousTool.value = resource.toolId;
+
+                    var previousUsageType = document.getElementById('selectUsageTypeEdit');
+                    previousUsageType.value = resource.usageTypeId;
+
+                    var previousisAccessibility = document.getElementById('selectIsAccessibilityEdit');
+                    previousisAccessibility.value = resource.isAccessibility;
+
+                    var previousmode = document.getElementById('selectModeEdit');
+                    previousmode.value = resource.modeId;
+
+                    var previousproductionUnit = document.getElementById('selectProductionUnitEdit');
+                    previousproductionUnit.value = resource.productionUnitId;
+
+                    var previousWorkCost = document.getElementById('workCostEdit');
+                    previousWorkCost.value = resource.workCost;
+
+                    var previousSetupCost = document.getElementById('setupCostEdit');
+                    previousSetupCost.value = resource.setupCost;
+
+                    var previousDowntimeCost = document.getElementById('downtimeCostEdit');
+                    previousDowntimeCost.value = resource.downtimeCost;
+
+                    resultForDelete.set('resourceName', resource.name);
+                    resultForDelete.set('personalId', resource.personalId);
+                    resultForDelete.set('equipmentId', resource.equipmentId);
+                    resultForDelete.set('toolId', resource.toolId);
+                    resultForDelete.set('usageTypeId', resource.usageTypeId);
+                    resultForDelete.set('isAccessibilityId', resource.isAccessibility);
+                    resultForDelete.set('modeId', resource.modeId);
+                    resultForDelete.set('productionUnitId', resource.productionUnitId);
+                    resultForDelete.set('workCost', resource.workCost);
+                    resultForDelete.set('setupCost', resource.setupCost);
+                    resultForDelete.set('downtimeCost', resource.downtimeCost);
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        /////////////////////TODO
+        function GetPersonals() {
+            var select = document.getElementById('selectPersonal');
+            var selectEdit = document.getElementById('selectPersonalEdit');
+
+            var ooptionNull = document.createElement('option');
+            ooptionNull.value = 0;
+            ooptionNull.innerText = '-';
+            select.appendChild(ooptionNull);
+
+            var ooptionNullEdit = document.createElement('option');
+            ooptionNullEdit.value = 0;
+            ooptionNullEdit.innerText = '-';
+            selectEdit.appendChild(ooptionNullEdit);
+
+            $.ajax({
+                url: '/api/Personal',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (personals) {
+                    $.each(personals, function (index, personal) {
+                        var ooption = document.createElement('option');
+                        ooption.value = personal.id;
+                        ooption.innerText = personal.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = personal.id;
+                        ooptionEdit.innerText = personal.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetEquipments() {
+            var select = document.getElementById('selectEquipment');
+            var selectEdit = document.getElementById('selectEquipmentEdit');
+
+            var ooptionNull = document.createElement('option');
+            ooptionNull.value = 0;
+            ooptionNull.innerText = '-';
+            select.appendChild(ooptionNull);
+
+            var ooptionNullEdit = document.createElement('option');
+            ooptionNullEdit.value = 0;
+            ooptionNullEdit.innerText = '-';
+            selectEdit.appendChild(ooptionNullEdit);
+
+            $.ajax({
+                url: '/api/Equipment',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (Equipments) {
+                    $.each(Equipments, function (index, Equipment) {
+                        var ooption = document.createElement('option');
+                        ooption.value = Equipment.id;
+                        ooption.innerText = Equipment.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = Equipment.id;
+                        ooptionEdit.innerText = Equipment.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetTools() {
+            var select = document.getElementById('selectTool');
+            var selectEdit = document.getElementById('selectToolEdit');
+
+            var ooptionNull = document.createElement('option');
+            ooptionNull.value = 0;
+            ooptionNull.innerText = '-';
+            select.appendChild(ooptionNull);
+
+            var ooptionNullEdit = document.createElement('option');
+            ooptionNullEdit.value = 0;
+            ooptionNullEdit.innerText = '-';
+            selectEdit.appendChild(ooptionNullEdit);
+
+            $.ajax({
+                url: '/api/Tool',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (Tools) {
+                    $.each(Tools, function (index, Tool) {
+                        var ooption = document.createElement('option');
+                        ooption.value = Tool.id;
+                        ooption.innerText = Tool.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = Tool.id;
+                        ooptionEdit.innerText = Tool.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetModes() {
+            var select = document.getElementById('selectMode');
+            var selectEdit = document.getElementById('selectModeEdit');
+           
+            $.ajax({
+                url: '/api/Mode',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (modes) {
+                    $.each(modes, function (index, modeObj) {
+
+                        var ooption = document.createElement('option');
+                        ooption.value = modeObj.id;
+                        ooption.innerText = modeObj.name;
+                        
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = modeObj.id;
+                        ooptionEdit.innerText = modeObj.name;
+                        
+                        select.appendChild(ooption);
+                        selectEdit.appendChild(ooptionEdit);
+                        
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        
+        function GetUsageTypes() {
+            var select = document.getElementById('selectUsageType');
+            var selectEdit = document.getElementById('selectUsageTypeEdit');
+           
+            $.ajax({
+                url: '/api/UsageType',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (UsageTypes) {
+                    $.each(UsageTypes, function (index, UsageType) {
+
+                        var ooption = document.createElement('option');
+                        ooption.value = UsageType.id;
+                        ooption.innerText = UsageType.name;
+                        
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = UsageType.id;
+                        ooptionEdit.innerText = UsageType.name;
+                        
+                        select.appendChild(ooption);
+                        selectEdit.appendChild(ooptionEdit);
+                        
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetIsAccessibility() {
+            var select = document.getElementById('selectIsAccessibility');
+            var selectEdit = document.getElementById('selectIsAccessibilityEdit');
+
+            var ooptionTrue = document.createElement('option');
+            ooptionTrue.value = true;
+            ooptionTrue.innerText = 'true';
+
+            var ooptionFalse = document.createElement('option');
+            ooptionFalse.value = false;
+            ooptionFalse.innerText = 'false';
+
+            var ooptionTrueEdit = document.createElement('option');
+            ooptionTrueEdit.value = true;
+            ooptionTrueEdit.innerText = 'true';
+
+            var ooptionFalseEdit = document.createElement('option');
+            ooptionFalseEdit.value = false;
+            ooptionFalseEdit.innerText = 'false';
+
+            
+
+            select.appendChild(ooptionTrue);
+            select.appendChild(ooptionFalse);
+            selectEdit.appendChild(ooptionTrueEdit);
+            selectEdit.appendChild(ooptionFalseEdit);
+        }
+        
+
+        function GetProductionUnits() {
+            var select = document.getElementById('selectProductionUnit');
+            var selectEdit = document.getElementById('selectProductionUnitEdit');
+           
+            $.ajax({
+                url: '/api/ProductionUnit',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (ProductionUnits) {
+                    $.each(ProductionUnits, function (index, ProductionUnit) {
+
+                        var ooption = document.createElement('option');
+                        ooption.value = ProductionUnit.id;
+                        ooption.innerText = ProductionUnit.name;
+                        
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = ProductionUnit.id;
+                        ooptionEdit.innerText = ProductionUnit.name;
+                        
+                        select.appendChild(ooption);
+                        selectEdit.appendChild(ooptionEdit);
+                        
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        
+
+
+        function AddResource() {
+            var resourceName = document.getElementById("resourceEdit").value;
+
+            var indexPersonalSelected = document.getElementById("selectPersonalEdit").options.selectedIndex;
+            var personalId = document.getElementById("selectPersonalEdit").options[indexPersonalSelected].value;
+
+            var indexEquipmentSelected = document.getElementById("selectEquipmentEdit").options.selectedIndex;
+            var equipmentId = document.getElementById("selectEquipmentEdit").options[indexEquipmentSelected].value;
+
+            var indexToolSelected = document.getElementById("selectToolEdit").options.selectedIndex;
+            var toolId = document.getElementById("selectToolEdit").options[indexToolSelected].value;
+
+            var indexUsageTypeSelected = document.getElementById("selectUsageTypeEdit").options.selectedIndex;
+            var usageTypeId = document.getElementById("selectUsageTypeEdit").options[indexUsageTypeSelected].value;
+
+            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibilityEdit").options.selectedIndex;
+            var isAccessibilityId = document.getElementById("selectIsAccessibilityEdit").options[indexIsAccessibilitySelected].value;
+
+            var indexModeSelected = document.getElementById("selectModeEdit").options.selectedIndex;
+            var modeId = document.getElementById("selectModeEdit").options[indexModeSelected].value;
+
+            var indexProductionUnitSelected = document.getElementById("selectProductionUnitEdit").options.selectedIndex;
+            var productionUnitId = document.getElementById("selectProductionUnitEdit").options[indexProductionUnitSelected].value;
+
+            var workCost = document.getElementById("workCostEdit").value;
+            if (workCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость работы"'); }
+
+            var setupCost = document.getElementById("setupCostEdit").value;
+            if (setupCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость наладки"'); }
+
+            var downtimeCost = document.getElementById("downtimeCostEdit").value;
+            if (downtimeCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
+
+            $.ajax({
+                url: "api/resource",
+                contentType: "application/json",
+                method: "POST",
+                data: JSON.stringify({
+                    name: resourceName,
+                    personalId: personalId,
+                    equipmentId: equipmentId,
+                    toolId: toolId,
+                    usageTypeId: usageTypeId,
+                    isAccessibilityId: isAccessibilityId,
+                    modeId: modeId,
+                    productionUnitId: productionUnitId,
+                    workCost: workCost,
+                    setupCost: setupCost,
+                    downtimeCost: downtimeCost
+                }),
+                success: function (resource) {
+                    reset('resourceForm');
+                    alert('Запись успешно добавлена');
+                    addRow('resourceTable', resource);
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            })
+        }
+
+
+        // Получение всех resource
+        function GetResources() {
+            $.ajax({
+                url: '/api/Resource',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (resources) {
+
+                    $.each(resources, function (index, resource) {
+                        var transactionList = resource;
+
+                        addRow("resourceTable", transactionList);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        /////////////TODO
+        async function GetPersonalName(id) {
+            var name;
+            var urlstr = '/api/Personal/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (personal) {
+                    name = personal.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetEquipmentName(id) {
+            var name;
+            var urlstr = '/api/Equipment/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (Equipment) {
+                    name = Equipment.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetToolName(id) {
+            var name;
+            var urlstr = '/api/Tool/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (Tool) {
+                    name = Tool.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetUsageTypeName(id) {
+            var name;
+            var urlstr = '/api/ResourceUsageType/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (UsageType) {
+                    name = UsageType.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetModeName(id) {
+            var name;
+            var urlstr = '/api/Mode/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (Mode) {
+                    name = Mode.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetProductionUnitName(id) {
+            var name;
+            var urlstr = '/api/Mode/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (ProductionUnit) {
+                    name = ProductionUnit.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function addRow(tableID, data) {
+            
+            var table = document.getElementById(tableID);
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            
+
+            var personalId = data.personalId;
+            var personalName;
+
+            var equipmentId = data.equipmentId;
+            var equipmentName;
+
+            var toolId = data.toolId;
+            var toolName;
+
+            if (personalId == null) {
+                personalName = '-';
+            }
+            else {
+                personalName = await GetPersonalName(personalId);
+            }
+
+            if (equipmentId == null) {
+                equipmentName = '-';
+            }
+            else {
+                equipmentName = await GetEquipmentName(equipmentId);
+            }
+
+            if (toolId == null) {
+                toolName = '-';
+            }
+            else {
+                toolName = await GetModeName(toolId);
+            }
+
+
+            var usageTypeId = data.usageTypeId;
+            var usageTypeName = await GetUsageTypeName(usageTypeId);
+
+            var modeId = data.modeId;
+            var modeName = await GetModeName(modeId);
+
+            var productionUnitId = data.productionUnitId;
+            var productionUnitName = await GetProductionUnitName(productionUnitId);
+
+            var cell1 = row.insertCell(0);
+            cell1.innerText = data.name;
+
+            var cell2 = row.insertCell(1);
+            cell2.innerText = personalName;
+
+            var cell3 = row.insertCell(2);
+            cell23.innerText = equipmentName;
+
+            var cell4 = row.insertCell(3);
+            cell4.innerText = toolName;
+
+            var cell5 = row.insertCell(4);
+            cell5.innerText = usageTypeName;
+
+            var cell6 = row.insertCell(5);
+            cell6.innerText = data.isAccessibility;
+
+            var cell7 = row.insertCell(6);
+            cell7.innerText = data.workCost;
+
+            var cell8 = row.insertCell(7);
+            cell8.innerText = data.setupCost;
+
+            var cell9 = row.insertCell(8);
+            cell9.innerText = data.downtimeCost;
+
+            var cell10 = row.insertCell(9);
+            cell10.innerText = modeName;
+
+            var cell11 = row.insertCell(10);
+            cell11.innerText = productionUnitName;
+
+
+            var cell12 = row.insertCell(11);
+            //var el = document.createElement('label');
+            //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
+            //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
+            cell12.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            //cell4.appendChild(el);
+        }
+        GetResources();
+        GetPersonals();
+        GetTools();
+        GetEquipments();
+        GetUsageTypes();
+        GetModes();
+        GetProductionUnits();
+        GetIsAccessibility();
+
+
+
+
+
+
+        var overlay = document.getElementById('overlay'),
+            mOpen = document.querySelectorAll('[data-modal]'),
+            mClose = document.querySelectorAll('[data-close]'),
+            outer = document.querySelector('.modal-outer'),
+            modals = document.querySelectorAll('.modal-outer > div'),
+            duration = 400,
+            mStatus = false,
+            h = null;
+
+
+
+        setTopOuter();
+
+        function setTopOuter() {
+            outer.style.top = -outer.offsetHeight + 'px';
+        }
+
+
+        function somebodyShow(modal) {
+
+            mStatus = true;
+            overlay.classList.remove('fadeOut');
+            overlay.classList.add('fadeIn');
+            modal.style.display = 'block';
+
+            var start = new Date().getTime(),
+                startTop = outer.getBoundingClientRect().top,
+                finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                offset = outer.offsetHeight + finalTop;
+
+            var fn = function () {
+                var now = new Date().getTime() - start,
+                    currTop = Math.round(startTop + offset * now / duration);
+
+                currTop = (currTop > finalTop) ? finalTop : currTop;
+                outer.style.top = currTop + 'px';
+
+                if (currTop < finalTop) {
+                    requestAnimationFrame(fn);
+                }
+            }
+            requestAnimationFrame(fn);
+            window.addEventListener('resize', setTopOpenOuter);
+        }
+
+        function setTopOpenOuter() {
+            outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+        }
+
+        (function () {
+            if (mOpen.length == 0) return;
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    somebodyShow(modal);
+                });
+            });
+        }());
+
+
+        [].forEach.call(mClose, function (el) {
+            el.addEventListener('click', modalClose);
+        });
+
+        document.addEventListener('keydown', modalClose);
+
+
+        function modalClose(event) {
+            if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                mStatus = false;
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = -outer.offsetHeight,
+                    offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop - offset * now / duration);
+
+                    currTop = (currTop < finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop > finalTop) {
+                        requestAnimationFrame(fn);
+                    } else {
+                        overlay.classList.remove('fadeIn');
+                        overlay.classList.add('fadeOut');
+                        [].forEach.call(modals, function (modal) {
+                            modal.removeAttribute('style');
+                        });
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.removeEventListener('resize', setTopOpenOuter);
+            }
+        }
+
+
+
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
+    </script>
+
+    <script>var typeAnimate = 'slide';</script>
+    @*<script>
+            ; (function () {
+                var overlay = document.getElementById('overlay'),
+                    mOpen = document.querySelectorAll('[data-modal]'),
+                    mClose = document.querySelectorAll('[data-close]'),
+                    outer = document.querySelector('.modal-outer'),
+                    modals = document.querySelectorAll('.modal-outer > div'),
+                    duration = 400,
+                    mStatus = false,
+                    h = null;
+
+                if (mOpen.length == 0) return;
+
+                setTopOuter();
+
+                function setTopOuter() {
+                    outer.style.top = -outer.offsetHeight + 'px';
+                }
+
+                [].forEach.call(mOpen, function (el) {
+                    el.addEventListener('click', function (e) {
+                        var modalId = el.getAttribute('data-modal'),
+                            modal = document.getElementById(modalId);
+                        modalShow(modal);
+                    });
+                });
+
+                [].forEach.call(mClose, function (el) {
+                    el.addEventListener('click', modalClose);
+                });
+
+                document.addEventListener('keydown', modalClose);
+
+                function modalShow(modal) {
+                    mStatus = true;
+                    overlay.classList.remove('fadeOut');
+                    overlay.classList.add('fadeIn');
+                    modal.style.display = 'block';
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                        offset = outer.offsetHeight + finalTop;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop + offset * now / duration);
+
+                        currTop = (currTop > finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop < finalTop) {
+                            requestAnimationFrame(fn);
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.addEventListener('resize', setTopOpenOuter);
+                }
+
+                function modalClose(event) {
+                    if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                        mStatus = false;
+
+                        var start = new Date().getTime(),
+                            startTop = outer.getBoundingClientRect().top,
+                            finalTop = -outer.offsetHeight,
+                            offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                        var fn = function () {
+                            var now = new Date().getTime() - start,
+                                currTop = Math.round(startTop - offset * now / duration);
+
+                            currTop = (currTop < finalTop) ? finalTop : currTop;
+                            outer.style.top = currTop + 'px';
+
+                            if (currTop > finalTop) {
+                                requestAnimationFrame(fn);
+                            } else {
+                                overlay.classList.remove('fadeIn');
+                                overlay.classList.add('fadeOut');
+                                [].forEach.call(modals, function (modal) {
+                                    modal.removeAttribute('style');
+                                });
+                            }
+                        }
+                        requestAnimationFrame(fn);
+                        window.removeEventListener('resize', setTopOpenOuter);
+                    }
+                }
+
+                function setTopOpenOuter() {
+                    outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+                }
+            })();
+
+        </script>*@
+</body>
+
+
+</html>

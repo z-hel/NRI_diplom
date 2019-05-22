@@ -13,8 +13,8 @@ namespace NRI.Models
         //private Mode nextMode;
 
         public int CurrentModeId { get; set; }
-        public int PreviousModeId { get; set; }
-        public int NextModeId { get; set; }
+        public int? PreviousModeId { get; set; }
+        public int? NextModeId { get; set; }
         public int EquipmentId { get; set; }
         public int Duration { get; set; }
         public int Id { get; set; }
