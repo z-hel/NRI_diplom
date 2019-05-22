@@ -63,14 +63,14 @@
 <body>
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
-    <INPUT type="button" value="Удалить" onclick="openDeleteModal()"/>
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
-        <table id="techOperationNeedTable">
+        <table id="personalTable">
             <thead>
                 <tr>
-                    <th>Технологическая операция</th>
-                    <th>Номенклатура входного изделия</th>
-                    <th>Количество</th>
+                    <th>Сотрудник</th>
+                    <th>Квалификация</th>
+                    <th>Смена</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -81,60 +81,60 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="techOperationNeedForm">
+            <form name="personalForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperation"></select>
+                    <label for="name">Сотрудник:</label>
+                    <input class="form-control" name="name" id="name" />
                 </div>
                 <div class="form-group">
-                    <label for="nomNeed">Номенклатура входного изделия:</label>
-                    <select name="nomNeed" id="selectNomOut"></select>
+                    <label for="qualification">Квалификация:</label>
+                    <input class="form-control" name="qualification" id="qualification" />
                 </div>
                 <div class="form-group">
-                    <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="count" />
+                    <label for="change">Смена:</label>
+                    <input class="form-control" name="change" id="change" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddTechOperationNeed()" />
-                    <input type="button" value="Сбросить" onclick="reset('techOperationNeedForm')" />
+                    <input type="button" value="Добавить" onclick="AddPersonal()" />
+                    <input type="button" value="Сбросить" onclick="reset('personalForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="techOperationNeedEditForm">
+            <form name="personalEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperationEdit"></select>
+                    <label for="nameEdit">Сотрудник:</label>
+                    <input class="form-control" name="nameEdit" id="nameEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="nomNeed">Номенклатура входного изделия:</label>
-                    <select name="nomNeed" id="selectNomOutEdit"></select>
+                    <label for="qualificationEdit">Квалификация:</label>
+                    <input class="form-control" name="qualificationEdit" id="qualificationEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="countEdit" />
+                    <label for="changeEdit">Смена:</label>
+                    <input class="form-control" name="changeEdit" id="changeEdit" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditTechOperationNeed()" />
+                    <input type="button" value="Изменить" onclick="EditPersonal()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('techOperationNeedEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('personalEditForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="deleteModal">
-                <div class="panel-body">
-                    <h3>Вы уверены, что хотите удалить запись?</h3>
-                    <input type="button" value="Удалить" onclick="DeleteTechOperationNeed()" />
-                    <input type="button" value="Отменить" onclick="CloseModal()" />
-                </div>
+            <div class="panel-body">
+                <h3>Вы уверены, что хотите удалить запись?</h3>
+                <input type="button" value="Удалить" onclick="DeletePersonal()" />
+                <input type="button" value="Отменить" onclick="CloseModal()" />
+            </div>
         </div>
     </div>
 
@@ -145,42 +145,36 @@
         var selectedForDelete = [];
         var resultForDelete = new Map();
 
-        function EditTechOperationNeed() {
-            
-
-            var indexTOSelected = document.getElementById("selectTechOperationEdit").options.selectedIndex;
-            var techOperationIdPUT = document.getElementById("selectTechOperationEdit").options[indexTOSelected].value;
-
-            var indexNomOutSelected = document.getElementById("selectNomOutEdit").options.selectedIndex;
-            var nomNeedIdPUT = document.getElementById("selectNomOutEdit").options[indexNomOutSelected].value;
-
-            var countPUT = document.getElementById("countEdit").value;
-            if (countPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
+        function EditPersonal() {
+            var namePUT = document.getElementById("nameEdit").value;
+            var qualificationPUT = document.getElementById("qualificationEdit").value;
+            var changePUT = document.getElementById("changeEdit").value;
+            if (changePUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Смена"'); }
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/TechOperationNeed/" + idPUT;
+            var urlstr = "api/Personal/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    techOperationId: techOperationIdPUT,
-                    nomenclatureNeedId: nomNeedIdPUT,
-                    count: countPUT,
+                    name: namePUT,
+                    qualification: qualificationPUT,
+                    change: changePUT,
                     id: idPUT
                 }),
-                success: async function (techOperationNeed) {
-                    reset('techOperationNeedEditForm');
+                success: async function (personal) {
+                    reset('personalEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('techOperationNeedTable');
-                    
+                    var table = document.getElementById('personalTable');
+
                     for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                        table.deleteRow(i);
                     }
-                    await GetTechOperationNeeds();
+                    await GetPersonals();
                     CloseModal();
                 },
                 error: function (e) {
@@ -190,7 +184,7 @@
         }
 
         function openEditModal() {
-            
+
             $('input[type=checkbox]').each(async function () {
                 //if ($(this).is(':checked')) {
                 if (this.checked) {
@@ -206,8 +200,8 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetTechOperationNeedById(id);
-                    
+                    await GetPersonalById(id);
+
                     return false;
                 }
             });
@@ -216,7 +210,7 @@
             }
             return false;
         }
-        
+
         // сброс формы
         function reset(formId) {
             var form = document.forms[formId];
@@ -245,7 +239,7 @@
                 alert('Не выбрана ни одна запись');
                 return false;
             }
-            
+
 
             var deleteModal = document.getElementById('deleteModal');
             //TODO SHOW DELETE MODAL
@@ -254,35 +248,34 @@
             return false;
         }
 
-        async function DeleteTechOperationNeed() {
+        async function DeletePersonal() {
             selectedForDelete.forEach(async function (elem) {
-                await GetTechOperationNeedById(elem);
+                await GetPersonalById(elem);
                 var idDEL = elem;
-                var techOperationIdDEL = resultForDelete.get('techOperationId');
-                var nomNeedIdDEL = resultForDelete.get('nomenclatureNeedId');
-                var countDEL = resultForDelete.get('count');
+                var nameDEL = resultForDelete.get('name');
+                var qualificationDEL = resultForDelete.get('qualification');
+                var changeDEL = resultForDelete.get('change');
 
-                var urlstr = "api/TechOperationNeed/" + idDEL;
+                var urlstr = "api/Personal/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        techOperationId: techOperationIdDEL,
-                        nomenclatureNeedId: nomNeedIdDEL,
-                        count: countDEL,
+                        name: nameDEL,
+                        qualification: qualificationDEL,
+                        change: changeDEL,
                         id: idDEL
                     }),
-                    success: async function (techOperationNeed) {
+                    success: async function (personal) {
                         alert('Запись удалена');
-
-                        //update table
-                        var table = document.getElementById('techOperationNeedTable');
+                        
+                        var table = document.getElementById('personalTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetTechOperationNeeds();
+                        await GetPersonals();
                         CloseModal();
                     },
                     error: function (e) {
@@ -290,39 +283,44 @@
                     }
                 });
             })
-            //await GetTechOperationNeeds();
             //alert('Запись удалена');
-
-            //var table = document.getElementById('techOperationNeedTable');
-
-            //for (var i = 1; i < table.rows.length;) {
-            //    table.deleteRow(i);
-            //}
-            //await GetTechOperationNeeds();
-
             //CloseModal();
+            //if (res) {
+            //    alert('Запись удалена');
+
+            //    var table = document.getElementById('personalTable');
+
+            //    for (var i = 1; i < table.rows.length;) {
+            //        table.deleteRow(i);
+            //    }
+            //    await GetPersonals();
+            //    CloseModal();
+            //}
+
+
+
         }
 
 
-        async function GetTechOperationNeedById(id) {
-            var urlstr = "api/TechOperationNeed/" + id;
+        async function GetPersonalById(id) {
+            var urlstr = "api/Personal/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (techOperationNeed) {
-                    var previousTO = document.getElementById('selectTechOperationEdit');
-                    previousTO.value = techOperationNeed.techOperationId;
+                success: async function (personal) {
+                    var name = document.getElementById('nameEdit');
+                    name.value = personal.name;
 
-                    var previousNomOut = document.getElementById('selectNomOutEdit');
-                    previousNomOut.value = techOperationNeed.nomenclatureNeedId;
+                    var previousqualification = document.getElementById('qualificationEdit');
+                    previousqualification.value = personal.qualification;
 
-                    var previousCount = document.getElementById('countEdit');
-                    previousCount.value = techOperationNeed.count;
+                    var previouschange = document.getElementById('changeEdit');
+                    previouschange.value = personal.change;
 
-                    resultForDelete.set('techOperationId', techOperationNeed.techOperationId);
-                    resultForDelete.set('nomenclatureNeedId', techOperationNeed.nomenclatureNeedId);
-                    resultForDelete.set('count', techOperationNeed.count);
+                    resultForDelete.set('name', personal.name);
+                    resultForDelete.set('qualification', personal.qualification);
+                    resultForDelete.set('change', personal.change);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -330,140 +328,49 @@
             });
         }
 
-        function GetTechOperations() {
-            var select = document.getElementById('selectTechOperation');
-            var selectEdit = document.getElementById('selectTechOperationEdit');
-            $.ajax({
-                url: '/api/TechOperation',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techOperations) {
-                    $.each(techOperations, function (index, techOperation) {
-                        var ooption = document.createElement('option');
-                        ooption.value = techOperation.id;
-                        ooption.innerText = techOperation.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = techOperation.id;
-                        ooptionEdit.innerText = techOperation.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        function GetNomenclatures() {
-            var select = document.getElementById('selectNomOut');
-            var selectEdit = document.getElementById('selectNomOutEdit');
-            $.ajax({
-                url: '/api/Nomenclature',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatures) {
-                    $.each(nomenclatures, function (index, nomenclature) {
-
-                        var ooption = document.createElement('option');
-                        ooption.value = nomenclature.id;
-                        ooption.innerText = nomenclature.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclature.id;
-                        ooptionEdit.innerText = nomenclature.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-
-
-        function AddTechOperationNeed() {
-            var indexTOSelected = document.getElementById("selectTechOperation").options.selectedIndex;
-            var techOperationId = document.getElementById("selectTechOperation").options[indexTOSelected].value;
-
-            var indexNomOutSelected = document.getElementById("selectNomOut").options.selectedIndex;
-            var nomNeedId = document.getElementById("selectNomOut").options[indexNomOutSelected].value;
-
-            var count = document.getElementById("count").value;
-            if (count.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
+        function AddPersonal() {
+            var name = document.getElementById("name").value;
+            var qualification = document.getElementById("qualification").value;
+            var change = document.getElementById("change").value;
+            if (change.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Смена"'); }
 
 
             $.ajax({
-                url: "api/TechOperationNeed",
+                url: "api/Personal",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    techOperationId: techOperationId,
-                    nomenclatureNeedId: nomNeedId,
-                    count: count
+                    name: name,
+                    qualification: qualification,
+                    change: change
                 }),
-                success: function (techOperationNeed) {
-                    reset('techOperationNeedForm');
+                success: function (personal) {
+                    reset('personalForm');
                     alert('Запись успешно добавлена');
-                    addRow('techOperationNeedTable', techOperationNeed);
+                    addRow('personalTable', personal);
                 }
             })
         }
 
 
-        // Получение всех techOperationNeed
-        function GetTechOperationNeeds() {
+        // Получение всех personal
+        function GetPersonals() {
             $.ajax({
-                url: '/api/TechOperationNeed',
+                url: '/api/Personal',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (techOperationNeeds) {
-                    
-                    $.each(techOperationNeeds, function (index, techOperationNeed) {
-                        var transactionList = techOperationNeed;
+                success: function (personals) {
 
-                        addRow("techOperationNeedTable", transactionList);
+                    $.each(personals, function (index, personal) {
+                        var transactionList = personal;
+
+                        addRow("personalTable", transactionList);
                     })
                 },
                 error: function (e) {
                     console.log(e.message);
                 }
             });
-        }
-
-        async function GetTechOperationName(id) {
-            var name;
-            var urlstr = '/api/TechOperation/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techOperation) {
-                    name = techOperation.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function GetNomenclatureNeedName(id) {
-            var name;
-            var urlstr = '/api/Nomenclature/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatureNeed) {
-                    name = nomenclatureNeed.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
         }
 
         async function addRow(tableID, data) {
@@ -472,21 +379,16 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
-
-            var toId = data.techOperationId;
-            var techOperationName = await GetTechOperationName(toId);
-
-            var nomId = data.nomenclatureNeedId;
-            var nomenclatureNeedName = await GetNomenclatureNeedName(nomId);
+            
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = techOperationName;
+            cell1.innerText = data.name;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = nomenclatureNeedName;
+            cell2.innerText = data.qualification;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = data.count;
+            cell3.innerText = data.change;
 
             var cell4 = row.insertCell(3);
             //var el = document.createElement('label');
@@ -495,9 +397,7 @@
             cell4.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetTechOperationNeeds();
-        GetTechOperations();
-        GetNomenclatures();
+        GetPersonals();
 
 
 
@@ -513,7 +413,7 @@
             mStatus = false,
             h = null;
 
-        
+
 
         setTopOuter();
 
@@ -523,7 +423,7 @@
 
 
         function somebodyShow(modal) {
-           
+
             mStatus = true;
             overlay.classList.remove('fadeOut');
             overlay.classList.add('fadeIn');
@@ -563,7 +463,7 @@
                 });
             });
         }());
-        
+
 
         [].forEach.call(mClose, function (el) {
             el.addEventListener('click', modalClose);
@@ -703,101 +603,101 @@
 
     <script>var typeAnimate = 'slide';</script>
     @*<script>
-        ; (function () {
-            var overlay = document.getElementById('overlay'),
-                mOpen = document.querySelectorAll('[data-modal]'),
-                mClose = document.querySelectorAll('[data-close]'),
-                outer = document.querySelector('.modal-outer'),
-                modals = document.querySelectorAll('.modal-outer > div'),
-                duration = 400,
-                mStatus = false,
-                h = null;
+            ; (function () {
+                var overlay = document.getElementById('overlay'),
+                    mOpen = document.querySelectorAll('[data-modal]'),
+                    mClose = document.querySelectorAll('[data-close]'),
+                    outer = document.querySelector('.modal-outer'),
+                    modals = document.querySelectorAll('.modal-outer > div'),
+                    duration = 400,
+                    mStatus = false,
+                    h = null;
 
-            if (mOpen.length == 0) return;
+                if (mOpen.length == 0) return;
 
-            setTopOuter();
+                setTopOuter();
 
-            function setTopOuter() {
-                outer.style.top = -outer.offsetHeight + 'px';
-            }
-
-            [].forEach.call(mOpen, function (el) {
-                el.addEventListener('click', function (e) {
-                    var modalId = el.getAttribute('data-modal'),
-                        modal = document.getElementById(modalId);
-                    modalShow(modal);
-                });
-            });
-
-            [].forEach.call(mClose, function (el) {
-                el.addEventListener('click', modalClose);
-            });
-
-            document.addEventListener('keydown', modalClose);
-
-            function modalShow(modal) {
-                mStatus = true;
-                overlay.classList.remove('fadeOut');
-                overlay.classList.add('fadeIn');
-                modal.style.display = 'block';
-
-                var start = new Date().getTime(),
-                    startTop = outer.getBoundingClientRect().top,
-                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
-                    offset = outer.offsetHeight + finalTop;
-
-                var fn = function () {
-                    var now = new Date().getTime() - start,
-                        currTop = Math.round(startTop + offset * now / duration);
-
-                    currTop = (currTop > finalTop) ? finalTop : currTop;
-                    outer.style.top = currTop + 'px';
-
-                    if (currTop < finalTop) {
-                        requestAnimationFrame(fn);
-                    }
+                function setTopOuter() {
+                    outer.style.top = -outer.offsetHeight + 'px';
                 }
-                requestAnimationFrame(fn);
-                window.addEventListener('resize', setTopOpenOuter);
-            }
 
-            function modalClose(event) {
-                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
-                    mStatus = false;
+                [].forEach.call(mOpen, function (el) {
+                    el.addEventListener('click', function (e) {
+                        var modalId = el.getAttribute('data-modal'),
+                            modal = document.getElementById(modalId);
+                        modalShow(modal);
+                    });
+                });
+
+                [].forEach.call(mClose, function (el) {
+                    el.addEventListener('click', modalClose);
+                });
+
+                document.addEventListener('keydown', modalClose);
+
+                function modalShow(modal) {
+                    mStatus = true;
+                    overlay.classList.remove('fadeOut');
+                    overlay.classList.add('fadeIn');
+                    modal.style.display = 'block';
 
                     var start = new Date().getTime(),
                         startTop = outer.getBoundingClientRect().top,
-                        finalTop = -outer.offsetHeight,
-                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+                        finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                        offset = outer.offsetHeight + finalTop;
 
                     var fn = function () {
                         var now = new Date().getTime() - start,
-                            currTop = Math.round(startTop - offset * now / duration);
+                            currTop = Math.round(startTop + offset * now / duration);
 
-                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        currTop = (currTop > finalTop) ? finalTop : currTop;
                         outer.style.top = currTop + 'px';
 
-                        if (currTop > finalTop) {
+                        if (currTop < finalTop) {
                             requestAnimationFrame(fn);
-                        } else {
-                            overlay.classList.remove('fadeIn');
-                            overlay.classList.add('fadeOut');
-                            [].forEach.call(modals, function (modal) {
-                                modal.removeAttribute('style');
-                            });
                         }
                     }
                     requestAnimationFrame(fn);
-                    window.removeEventListener('resize', setTopOpenOuter);
+                    window.addEventListener('resize', setTopOpenOuter);
                 }
-            }
 
-            function setTopOpenOuter() {
-                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
-            }
-        })();
+                function modalClose(event) {
+                    if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                        mStatus = false;
 
-    </script>*@
+                        var start = new Date().getTime(),
+                            startTop = outer.getBoundingClientRect().top,
+                            finalTop = -outer.offsetHeight,
+                            offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                        var fn = function () {
+                            var now = new Date().getTime() - start,
+                                currTop = Math.round(startTop - offset * now / duration);
+
+                            currTop = (currTop < finalTop) ? finalTop : currTop;
+                            outer.style.top = currTop + 'px';
+
+                            if (currTop > finalTop) {
+                                requestAnimationFrame(fn);
+                            } else {
+                                overlay.classList.remove('fadeIn');
+                                overlay.classList.add('fadeOut');
+                                [].forEach.call(modals, function (modal) {
+                                    modal.removeAttribute('style');
+                                });
+                            }
+                        }
+                        requestAnimationFrame(fn);
+                        window.removeEventListener('resize', setTopOpenOuter);
+                    }
+                }
+
+                function setTopOpenOuter() {
+                    outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+                }
+            })();
+
+        </script>*@
 </body>
 
 

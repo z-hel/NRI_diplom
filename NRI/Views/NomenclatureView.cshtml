@@ -65,14 +65,13 @@
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
-        <table id="techProcessTable">
+        <table id="nomenclatureTable">
             <thead>
                 <tr>
-                    <th>Технологический процесс</th>
-                    <th>Номенклатура изделия</th>
-                    <th>Количество в партии запуска</th>
-                    <th>Минимальное количество в партии</th>
-                    <th>Максимальное количество в партии</th>
+                    <th>Номенклатура</th>
+                    <th>Тип получения</th>
+                    <th>Тип номенклатуры</th>
+                    <th>Номенклатура родительского изделия</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -83,65 +82,57 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="techProcessForm">
+            <form name="nomenclatureForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techProcess">Технологический процесс:</label>
-                    <input class="form-control" name="techProcess" id="techProcess" />
+                    <label for="nomenclature">Номенклатура:</label>
+                    <input class="form-control" name="nomenclature" id="nomenclature" />
                 </div>
                 <div class="form-group">
-                    <label for="nomenclature">Номенклатура изделия:</label>
-                    <select name="nomenclature" id="selectNomenclature"></select>
+                    <label for="selectReceiptType">Тип получения:</label>
+                    <select name="selectReceiptType" id="selectReceiptType"></select>
                 </div>
                 <div class="form-group">
-                    <label for="launchBatch">Количество в партии запуска:</label>
-                    <input class="form-control" name="launchBatch" id="launchBatch" />
+                    <label for="selectNomenclatureType">Тип номенклатуры:</label>
+                    <select name="selectNomenclatureType" id="selectNomenclatureType"></select>
                 </div>
                 <div class="form-group">
-                    <label for="minBatch">Минимальное количество в партии:</label>
-                    <input class="form-control" name="minBatch" id="minBatch" />
-                </div>
-                <div class="form-group">
-                    <label for="maxBatch">Максимальное количество в партии:</label>
-                    <input class="form-control" name="maxBatch" id="maxBatch" />
+                    <label for="selectParentNomenclature">Номенклатура родительского изделия:</label>
+                    <select name="selectParentNomenclature" id="selectParentNomenclature"></select>
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddTechProcess()" />
-                    <input type="button" value="Сбросить" onclick="reset('techProcessForm')" />
+                    <input type="button" value="Добавить" onclick="AddNomenclature()" />
+                    <input type="button" value="Сбросить" onclick="reset('nomenclatureForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="techProcessEditForm">
+            <form name="nomenclatureEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techProcess">Технологический процесс:</label>
-                    <input class="form-control" name="techProcessEdit" id="techProcessEdit" />
+                    <label for="nomenclatureEdit">Номенклатура:</label>
+                    <input class="form-control" name="nomenclatureEdit" id="nomenclatureEdit" />
                 </div>
                 <div class="form-group">
-                    <label for="nomenclature">Номенклатура изделия:</label>
-                    <select name="nomenclatureEdit" id="selectNomenclatureEdit"></select>
+                    <label for="selectReceiptTypeEdit">Тип получения:</label>
+                    <select name="selectReceiptTypeEdit" id="selectReceiptTypeEdit"></select>
                 </div>
                 <div class="form-group">
-                    <label for="launchBatch">Количество в партии запуска:</label>
-                    <input class="form-control" name="launchBatchEdit" id="launchBatchEdit" />
+                    <label for="selectNomenclatureTypeEdit">Тип номенклатуры:</label>
+                    <select name="selectNomenclatureTypeEdit" id="selectNomenclatureTypeEdit"></select>
                 </div>
                 <div class="form-group">
-                    <label for="minBatch">Минимальное количество в партии:</label>
-                    <input class="form-control" name="minBatchEdit" id="minBatchEdit" />
-                </div>
-                <div class="form-group">
-                    <label for="maxBatch">Максимальное количество в партии:</label>
-                    <input class="form-control" name="maxBatchEdit" id="maxBatchEdit" />
+                    <label for="selectParentNomenclatureEdit">Номенклатура родительского изделия:</label>
+                    <select name="selectParentNomenclatureEdit" id="selectParentNomenclatureEdit"></select>
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditTechProcess()" />
+                    <input type="button" value="Изменить" onclick="EditNomenclature()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('techProcessEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('nomenclatureEditForm')" />
                 </div>
             </form>
         </div>
@@ -150,7 +141,7 @@
         <div id="deleteModal">
             <div class="panel-body">
                 <h3>Вы уверены, что хотите удалить запись?</h3>
-                <input type="button" value="Удалить" onclick="DeleteTechProcess()" />
+                <input type="button" value="Удалить" onclick="DeleteNomenclature()" />
                 <input type="button" value="Отменить" onclick="CloseModal()" />
             </div>
         </div>
@@ -162,55 +153,57 @@
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
+        
 
-        function EditTechProcess() {
+        function EditNomenclature() {
             
-            var techProcessNamePUT = document.getElementById("techProcessEdit").value;
+            var nomenclatureNamePUT = document.getElementById("nomenclatureEdit").value;
 
-            var indexNomenclatureSelected = document.getElementById("selectNomenclatureEdit").options.selectedIndex;
-            var nomenclatureIdPUT = document.getElementById("selectNomenclatureEdit").options[indexNomenclatureSelected].value;
+            var indexReceiptTypeSelected = document.getElementById("selectReceiptTypeEdit").options.selectedIndex;
+            var receiptTypeIdPUT = document.getElementById("selectReceiptTypeEdit").options[indexReceiptTypeSelected].value;
 
-            var launchBatchPUT = document.getElementById("launchBatchEdit").value;
-            if (launchBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
+            var indexNomenclatureTypeSelected = document.getElementById("selectNomenclatureTypeEdit").options.selectedIndex;
+            var nomenclatureTypeIdPUT = document.getElementById("selectNomenclatureTypeEdit").options[indexNomenclatureTypeSelected].value;
 
-            var minBatchPUT = document.getElementById("minBatchEdit").value;
-            if (minBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
-
-            var maxBatchPUT = document.getElementById("maxBatchEdit").value;
-            if (maxBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
+            var indexParentNomenclatureSelected = document.getElementById("selectParentNomenclatureEdit").options.selectedIndex;
+            var parentNomenclatureIdPUT = document.getElementById("selectParentNomenclatureEdit").options[indexParentNomenclatureSelected].value;
+            if (parentNomenclatureIdPUT == 0) {
+                parentNomenclatureIdPUT = null;
+            }
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/TechProcess/" + idPUT;
+            var urlstr = "api/Nomenclature/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    name: techProcessNamePUT,
-                    nomenclatureId: nomenclatureIdPUT,
-                    launchBatch: launchBatchPUT,
-                    minBatch: minBatchPUT,
-                    maxBatch: maxBatchPUT,
+                    name: nomenclatureNamePUT,
+                    parentNomenclatureId: parentNomenclatureIdPUT,
+                    receiptTypeId: receiptTypeIdPUT,
+                    nomenclatureTypeId: nomenclatureTypeIdPUT,
                     id: idPUT
                 }),
-                success: async function (techProcess) {
-                    reset('techProcessEditForm');
+                success: async function (nomenclature) {
+                    reset('nomenclatureEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('techProcessTable');
+                    var table = document.getElementById('nomenclatureTable');
 
                     for (var i = 1; i < table.rows.length;) {
                         table.deleteRow(i);
                     }
-                    await GetTechProcesss();
+                    await GetNomenclatures();
                     CloseModal();
+                    await GetParentNomenclature();
                 },
                 error: function (e) {
                     console.log(e.message);
                 }
             })
+            
         }
 
         function openEditModal() {
@@ -230,7 +223,7 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetTechProcessById(id);
+                    await GetNomenclatureById(id);
 
                     return false;
                 }
@@ -278,39 +271,38 @@
             return false;
         }
 
-        async function DeleteTechProcess() {
+        async function DeleteNomenclature() {
             selectedForDelete.forEach(async function (elem) {
-                await GetTechProcessById(elem);
+                await GetNomenclatureById(elem);
                 var idDEL = elem;
-                var techProcessNameDEL = resultForDelete.get('techProcessName');
-                var nomenclatureIdDEL = resultForDelete.get('nomenclatureId');
-                var launchBatchDEL = resultForDelete.get('launchBatch');
-                var minBatchDEL = resultForDelete.get('minBatch');
-                var maxBatchDEL = resultForDelete.get('maxBatch');
+                var nomenclatureNameDEL = resultForDelete.get('nomenclatureName');
+                var parentNomenclatureIdDEL = resultForDelete.get('parentNomenclatureId');
+                var receiptTypeIdDEL = resultForDelete.get('receiptTypeId');
+                var nomenclatureTypeIdDEL = resultForDelete.get('nomenclatureTypeId');
 
-                var urlstr = "api/TechProcess/" + idDEL;
+                var urlstr = "api/Nomenclature/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: techProcessNameDEL,
-                        nomenclatureId: nomenclatureIdDEL,
-                        launchBatch: launchBatchDEL,
-                        minBatch: minBatchDEL,
-                        maxBatch: maxBatchDEL,
+                        name: nomenclatureNameDEL,
+                        parentNomenclatureId: parentNomenclatureIdDEL,
+                        receiptTypeId: receiptTypeIdDEL,
+                        nomenclatureTypeId: nomenclatureTypeIdDEL,
                         id: idDEL
                     }),
-                    success: async function (techProcess) {
+                    success: async function (nomenclature) {
                         alert('Запись удалена');
                         
-                        var table = document.getElementById('techProcessTable');
+                        var table = document.getElementById('nomenclatureTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetTechProcesss();
+                        await GetNomenclatures();
                         CloseModal();
+                        await GetParentNomenclature();
                     },
                     error: function (e) {
                         console.log(e.message);
@@ -336,33 +328,29 @@
         }
 
 
-        async function GetTechProcessById(id) {
-            var urlstr = "api/TechProcess/" + id;
+        async function GetNomenclatureById(id) {
+            var urlstr = "api/Nomenclature/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (techProcess) {
-                    var previousTO = document.getElementById('techProcessEdit');
-                    previousTO.value = techProcess.name;
+                success: async function (nomenclature) {
+                    var previousTO = document.getElementById('nomenclatureEdit');
+                    previousTO.value = nomenclature.name;
 
-                    var previousNomenclature = document.getElementById('selectNomenclatureEdit');
-                    previousNomenclature.value = techProcess.nomenclatureId;
+                    var previousParentNomenclature = document.getElementById('selectParentNomenclatureEdit');
+                    previousParentNomenclature.value = nomenclature.parentNomenclatureId;
 
-                    var previousLaunchBatch = document.getElementById('launchBatchEdit');
-                    previousLaunchBatch.value = techProcess.launchBatch;
+                    var previousReceiptType = document.getElementById('receiptTypeEdit');
+                    previousReceiptType.value = nomenclature.receiptTypeId;
 
-                    var previousMinBatch = document.getElementById('minBatchEdit');
-                    previousMinBatch.value = techProcess.minBatch;
+                    var previousNomenclatureType = document.getElementById('nomenclatureTypeEdit');
+                    previousNomenclatureType.value = nomenclature.nomenclatureTypeId;
 
-                    var previousMaxBatch = document.getElementById('maxBatchEdit');
-                    previousMaxBatch.value = techProcess.maxBatch;
-
-                    resultForDelete.set('techProcessName', techProcess.name);
-                    resultForDelete.set('nomenclatureId', techProcess.NomenclatureId);
-                    resultForDelete.set('launchBatch', techProcess.launchBatch);
-                    resultForDelete.set('minBatch', techProcess.minBatch);
-                    resultForDelete.set('maxBatch', techProcess.maxBatch);
+                    resultForDelete.set('nomenclatureName', nomenclature.name);
+                    resultForDelete.set('parentNomenclatureId', nomenclature.parentNomenclatureId);
+                    resultForDelete.set('receiptTypeId', nomenclature.receiptTypeId);
+                    resultForDelete.set('nomenclatureTypeId', nomenclature.nomenclatureTypeId);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -370,9 +358,27 @@
             });
         }
 
-        function GetNomenclatures() {
-            var select = document.getElementById('selectNomenclature');
-            var selectEdit = document.getElementById('selectNomenclatureEdit');
+        function GetParentNomenclature() {
+            var select = document.getElementById('selectParentNomenclature');
+            var selectEdit = document.getElementById('selectParentNomenclatureEdit');
+
+            var optsSelect = select.options;
+            while (optsSelect.length > 0) {
+                optsSelect[optsSelect.length - 1] = null;
+            }
+
+            var optsSelectEdit = selectEdit.options;
+            while (optsSelectEdit.length > 0) {
+                optsSelectEdit[optsSelectEdit.length - 1] = null;
+            }
+
+            var ooptionNull = document.createElement('option');
+            ooptionNull.value = 0;
+            ooptionNull.innerText = '-';
+            select.appendChild(ooptionNull);
+            selectEdit.appendChild(ooptionNull);
+
+
             $.ajax({
                 url: '/api/Nomenclature',
                 type: 'GET',
@@ -383,7 +389,7 @@
                         ooption.value = nomenclature.id;
                         ooption.innerText = nomenclature.name
                         select.appendChild(ooption);
-
+                        
                         var ooptionEdit = document.createElement('option');
                         ooptionEdit.value = nomenclature.id;
                         ooptionEdit.innerText = nomenclature.name
@@ -396,39 +402,91 @@
             });
         }
         
+        function GetReceiptType() {
+            var select = document.getElementById('selectReceiptType');
+            var selectEdit = document.getElementById('selectReceiptTypeEdit');
+            $.ajax({
+                url: '/api/ReceiptType',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (receiptTypes) {
+                    $.each(receiptTypes, function (index, receiptType) {
+                        var ooption = document.createElement('option');
+                        ooption.value = receiptType.id;
+                        ooption.innerText = receiptType.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = receiptType.id;
+                        ooptionEdit.innerText = receiptType.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        
+        function GetNomenclatureType() {
+            var select = document.getElementById('selectNomenclatureType');
+            var selectEdit = document.getElementById('selectNomenclatureTypeEdit');
+            $.ajax({
+                url: '/api/NomenclatureType',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (nomenclatureTypes) {
+                    $.each(nomenclatureTypes, function (index, nomenclatureType) {
+                        var ooption = document.createElement('option');
+                        ooption.value = nomenclatureType.id;
+                        ooption.innerText = nomenclatureType.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = nomenclatureType.id;
+                        ooptionEdit.innerText = nomenclatureType.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        
 
 
-        function AddTechProcess() {
-            var techProcessName = document.getElementById("techProcess").value;
+        async function AddNomenclature() {
+            var nomenclatureName = document.getElementById("nomenclature").value;
 
-            var indexNomenclatureSelected = document.getElementById("selectNomenclature").options.selectedIndex;
-            var nomenclatureId = document.getElementById("selectNomenclature").options[indexNomenclatureSelected].value;
+            var indexReceiptTypeSelected = document.getElementById("selectReceiptType").options.selectedIndex;
+            var receiptTypeId = document.getElementById("selectReceiptType").options[indexReceiptTypeSelected].value;
 
-            var launchBatch = document.getElementById("launchBatch").value;
-            if (launchBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
+            var indexNomenclatureTypeSelected = document.getElementById("selectNomenclatureType").options.selectedIndex;
+            var nomenclatureTypeId = document.getElementById("selectNomenclatureType").options[indexNomenclatureTypeSelected].value;
 
-            var minBatch = document.getElementById("minBatch").value;
-            if (minBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
-
-            var maxBatch = document.getElementById("maxBatch").value;
-            if (maxBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
-
+            var indexParentNomenclatureSelected = document.getElementById("selectParentNomenclature").options.selectedIndex;
+            var parentNomenclatureId = document.getElementById("selectParentNomenclature").options[indexParentNomenclatureSelected].value;
+            if (parentNomenclatureId == 0) {
+                parentNomenclatureId = null;
+            }
+            
 
             $.ajax({
-                url: "api/techProcess",
+                url: "api/Nomenclature",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    name: techProcessName,
-                    nomenclatureId: nomenclatureId,
-                    launchBatch: launchBatch,
-                    minBatch: minBatch,
-                    maxBatch: maxBatch
+                    name: nomenclatureName,
+                    parentNomenclatureId: parentNomenclatureId,
+                    nomenclatureTypeId: nomenclatureTypeId,
+                    receiptTypeId: receiptTypeId
                 }),
-                success: function (techProcess) {
-                    reset('techProcessForm');
+                success: async function (nomenclature) {
+                    reset('nomenclatureForm');
                     alert('Запись успешно добавлена');
-                    addRow('techProcessTable', techProcess);
+                    await GetParentNomenclature();
+                    addRow('nomenclatureTable', nomenclature);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -437,18 +495,18 @@
         }
 
 
-        // Получение всех techProcess
-        function GetTechProcesss() {
+        // Получение всех Nomenclature
+        function GetNomenclatures() {
             $.ajax({
-                url: '/api/TechProcess',
+                url: '/api/Nomenclature',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (techProcesss) {
+                success: function (nomenclatures) {
 
-                    $.each(techProcesss, function (index, techProcess) {
-                        var transactionList = techProcess;
+                    $.each(nomenclatures, function (index, nomenclature) {
+                        var transactionList = nomenclature;
 
-                        addRow("techProcessTable", transactionList);
+                        addRow("nomenclatureTable", transactionList);
                     })
                 },
                 error: function (e) {
@@ -457,7 +515,7 @@
             });
         }
 
-        async function GetNomenclatureName(id) {
+        async function GetParentNomenclatureName(id) {
             var name;
             var urlstr = '/api/Nomenclature/' + id;
             await $.ajax({
@@ -474,6 +532,40 @@
             return name;
         }
 
+        async function GetReceiptTypeName(id) {
+            var name;
+            var urlstr = '/api/ReceiptType/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (receiptType) {
+                    name = receiptType.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetNomenclatureTypeName(id) {
+            var name;
+            var urlstr = '/api/NomenclatureType/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (nomenclatureType) {
+                    name = nomenclatureType.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
         async function addRow(tableID, data) {
 
             var table = document.getElementById(tableID);
@@ -481,34 +573,41 @@
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
             
-            var techProcessName = data.name;
+            var nomenclatureName = data.name;
 
-            var nomenclatureId = data.nomenclatureId;
-            var nomenclatureName = await GetNomenclatureName(nomenclatureId);
+            var parentNomenclatureId = data.parentNomenclatureId;
+            var parentNomenclatureName;
+            if (parentNomenclatureId == null) {
+                parentNomenclatureName = '-';
+            }
+            else {
+                parentNomenclatureName = await GetParentNomenclatureName(parentNomenclatureId);
+            }
+            var receiptTypeName = await GetReceiptTypeName(data.receiptTypeId);
+            var nomenclatureTypeName = await GetNomenclatureTypeName(data.nomenclatureTypeId);
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = techProcessName;
+            cell1.innerText = nomenclatureName;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = nomenclatureName;
+            cell2.innerText = receiptTypeName;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = data.launchBatch;
+            cell3.innerText = nomenclatureTypeName;
 
             var cell4 = row.insertCell(3);
-            cell4.innerText = data.minBatch;
+            cell4.innerText = parentNomenclatureName;
 
             var cell5 = row.insertCell(4);
-            cell5.innerText = data.maxBatch;
-
-            var cell6 = row.insertCell(5);
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell5.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetTechProcesss();
+        GetParentNomenclature();
+        GetReceiptType();
+        GetNomenclatureType();
         GetNomenclatures();
 
 

@@ -63,14 +63,12 @@
 <body>
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
-    <INPUT type="button" value="Удалить" onclick="openDeleteModal()"/>
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
-        <table id="techOperationNeedTable">
+        <table id="equipmentTable">
             <thead>
                 <tr>
-                    <th>Технологическая операция</th>
-                    <th>Номенклатура входного изделия</th>
-                    <th>Количество</th>
+                    <th>Оборудование</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -81,60 +79,44 @@
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
         <div id="addModal">
-            <form name="techOperationNeedForm">
+            <form name="equipmentForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperation"></select>
-                </div>
-                <div class="form-group">
-                    <label for="nomNeed">Номенклатура входного изделия:</label>
-                    <select name="nomNeed" id="selectNomOut"></select>
-                </div>
-                <div class="form-group">
-                    <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="count" />
+                    <label for="name">Оборудование:</label>
+                    <input class="form-control" name="name" id="name" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddTechOperationNeed()" />
-                    <input type="button" value="Сбросить" onclick="reset('techOperationNeedForm')" />
+                    <input type="button" value="Добавить" onclick="AddEquipment()" />
+                    <input type="button" value="Сбросить" onclick="reset('equipmentForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="editModal">
-            <form name="techOperationNeedEditForm">
+            <form name="equipmentEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
-                    <label for="techOperation">Технологическая операция:</label>
-                    <select name="to" id="selectTechOperationEdit"></select>
-                </div>
-                <div class="form-group">
-                    <label for="nomNeed">Номенклатура входного изделия:</label>
-                    <select name="nomNeed" id="selectNomOutEdit"></select>
-                </div>
-                <div class="form-group">
-                    <label for="count">Количество:</label>
-                    <input class="form-control" name="count" id="countEdit" />
+                    <label for="nameEdit">Оборудование:</label>
+                    <input class="form-control" name="nameEdit" id="nameEdit" />
                 </div>
                 <div class="panel-body">
 
-                    <input type="button" value="Изменить" onclick="EditTechOperationNeed()" />
+                    <input type="button" value="Изменить" onclick="EditEquipment()" />
                     @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('techOperationNeedEditForm')" />
+                    <input type="button" value="Сбросить" onclick="reset('equipmentEditForm')" />
                 </div>
             </form>
         </div>
 
 
         <div id="deleteModal">
-                <div class="panel-body">
-                    <h3>Вы уверены, что хотите удалить запись?</h3>
-                    <input type="button" value="Удалить" onclick="DeleteTechOperationNeed()" />
-                    <input type="button" value="Отменить" onclick="CloseModal()" />
-                </div>
+            <div class="panel-body">
+                <h3>Вы уверены, что хотите удалить запись?</h3>
+                <input type="button" value="Удалить" onclick="DeleteEquipment()" />
+                <input type="button" value="Отменить" onclick="CloseModal()" />
+            </div>
         </div>
     </div>
 
@@ -145,42 +127,31 @@
         var selectedForDelete = [];
         var resultForDelete = new Map();
 
-        function EditTechOperationNeed() {
-            
-
-            var indexTOSelected = document.getElementById("selectTechOperationEdit").options.selectedIndex;
-            var techOperationIdPUT = document.getElementById("selectTechOperationEdit").options[indexTOSelected].value;
-
-            var indexNomOutSelected = document.getElementById("selectNomOutEdit").options.selectedIndex;
-            var nomNeedIdPUT = document.getElementById("selectNomOutEdit").options[indexNomOutSelected].value;
-
-            var countPUT = document.getElementById("countEdit").value;
-            if (countPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
+        function EditEquipment() {
+            var namePUT = document.getElementById("nameEdit").value;
 
             var idPUT = selectedCheckbox;
 
-            var urlstr = "api/TechOperationNeed/" + idPUT;
+            var urlstr = "api/Equipment/" + idPUT;
             $.ajax({
                 url: urlstr,
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    techOperationId: techOperationIdPUT,
-                    nomenclatureNeedId: nomNeedIdPUT,
-                    count: countPUT,
+                    name: namePUT,
                     id: idPUT
                 }),
-                success: async function (techOperationNeed) {
-                    reset('techOperationNeedEditForm');
+                success: async function (equipment) {
+                    reset('equipmentEditForm');
                     alert('Запись успешно изменена');
                     //update table
 
-                    var table = document.getElementById('techOperationNeedTable');
-                    
+                    var table = document.getElementById('equipmentTable');
+
                     for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                        table.deleteRow(i);
                     }
-                    await GetTechOperationNeeds();
+                    await GetEquipments();
                     CloseModal();
                 },
                 error: function (e) {
@@ -190,7 +161,7 @@
         }
 
         function openEditModal() {
-            
+
             $('input[type=checkbox]').each(async function () {
                 //if ($(this).is(':checked')) {
                 if (this.checked) {
@@ -206,8 +177,8 @@
                     //modalShow(editModal);
                     //$("#editModal").show();
                     var id = selectedCheckbox;
-                    await GetTechOperationNeedById(id);
-                    
+                    await GetEquipmentById(id);
+
                     return false;
                 }
             });
@@ -216,7 +187,7 @@
             }
             return false;
         }
-        
+
         // сброс формы
         function reset(formId) {
             var form = document.forms[formId];
@@ -245,7 +216,7 @@
                 alert('Не выбрана ни одна запись');
                 return false;
             }
-            
+
 
             var deleteModal = document.getElementById('deleteModal');
             //TODO SHOW DELETE MODAL
@@ -254,35 +225,30 @@
             return false;
         }
 
-        async function DeleteTechOperationNeed() {
+        async function DeleteEquipment() {
             selectedForDelete.forEach(async function (elem) {
-                await GetTechOperationNeedById(elem);
+                await GetEquipmentById(elem);
                 var idDEL = elem;
-                var techOperationIdDEL = resultForDelete.get('techOperationId');
-                var nomNeedIdDEL = resultForDelete.get('nomenclatureNeedId');
-                var countDEL = resultForDelete.get('count');
+                var nameDEL = resultForDelete.get('name');
 
-                var urlstr = "api/TechOperationNeed/" + idDEL;
+                var urlstr = "api/Equipment/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        techOperationId: techOperationIdDEL,
-                        nomenclatureNeedId: nomNeedIdDEL,
-                        count: countDEL,
+                        name: nameDEL,
                         id: idDEL
                     }),
-                    success: async function (techOperationNeed) {
+                    success: async function (equipment) {
                         alert('Запись удалена');
-
-                        //update table
-                        var table = document.getElementById('techOperationNeedTable');
+                        
+                        var table = document.getElementById('equipmentTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetTechOperationNeeds();
+                        await GetEquipments();
                         CloseModal();
                     },
                     error: function (e) {
@@ -290,39 +256,36 @@
                     }
                 });
             })
-            //await GetTechOperationNeeds();
             //alert('Запись удалена');
-
-            //var table = document.getElementById('techOperationNeedTable');
-
-            //for (var i = 1; i < table.rows.length;) {
-            //    table.deleteRow(i);
-            //}
-            //await GetTechOperationNeeds();
-
             //CloseModal();
+            //if (res) {
+            //    alert('Запись удалена');
+
+            //    var table = document.getElementById('equipmentTable');
+
+            //    for (var i = 1; i < table.rows.length;) {
+            //        table.deleteRow(i);
+            //    }
+            //    await GetEquipments();
+            //    CloseModal();
+            //}
+
+
+
         }
 
 
-        async function GetTechOperationNeedById(id) {
-            var urlstr = "api/TechOperationNeed/" + id;
+        async function GetEquipmentById(id) {
+            var urlstr = "api/Equipment/" + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
                 contentType: "application/json",
-                success: async function (techOperationNeed) {
-                    var previousTO = document.getElementById('selectTechOperationEdit');
-                    previousTO.value = techOperationNeed.techOperationId;
-
-                    var previousNomOut = document.getElementById('selectNomOutEdit');
-                    previousNomOut.value = techOperationNeed.nomenclatureNeedId;
-
-                    var previousCount = document.getElementById('countEdit');
-                    previousCount.value = techOperationNeed.count;
-
-                    resultForDelete.set('techOperationId', techOperationNeed.techOperationId);
-                    resultForDelete.set('nomenclatureNeedId', techOperationNeed.nomenclatureNeedId);
-                    resultForDelete.set('count', techOperationNeed.count);
+                success: async function (equipment) {
+                    var name = document.getElementById('nameEdit');
+                    name.value = equipment.name;
+                    
+                    resultForDelete.set('name', equipment.name);
                 },
                 error: function (e) {
                     console.log(e.message);
@@ -330,140 +293,43 @@
             });
         }
 
-        function GetTechOperations() {
-            var select = document.getElementById('selectTechOperation');
-            var selectEdit = document.getElementById('selectTechOperationEdit');
-            $.ajax({
-                url: '/api/TechOperation',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techOperations) {
-                    $.each(techOperations, function (index, techOperation) {
-                        var ooption = document.createElement('option');
-                        ooption.value = techOperation.id;
-                        ooption.innerText = techOperation.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = techOperation.id;
-                        ooptionEdit.innerText = techOperation.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-        function GetNomenclatures() {
-            var select = document.getElementById('selectNomOut');
-            var selectEdit = document.getElementById('selectNomOutEdit');
-            $.ajax({
-                url: '/api/Nomenclature',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatures) {
-                    $.each(nomenclatures, function (index, nomenclature) {
-
-                        var ooption = document.createElement('option');
-                        ooption.value = nomenclature.id;
-                        ooption.innerText = nomenclature.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclature.id;
-                        ooptionEdit.innerText = nomenclature.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-
-
-        function AddTechOperationNeed() {
-            var indexTOSelected = document.getElementById("selectTechOperation").options.selectedIndex;
-            var techOperationId = document.getElementById("selectTechOperation").options[indexTOSelected].value;
-
-            var indexNomOutSelected = document.getElementById("selectNomOut").options.selectedIndex;
-            var nomNeedId = document.getElementById("selectNomOut").options[indexNomOutSelected].value;
-
-            var count = document.getElementById("count").value;
-            if (count.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество"'); }
-
+        function AddEquipment() {
+            var name = document.getElementById("name").value;
 
             $.ajax({
-                url: "api/TechOperationNeed",
+                url: "api/Equipment",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
-                    techOperationId: techOperationId,
-                    nomenclatureNeedId: nomNeedId,
-                    count: count
+                    name: name
                 }),
-                success: function (techOperationNeed) {
-                    reset('techOperationNeedForm');
+                success: function (equipment) {
+                    reset('equipmentForm');
                     alert('Запись успешно добавлена');
-                    addRow('techOperationNeedTable', techOperationNeed);
+                    addRow('equipmentTable', equipment);
                 }
             })
         }
 
 
-        // Получение всех techOperationNeed
-        function GetTechOperationNeeds() {
+        // Получение всех equipment
+        function GetEquipments() {
             $.ajax({
-                url: '/api/TechOperationNeed',
+                url: '/api/Equipment',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (techOperationNeeds) {
-                    
-                    $.each(techOperationNeeds, function (index, techOperationNeed) {
-                        var transactionList = techOperationNeed;
+                success: function (equipments) {
 
-                        addRow("techOperationNeedTable", transactionList);
+                    $.each(equipments, function (index, equipment) {
+                        var transactionList = equipment;
+
+                        addRow("equipmentTable", transactionList);
                     })
                 },
                 error: function (e) {
                     console.log(e.message);
                 }
             });
-        }
-
-        async function GetTechOperationName(id) {
-            var name;
-            var urlstr = '/api/TechOperation/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techOperation) {
-                    name = techOperation.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function GetNomenclatureNeedName(id) {
-            var name;
-            var urlstr = '/api/Nomenclature/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatureNeed) {
-                    name = nomenclatureNeed.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
         }
 
         async function addRow(tableID, data) {
@@ -472,32 +338,19 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
-
-            var toId = data.techOperationId;
-            var techOperationName = await GetTechOperationName(toId);
-
-            var nomId = data.nomenclatureNeedId;
-            var nomenclatureNeedName = await GetNomenclatureNeedName(nomId);
+            
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = techOperationName;
-
+            cell1.innerText = data.name;
+            
             var cell2 = row.insertCell(1);
-            cell2.innerText = nomenclatureNeedName;
-
-            var cell3 = row.insertCell(2);
-            cell3.innerText = data.count;
-
-            var cell4 = row.insertCell(3);
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell4.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell2.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetTechOperationNeeds();
-        GetTechOperations();
-        GetNomenclatures();
+        GetEquipments();
 
 
 
@@ -513,7 +366,7 @@
             mStatus = false,
             h = null;
 
-        
+
 
         setTopOuter();
 
@@ -523,7 +376,7 @@
 
 
         function somebodyShow(modal) {
-           
+
             mStatus = true;
             overlay.classList.remove('fadeOut');
             overlay.classList.add('fadeIn');
@@ -563,7 +416,7 @@
                 });
             });
         }());
-        
+
 
         [].forEach.call(mClose, function (el) {
             el.addEventListener('click', modalClose);
@@ -703,101 +556,101 @@
 
     <script>var typeAnimate = 'slide';</script>
     @*<script>
-        ; (function () {
-            var overlay = document.getElementById('overlay'),
-                mOpen = document.querySelectorAll('[data-modal]'),
-                mClose = document.querySelectorAll('[data-close]'),
-                outer = document.querySelector('.modal-outer'),
-                modals = document.querySelectorAll('.modal-outer > div'),
-                duration = 400,
-                mStatus = false,
-                h = null;
+            ; (function () {
+                var overlay = document.getElementById('overlay'),
+                    mOpen = document.querySelectorAll('[data-modal]'),
+                    mClose = document.querySelectorAll('[data-close]'),
+                    outer = document.querySelector('.modal-outer'),
+                    modals = document.querySelectorAll('.modal-outer > div'),
+                    duration = 400,
+                    mStatus = false,
+                    h = null;
 
-            if (mOpen.length == 0) return;
+                if (mOpen.length == 0) return;
 
-            setTopOuter();
+                setTopOuter();
 
-            function setTopOuter() {
-                outer.style.top = -outer.offsetHeight + 'px';
-            }
-
-            [].forEach.call(mOpen, function (el) {
-                el.addEventListener('click', function (e) {
-                    var modalId = el.getAttribute('data-modal'),
-                        modal = document.getElementById(modalId);
-                    modalShow(modal);
-                });
-            });
-
-            [].forEach.call(mClose, function (el) {
-                el.addEventListener('click', modalClose);
-            });
-
-            document.addEventListener('keydown', modalClose);
-
-            function modalShow(modal) {
-                mStatus = true;
-                overlay.classList.remove('fadeOut');
-                overlay.classList.add('fadeIn');
-                modal.style.display = 'block';
-
-                var start = new Date().getTime(),
-                    startTop = outer.getBoundingClientRect().top,
-                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
-                    offset = outer.offsetHeight + finalTop;
-
-                var fn = function () {
-                    var now = new Date().getTime() - start,
-                        currTop = Math.round(startTop + offset * now / duration);
-
-                    currTop = (currTop > finalTop) ? finalTop : currTop;
-                    outer.style.top = currTop + 'px';
-
-                    if (currTop < finalTop) {
-                        requestAnimationFrame(fn);
-                    }
+                function setTopOuter() {
+                    outer.style.top = -outer.offsetHeight + 'px';
                 }
-                requestAnimationFrame(fn);
-                window.addEventListener('resize', setTopOpenOuter);
-            }
 
-            function modalClose(event) {
-                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
-                    mStatus = false;
+                [].forEach.call(mOpen, function (el) {
+                    el.addEventListener('click', function (e) {
+                        var modalId = el.getAttribute('data-modal'),
+                            modal = document.getElementById(modalId);
+                        modalShow(modal);
+                    });
+                });
+
+                [].forEach.call(mClose, function (el) {
+                    el.addEventListener('click', modalClose);
+                });
+
+                document.addEventListener('keydown', modalClose);
+
+                function modalShow(modal) {
+                    mStatus = true;
+                    overlay.classList.remove('fadeOut');
+                    overlay.classList.add('fadeIn');
+                    modal.style.display = 'block';
 
                     var start = new Date().getTime(),
                         startTop = outer.getBoundingClientRect().top,
-                        finalTop = -outer.offsetHeight,
-                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+                        finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                        offset = outer.offsetHeight + finalTop;
 
                     var fn = function () {
                         var now = new Date().getTime() - start,
-                            currTop = Math.round(startTop - offset * now / duration);
+                            currTop = Math.round(startTop + offset * now / duration);
 
-                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        currTop = (currTop > finalTop) ? finalTop : currTop;
                         outer.style.top = currTop + 'px';
 
-                        if (currTop > finalTop) {
+                        if (currTop < finalTop) {
                             requestAnimationFrame(fn);
-                        } else {
-                            overlay.classList.remove('fadeIn');
-                            overlay.classList.add('fadeOut');
-                            [].forEach.call(modals, function (modal) {
-                                modal.removeAttribute('style');
-                            });
                         }
                     }
                     requestAnimationFrame(fn);
-                    window.removeEventListener('resize', setTopOpenOuter);
+                    window.addEventListener('resize', setTopOpenOuter);
                 }
-            }
 
-            function setTopOpenOuter() {
-                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
-            }
-        })();
+                function modalClose(event) {
+                    if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                        mStatus = false;
 
-    </script>*@
+                        var start = new Date().getTime(),
+                            startTop = outer.getBoundingClientRect().top,
+                            finalTop = -outer.offsetHeight,
+                            offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                        var fn = function () {
+                            var now = new Date().getTime() - start,
+                                currTop = Math.round(startTop - offset * now / duration);
+
+                            currTop = (currTop < finalTop) ? finalTop : currTop;
+                            outer.style.top = currTop + 'px';
+
+                            if (currTop > finalTop) {
+                                requestAnimationFrame(fn);
+                            } else {
+                                overlay.classList.remove('fadeIn');
+                                overlay.classList.add('fadeOut');
+                                [].forEach.call(modals, function (modal) {
+                                    modal.removeAttribute('style');
+                                });
+                            }
+                        }
+                        requestAnimationFrame(fn);
+                        window.removeEventListener('resize', setTopOpenOuter);
+                    }
+                }
+
+                function setTopOpenOuter() {
+                    outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+                }
+            })();
+
+        </script>*@
 </body>
 
 
