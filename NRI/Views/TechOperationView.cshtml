@@ -64,6 +64,7 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
+    <INPUT type="button" value="Технологическая карта" data-modal="TKModal" />
     <div class="table">
         <table id="techOperationTable">
             <thead>
@@ -80,6 +81,9 @@
     <div id="overlay" class="overlay fadeOut" data-close=""></div>
     <div class="modal-outer" style="top: -460px;">
         <span class="closer" id="closer" data-close=""></span>
+
+
+
         <div id="addModal">
             <form name="techOperationForm">
                 <input type="hidden" name="id" value="0" />
@@ -100,6 +104,22 @@
                     <input type="button" value="Добавить" onclick="AddTechOperation()" />
                     <input type="button" value="Сбросить" onclick="reset('techOperationForm')" />
                 </div>
+            </form>
+        </div>
+
+        <div id="TKModal">
+            <form name="TKForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="selectTKTechProcess">Технологический процесс:</label>
+                    <select name="selectTKTechProcess" id="selectTKTechProcess"></select>
+
+                </div>
+                <div class="panel-body">
+                    <INPUT type="button" value="Показать" onclick="showTK()" />
+                    <INPUT type="button" value="Выгрузить в pdf" onclick="downloadTK()" />
+                </div>
+                <div id="listOperationsTK"></div>
             </form>
         </div>
 
@@ -143,10 +163,41 @@
     <script>
         var selectedCheckbox;
         var selectedForDelete = [];
+        var TKOperations = [];
         var resultForDelete = new Map();
+        var resultForTK = new Map();
+
+
+        function downloadTK() {
+
+        }
+
+        async function showTK() {
+            
+                var indexTechProcessSelected = document.getElementById("selectTKTechProcess").options.selectedIndex;
+                var techProcessId = document.getElementById("selectTKTechProcess").options[indexTechProcessSelected].value;
+
+                await GetTechOperations();
+
+                resultForTK.forEach(async function (key) {
+                    var techOperationName = resultForTK.get('techOperationName' + key);
+                    var techProcessIdTK = resultForTK.get('techProcessId' + key);
+
+                    if (techProcessId == techProcessIdTK) {
+                        TKOperations.push(techOperationName);
+                    }
+
+                });
+
+                TKOperations.forEach(function (elem) {
+                    var f = document.getElementById('listOperationsTK');
+                    f.innerHTML = '<label for="listOperationsTK">' + elem + '</label>';
+                });
+            
+        }
 
         function EditTechOperation() {
-            
+
             var techOperationNamePUT = document.getElementById("TechOperationEdit").value;
 
             var indexTechProcessSelected = document.getElementById("selectTechProcessEdit").options.selectedIndex;
@@ -273,7 +324,7 @@
                     }),
                     success: async function (techOperation) {
                         alert('Запись удалена');
-                        
+
                         var table = document.getElementById('techOperationTable');
 
                         for (var i = 1; i < table.rows.length;) {
@@ -335,6 +386,7 @@
         function GetTechProcesses() {
             var select = document.getElementById('selectTechProcess');
             var selectEdit = document.getElementById('selectTechProcessEdit');
+            var selectTK = document.getElementById('selectTKTechProcess');
             $.ajax({
                 url: '/api/TechProcess',
                 type: 'GET',
@@ -345,6 +397,11 @@
                         ooption.value = techProcess.id;
                         ooption.innerText = techProcess.name
                         select.appendChild(ooption);
+
+                        var ooptionTK = document.createElement('option');
+                        ooptionTK.value = techProcess.id;
+                        ooptionTK.innerText = techProcess.name
+                        selectTK.appendChild(ooptionTK);
 
                         var ooptionEdit = document.createElement('option');
                         ooptionEdit.value = techProcess.id;
@@ -357,7 +414,7 @@
                 }
             });
         }
-        
+
 
 
         function AddTechOperation() {
@@ -390,13 +447,19 @@
 
         // Получение всех techOperation
         function GetTechOperations() {
+            var index = 1;
             $.ajax({
                 url: '/api/TechOperation',
                 type: 'GET',
                 contentType: "application/json",
                 success: function (techOperations) {
+                    
+                    $.each(techOperations, function (techOperation) {
+                        index++;
+                        
+                        resultForTK.set('techOperationName'+index, techOperation.name);
+                        resultForTK.set('techProcessId' + index, techOperation.TechProcessId);
 
-                    $.each(techOperations, function (index, techOperation) {
                         var transactionList = techOperation;
 
                         addRow("techOperationTable", transactionList);
@@ -431,7 +494,7 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
-            
+
             var techOperationName = data.name;
 
             var techProcessId = data.techProcessId;
@@ -453,6 +516,7 @@
             cell4.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
+
         GetTechOperations();
         GetTechProcesses();
 

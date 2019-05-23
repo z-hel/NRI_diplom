@@ -108,8 +108,8 @@
                     <select name="tool" id="selectTool"></select>
                 </div>
                 <div class="form-group">
-                    <label for="resourceUsageType">Тип использования:</label>
-                    <select name="resourceUsageType" id="selectResourceUsageType"></select>
+                    <label for="usageType">Тип использования:</label>
+                    <select name="usageType" id="selectUsageType"></select>
                 </div>
                 <div class="form-group">
                     <label for="isAccessibitity">Доступность:</label>
@@ -164,8 +164,8 @@
                     <select name="toolEdit" id="selectToolEdit"></select>
                 </div>
                 <div class="form-group">
-                    <label for="resourceUsageTypeEdit">Тип использования:</label>
-                    <select name="resourceUsageTypeEdit" id="selectResourceUsageTypeEdit"></select>
+                    <label for="usageTypeEdit">Тип использования:</label>
+                    <select name="usageTypeEdit" id="selectUsageTypeEdit"></select>
                 </div>
                 <div class="form-group">
                     <label for="isAccessibitityEdit">Доступность:</label>
@@ -630,7 +630,7 @@
             var selectEdit = document.getElementById('selectUsageTypeEdit');
            
             $.ajax({
-                url: '/api/UsageType',
+                url: '/api/ResourceUsageType',
                 type: 'GET',
                 contentType: "application/json",
                 success: function (UsageTypes) {
@@ -660,19 +660,19 @@
             var selectEdit = document.getElementById('selectIsAccessibilityEdit');
 
             var ooptionTrue = document.createElement('option');
-            ooptionTrue.value = true;
+            ooptionTrue.value = 1;
             ooptionTrue.innerText = 'true';
 
             var ooptionFalse = document.createElement('option');
-            ooptionFalse.value = false;
+            ooptionFalse.value = 2;
             ooptionFalse.innerText = 'false';
 
             var ooptionTrueEdit = document.createElement('option');
-            ooptionTrueEdit.value = true;
+            ooptionTrueEdit.value = 1;
             ooptionTrueEdit.innerText = 'true';
 
             var ooptionFalseEdit = document.createElement('option');
-            ooptionFalseEdit.value = false;
+            ooptionFalseEdit.value = 2;
             ooptionFalseEdit.innerText = 'false';
 
             
@@ -749,6 +749,14 @@
             var downtimeCost = document.getElementById("downtimeCostEdit").value;
             if (downtimeCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
 
+            if (isAccessibilityId == 2) {
+                isAccessibilityId = false;
+            }
+            else {
+                isAccessibilityId = true;
+            }
+
+
             $.ajax({
                 url: "api/resource",
                 contentType: "application/json",
@@ -759,7 +767,7 @@
                     equipmentId: equipmentId,
                     toolId: toolId,
                     usageTypeId: usageTypeId,
-                    isAccessibilityId: isAccessibilityId,
+                    isAccessibility: isAccessibilityId,
                     modeId: modeId,
                     productionUnitId: productionUnitId,
                     workCost: workCost,
@@ -955,7 +963,7 @@
             cell2.innerText = personalName;
 
             var cell3 = row.insertCell(2);
-            cell23.innerText = equipmentName;
+            cell3.innerText = equipmentName;
 
             var cell4 = row.insertCell(3);
             cell4.innerText = toolName;

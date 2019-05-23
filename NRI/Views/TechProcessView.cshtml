@@ -14,6 +14,17 @@
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    @*<script lang="javascript" src="dist/xlsx.full.min.js"></script>*@
+
+
+    @*<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>*@
+    @*<script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-5M5RCSJ"></script>*@
+    <script type="text/javascript" src="https://docs.dhtmlx.com/spreadsheet/codebase/spreadsheet.js?v=3.1.2"></script>
+    <script type="text/javascript" src="https://docs.dhtmlx.com/spreadsheet/samples/common/dataset.js?v=3.1.2"></script>
+    <script src="https://cdn.dhtmlx.com/libs/excel2json/1.0/worker.js"></script>
+    <script src="https://cdn.ravenjs.com/3.19.1/raven.min.js" crossorigin="anonymous"></script>
+    <script>Raven.config('https://a2578da6be394598bfe003e4dbb3a394@sentry.dhtmlx.ru/13').install()</script>
+
     <!-- Bootstrap -->
     @*<script src="/examples/vendors/bootstrap-3.3.7/js/bootstrap.min.js"></script>*@
 
@@ -64,6 +75,7 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
+    <INPUT type="button" value="Импорт" onclick="importXlsx()" />
     <div class="table">
         <table id="techProcessTable">
             <thead>
@@ -157,11 +169,43 @@
     </div>
 
 
+    <script>
+        var spreadsheet = new dhx.Spreadsheet("content", {
+            menu: true,
+            toolbarBlocks: ["default", "file"]
+        });
+        spreadsheet.parse(dataset);
+        function importXlsx() {
+            spreadsheet.load("", "xlsx").then(function () {
+                var state = spreadsheet1.serialize();
 
+                var spreadsheet2 = new dhx.Spreadsheet(document.body);
+                // parsing the state of the spreadsheet1 into spreadsheet2
+                spreadsheet2.parse(state);
+            });
+        }</script>
     <script>
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
+
+
+
+        //function importTechProcess() {
+
+        //    var spreadsheet = new dhx.Spreadsheet("spreadsheet", {
+        //        menu: true,
+        //        toolbarBlocks: ["default", "file"]
+        //    });
+        //    spreadsheet.parse(dataset);
+        //    function importXlsx() {
+        //        spreadsheet.load("", "xlsx");
+        //    }
+
+        //}
+
+
+
 
         function EditTechProcess() {
             
