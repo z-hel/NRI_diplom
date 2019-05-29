@@ -19,11 +19,11 @@
 
     @*<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>*@
     @*<script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-5M5RCSJ"></script>*@
-    <script type="text/javascript" src="https://docs.dhtmlx.com/spreadsheet/codebase/spreadsheet.js?v=3.1.2"></script>
-    <script type="text/javascript" src="https://docs.dhtmlx.com/spreadsheet/samples/common/dataset.js?v=3.1.2"></script>
-    <script src="https://cdn.dhtmlx.com/libs/excel2json/1.0/worker.js"></script>
-    <script src="https://cdn.ravenjs.com/3.19.1/raven.min.js" crossorigin="anonymous"></script>
-    <script>Raven.config('https://a2578da6be394598bfe003e4dbb3a394@sentry.dhtmlx.ru/13').install()</script>
+    @*<script type="text/javascript" src="https://docs.dhtmlx.com/spreadsheet/codebase/spreadsheet.js?v=3.1.2"></script>*@
+    @*<script type="text/javascript" src="https://docs.dhtmlx.com/spreadsheet/samples/common/dataset.js?v=3.1.2"></script>*@
+    @*<script src="https://cdn.dhtmlx.com/libs/excel2json/1.0/worker.js"></script>*@
+    @*<script src="https://cdn.ravenjs.com/3.19.1/raven.min.js" crossorigin="anonymous"></script>*@
+    @*<script>Raven.config('https://a2578da6be394598bfe003e4dbb3a394@sentry.dhtmlx.ru/13').install()</script>*@
 
     <!-- Bootstrap -->
     @*<script src="/examples/vendors/bootstrap-3.3.7/js/bootstrap.min.js"></script>*@
@@ -75,7 +75,19 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
-    <INPUT type="button" value="Импорт" onclick="importXlsx()" />
+    @*<INPUT type="button" value="Импорт" onclick="importXlsx()" />*@
+
+    <form id="form" name="form" action="/import" enctype="multipart/form-data" method="post">
+        <div class="buttons">
+            <div class="upload-button">
+                @*<div class="label">Click me!</div>*@
+                @*<input id="files" name="files" type="file" size="1" multiple onchange="importXlsx('files');" />*@
+                <INPUT id="files" name="files" type="file" size="1" value="Импорт" onchange="importXlsx('files')" />
+            </div>
+        </div>
+    </form>
+
+    @*<INPUT id="files" name="files" type="file" size="1" value="Импорт" onclick="importXlsx('files')" class="button" />*@
     <div class="table">
         <table id="techProcessTable">
             <thead>
@@ -170,45 +182,63 @@
 
 
     <script>
-        var spreadsheet = new dhx.Spreadsheet("content", {
-            menu: true,
-            toolbarBlocks: ["default", "file"]
-        });
-        spreadsheet.parse(dataset);
-        function importXlsx() {
-            spreadsheet.load("", "xlsx").then(function () {
-                var state = spreadsheet1.serialize();
+        //var spreadsheet = new dhx.Spreadsheet("content", {
+        //    menu: true,
+        //    toolbarBlocks: ["default", "file"]
+        //});
+        //spreadsheet.parse(dataset);
+        //spreadsheet.load("", "xlsx").then(function () {
+        //    var state = spreadsheet1.serialize();
 
-                var spreadsheet2 = new dhx.Spreadsheet(document.body);
-                // parsing the state of the spreadsheet1 into spreadsheet2
-                spreadsheet2.parse(state);
-            });
+        //    var spreadsheet2 = new dhx.Spreadsheet(document.body);
+        //    spreadsheet2.parse(state);
+        //});
+        //spreadsheet.parse(dataset);
+
+        function importXlsx(inputId) {
+            var input = document.getElementById(inputId);
+            var files = input.files;
+            var formData = new FormData();
+
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]);
+            }
+            var _url = '@Url.Action("Import", "TechProcess")';
+            $.ajax(
+                {
+                    url: _url, //"api/TechProcess/import",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: async function (techProcess) {
+                        console.log(techProcess);
+                        //reset('techProcessForm');
+                        alert('Запись успешно добавлена');
+
+                        var table = document.getElementById('techProcessTable');
+
+                        for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                        }
+                        //await GetTechProcesss();
+
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            
         }</script>
     <script>
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
 
-
-
-        //function importTechProcess() {
-
-        //    var spreadsheet = new dhx.Spreadsheet("spreadsheet", {
-        //        menu: true,
-        //        toolbarBlocks: ["default", "file"]
-        //    });
-        //    spreadsheet.parse(dataset);
-        //    function importXlsx() {
-        //        spreadsheet.load("", "xlsx");
-        //    }
-
-        //}
-
-
-
+        
 
         function EditTechProcess() {
-            
+
             var techProcessNamePUT = document.getElementById("techProcessEdit").value;
 
             var indexNomenclatureSelected = document.getElementById("selectNomenclatureEdit").options.selectedIndex;
@@ -347,7 +377,7 @@
                     }),
                     success: async function (techProcess) {
                         alert('Запись удалена');
-                        
+
                         var table = document.getElementById('techProcessTable');
 
                         for (var i = 1; i < table.rows.length;) {
@@ -439,7 +469,7 @@
                 }
             });
         }
-        
+
 
 
         function AddTechProcess() {
@@ -524,7 +554,7 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
-            
+
             var techProcessName = data.name;
 
             var nomenclatureId = data.nomenclatureId;

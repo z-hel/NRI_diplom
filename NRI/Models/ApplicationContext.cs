@@ -7,7 +7,7 @@ namespace NRI
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
-
+        //public DbSet<FileModel> Files { get; set; }
         public  DbSet<Calendar> calendars { get; set; }
         public  DbSet<Equipment> equipments { get; set; }
         public  DbSet<Mode> modes { get; set; }
