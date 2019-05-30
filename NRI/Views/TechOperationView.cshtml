@@ -19,6 +19,11 @@
 
     @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    @*<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>*@
+    <script src="~/16761-normal.js"></script>
+
+
     <style type="text/css">
         table {
             font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -119,7 +124,7 @@
                     <INPUT type="button" value="Показать" onclick="showTK()" />
                     <INPUT type="button" value="Выгрузить в pdf" onclick="downloadTK()" />
                 </div>
-                <div id="listOperationsTK"></div>
+                <div id="listOperationsTK" style="padding: 15px;"></div>
             </form>
         </div>
 
@@ -142,7 +147,6 @@
                 <div class="panel-body">
 
                     <input type="button" value="Изменить" onclick="EditTechOperation()" />
-                    @*TODO*@
                     <input type="button" value="Сбросить" onclick="reset('techOperationEditForm')" />
                 </div>
             </form>
@@ -161,39 +165,71 @@
 
 
     <script>
+        
+
         var selectedCheckbox;
         var selectedForDelete = [];
         var TKOperations = [];
         var resultForDelete = new Map();
-        var resultForTK = new Map();
+        var resultTOForTK = new Map();
+        var resultTPForTK = new Map();
 
 
         function downloadTK() {
+            showTK();
 
+            var indexTechProcessSelected = document.getElementById("selectTKTechProcess").options.selectedIndex;
+            var techProcess = document.getElementById("selectTKTechProcess").options[indexTechProcessSelected].text;
+
+            var doc = new jsPDF()
+            
+
+            doc.setFont('16761')
+            
+            doc.text("Технологический процесс: ", 20, 20);
+            doc.text(techProcess, 20, 30);
+
+            var x = 30;
+
+            for (var i = 0; i < TKOperations.length; i++) {
+                x = x + 10;
+                doc.text("Технологическая операция: " + TKOperations[i], 40, x);
+            }
+            
+            
+            doc.save('techMap.pdf')
         }
 
         async function showTK() {
             
-                var indexTechProcessSelected = document.getElementById("selectTKTechProcess").options.selectedIndex;
-                var techProcessId = document.getElementById("selectTKTechProcess").options[indexTechProcessSelected].value;
+            var indexTechProcessSelected = document.getElementById("selectTKTechProcess").options.selectedIndex;
+            var techProcessId = document.getElementById("selectTKTechProcess").options[indexTechProcessSelected].value;
 
-                await GetTechOperations();
+            var f = document.getElementById('listOperationsTK');
 
-                resultForTK.forEach(async function (key) {
-                    var techOperationName = resultForTK.get('techOperationName' + key);
-                    var techProcessIdTK = resultForTK.get('techProcessId' + key);
+            $("label.tkLabel").remove();
+            TKOperations = [];
+            
+                resultTPForTK.forEach(function (keyTP, valueTP) {
+                    var techProcessIdTK = resultTPForTK.get(valueTP);
 
-                    if (techProcessId == techProcessIdTK) {
+                    resultTOForTK.forEach(function (keyTO, valueTO) {
+                        var techOperationName = keyTO;
+
+                        if (valueTP == valueTO && techProcessId == techProcessIdTK) {
                         TKOperations.push(techOperationName);
                     }
+                });
 
                 });
 
-                TKOperations.forEach(function (elem) {
-                    var f = document.getElementById('listOperationsTK');
-                    f.innerHTML = '<label for="listOperationsTK">' + elem + '</label>';
-                });
-            
+            for (var i = 0; i < TKOperations.length; i++) {
+                var elem = TKOperations[i];
+                var sp = document.createElement("span");
+                sp.innerHTML = '<label for="listOperationsTK" class="tkLabel" id="' + i + '">' + elem + '</label>';
+                sp.id = i;
+                f.appendChild(sp);
+            }
         }
 
         function EditTechOperation() {
@@ -230,6 +266,7 @@
                         table.deleteRow(i);
                     }
                     await GetTechOperations();
+                    await GetTechProcesses();
                     CloseModal();
                 },
                 error: function (e) {
@@ -331,6 +368,7 @@
                             table.deleteRow(i);
                         }
                         await GetTechOperations();
+                        await GetTechProcesses();
                         CloseModal();
                     },
                     error: function (e) {
@@ -436,10 +474,11 @@
                     techProcessId: techProcessId,
                     serialNumber: serialNumber
                 }),
-                success: function (techOperation) {
+                success: async function (techOperation) {
                     reset('techOperationForm');
                     alert('Запись успешно добавлена');
                     addRow('techOperationTable', techOperation);
+                    await GetTechProcesses();
                 }
             })
         }
@@ -447,18 +486,21 @@
 
         // Получение всех techOperation
         function GetTechOperations() {
-            var index = 1;
+            var i = 0;
             $.ajax({
                 url: '/api/TechOperation',
                 type: 'GET',
                 contentType: "application/json",
                 success: function (techOperations) {
                     
-                    $.each(techOperations, function (techOperation) {
-                        index++;
+                    $.each(techOperations, function (index, techOperation) {
+                        i = i + 1;
+
+                        var TOIndex = 'techOperationName' + techOperation.id;
+                        var TPIndex = 'techProcessId' + techOperation.id;
                         
-                        resultForTK.set('techOperationName'+index, techOperation.name);
-                        resultForTK.set('techProcessId' + index, techOperation.TechProcessId);
+                        resultTOForTK.set(techOperation.id, techOperation.name);
+                        resultTPForTK.set(techOperation.id, techOperation.techProcessId);
 
                         var transactionList = techOperation;
 
@@ -468,7 +510,7 @@
                 error: function (e) {
                     console.log(e.message);
                 }
-            });
+            })
         }
 
         async function GetTechProcessName(id) {

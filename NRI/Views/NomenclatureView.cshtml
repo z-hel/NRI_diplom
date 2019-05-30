@@ -19,6 +19,14 @@
 
     @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    @*<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>*@
+    <script src="~/16761-normal.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/json-formatter-js@2.2.1/dist/json-formatter.min.js"></script>
+
+
     <style type="text/css">
         table {
             font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -64,6 +72,8 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
+    <INPUT type="button" value="Спецификация" data-modal="SPModal" />
+    <INPUT type="button" value="Разузлование" data-modal="explosionModal" />
     <div class="table">
         <table id="nomenclatureTable">
             <thead>
@@ -108,6 +118,37 @@
             </form>
         </div>
 
+        <div id="SPModal">
+            <form name="SPForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="selectSPNomenclature">Номенклатура:</label>
+                    <select name="selectSPNomenclature" id="selectSPNomenclature"></select>
+
+                </div>
+                <div class="panel-body">
+                    <INPUT type="button" value="Показать" onclick="showSP()" />
+                    <INPUT type="button" value="Выгрузить в pdf" onclick="downloadSP()" />
+                </div>
+                <div id="listNomenclaturesSP" style="padding: 15px;"></div>
+            </form>
+        </div>
+
+        <div id="explosionModal">
+            <form name="explosionForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="selectExplosion">Номенклатура:</label>
+                    <select name="selectExplosion" id="selectExplosion"></select>
+
+                </div>
+                <div class="panel-body">
+                    <INPUT type="button" value="Показать" onclick="showExplosion()" />
+                    @*<INPUT type="button" value="Выгрузить в pdf" onclick="downloadSP()" />*@
+                </div>
+                <div id="listExplosion" style="padding: 15px;"></div>
+            </form>
+        </div>
 
         <div id="editModal">
             <form name="nomenclatureEditForm">
@@ -131,7 +172,7 @@
                 <div class="panel-body">
 
                     <input type="button" value="Изменить" onclick="EditNomenclature()" />
-                    @*TODO*@
+                    @*NOMDO*@
                     <input type="button" value="Сбросить" onclick="reset('nomenclatureEditForm')" />
                 </div>
             </form>
@@ -152,11 +193,114 @@
     <script>
         var selectedCheckbox;
         var selectedForDelete = [];
+        var SPNomenclatures = [];
+        var ExplosionNomenclatures = [];
         var resultForDelete = new Map();
-        
+        var resultNOMForSP = new Map();
+        var resultPRNTForSP = new Map();
+
+        var explosionMap = new Map();
+
+        function downloadSP() {
+            showSP();
+
+            var indexNomenclatureSelected = document.getElementById("selectSPNomenclature").options.selectedIndex;
+            var nomenclature = document.getElementById("selectSPNomenclature").options[indexNomenclatureSelected].text;
+
+            var doc = new jsPDF()
+
+
+            doc.setFont('16761')
+
+            doc.text("Номенклатура родительского изделия: ", 10, 20);
+            doc.text(nomenclature, 10, 30);
+
+            var x = 30;
+
+            for (var i = 0; i < SPNomenclatures.length; i++) {
+                x = x + 10;
+                doc.text("Номенклатура: " + SPNomenclatures[i], 40, x);
+            }
+
+
+            doc.save('specification.pdf')
+        }
+
+        function showSP() {
+
+            var indexNomenclatureSelected = document.getElementById("selectSPNomenclature").options.selectedIndex;
+            var nomenclatureId = document.getElementById("selectSPNomenclature").options[indexNomenclatureSelected].value;
+
+            var f = document.getElementById('listNomenclaturesSP');
+
+            $("label.spLabel").remove();
+            SPNomenclatures = [];
+
+            resultPRNTForSP.forEach(function (keyPRNT, valuePRNT) {
+                var parentIdSP = resultPRNTForSP.get(valuePRNT);
+
+                resultNOMForSP.forEach(function (keyNOM, valueNOM) {
+                    var nomenclatureName = keyNOM;
+
+                    if (valuePRNT == valueNOM && nomenclatureId == parentIdSP) {
+                        SPNomenclatures.push(nomenclatureName);
+                    }
+                });
+
+            });
+
+            for (var i = 0; i < SPNomenclatures.length; i++) {
+                var elem = SPNomenclatures[i];
+                var sp = document.createElement("span");
+                sp.innerHTML = '<label for="listNomenclaturesSP" class="spLabel" id="' + i + '">' + elem + '</label>';
+                sp.id = i;
+                f.appendChild(sp);
+            }
+        }
+
+
+        function showExplosion() {
+
+            var indexNomenclatureSelected = document.getElementById("selectExplosion").options.selectedIndex;
+            var nomenclatureId = document.getElementById("selectExplosion").options[indexNomenclatureSelected].value;
+
+            var f = document.getElementById('listExplosion');
+
+            $("label.ExplosionLabel").remove();
+            ExplosionNomenclatures = [];
+
+            resultPRNTForSP.forEach(function (keyPRNT, valuePRNT) {
+                var parentIdSP = resultPRNTForSP.get(valuePRNT);
+
+                resultNOMForSP.forEach(function (keyNOM, valueNOM) {
+                    var nomenclatureName = keyNOM;
+
+                    if (valuePRNT == valueNOM && nomenclatureId == parentIdSP) {
+                        ExplosionNomenclatures.push(nomenclatureName);
+                    }
+                });
+
+
+                const myJSON = { ans: 42 };
+
+                const formatter = new JSONFormatter(myJSON);
+
+                document.getElementById("listExplosion").appendChild(formatter.render());
+
+            });
+
+            for (var i = 0; i < ExplosionNomenclatures.length; i++) {
+                var elem = ExplosionNomenclatures[i];
+                var sp = document.createElement("span");
+                sp.innerHTML = '<label for="listExplosion" class="ExplosionLabel" id="' + i + '">' + elem + '</label>';
+                sp.id = i;
+                f.appendChild(sp);
+            }
+        }
+
 
         function EditNomenclature() {
-            
+
             var nomenclatureNamePUT = document.getElementById("nomenclatureEdit").value;
 
             var indexReceiptTypeSelected = document.getElementById("selectReceiptTypeEdit").options.selectedIndex;
@@ -203,7 +347,7 @@
                     console.log(e.message);
                 }
             })
-            
+
         }
 
         function openEditModal() {
@@ -215,7 +359,7 @@
                     var editModal = document.getElementById('editModal');
 
                     somebodyShow(editModal);
-                    //TODO SHOW EDIT MODAL
+                    //NOMDO SHOW EDIT MODAL
 
 
                     //editButton.setAttribute('data-modal', 'editModal');
@@ -265,7 +409,7 @@
 
 
             var deleteModal = document.getElementById('deleteModal');
-            //TODO SHOW DELETE MODAL
+            //NOMDO SHOW DELETE MODAL
             somebodyShow(deleteModal);
 
             return false;
@@ -294,7 +438,7 @@
                     }),
                     success: async function (nomenclature) {
                         alert('Запись удалена');
-                        
+
                         var table = document.getElementById('nomenclatureTable');
 
                         for (var i = 1; i < table.rows.length;) {
@@ -314,17 +458,38 @@
             //if (res) {
             //    alert('Запись удалена');
 
-            //    var table = document.getElementById('techProcessTable');
+            //    var table = document.getElementById('nomenclatureTable');
 
             //    for (var i = 1; i < table.rows.length;) {
             //        table.deleteRow(i);
             //    }
-            //    await GetTechProcesss();
+            //    await GetNomenclatures();
             //    CloseModal();
             //}
 
 
 
+        }
+
+        async function GetExplosion(id) {
+            explosionMap.clear();
+
+
+            var level = 1;
+
+            var parent = await GetNomenclatureById(id);
+            var noms = await GetNomenclatures();
+            
+
+            while ()
+            for (var i = 0; i < noms.length; i++) {
+                if (noms[i].parentNomenclatureId == parent.id) {
+                    explosionMap.set(level, noms[i].name);
+                }
+                noms = await GetNomenclatures();
+                parent = await GetNomenclatureById(id);
+            }
+            return map;
         }
 
 
@@ -335,8 +500,8 @@
                 type: 'GET',
                 contentType: "application/json",
                 success: async function (nomenclature) {
-                    var previousTO = document.getElementById('nomenclatureEdit');
-                    previousTO.value = nomenclature.name;
+                    var previousNOM = document.getElementById('nomenclatureEdit');
+                    previousNOM.value = nomenclature.name;
 
                     var previousParentNomenclature = document.getElementById('selectParentNomenclatureEdit');
                     previousParentNomenclature.value = nomenclature.parentNomenclatureId;
@@ -393,7 +558,7 @@
                         ooption.value = nomenclature.id;
                         ooption.innerText = nomenclature.name
                         select.appendChild(ooption);
-                        
+
                         var ooptionEdit = document.createElement('option');
                         ooptionEdit.value = nomenclature.id;
                         ooptionEdit.innerText = nomenclature.name
@@ -405,7 +570,7 @@
                 }
             });
         }
-        
+
         function GetReceiptType() {
             var select = document.getElementById('selectReceiptType');
             var selectEdit = document.getElementById('selectReceiptTypeEdit');
@@ -431,10 +596,11 @@
                 }
             });
         }
-        
+
         function GetNomenclatureType() {
             var select = document.getElementById('selectNomenclatureType');
             var selectEdit = document.getElementById('selectNomenclatureTypeEdit');
+
             $.ajax({
                 url: '/api/NomenclatureType',
                 type: 'GET',
@@ -457,7 +623,7 @@
                 }
             });
         }
-        
+
 
 
         async function AddNomenclature() {
@@ -474,7 +640,7 @@
             if (parentNomenclatureId == 0) {
                 parentNomenclatureId = null;
             }
-            
+
 
             $.ajax({
                 url: "api/Nomenclature",
@@ -490,6 +656,7 @@
                     reset('nomenclatureForm');
                     alert('Запись успешно добавлена');
                     await GetParentNomenclature();
+                    await GetNomenclatures();
                     addRow('nomenclatureTable', nomenclature);
                 },
                 error: function (e) {
@@ -501,6 +668,7 @@
 
         // Получение всех Nomenclature
         function GetNomenclatures() {
+            var selectSP = document.getElementById('selectSPNomenclature');
             $.ajax({
                 url: '/api/Nomenclature',
                 type: 'GET',
@@ -508,6 +676,15 @@
                 success: function (nomenclatures) {
 
                     $.each(nomenclatures, function (index, nomenclature) {
+
+                        var ooptionSP = document.createElement('option');
+                        ooptionSP.value = nomenclature.id;
+                        ooptionSP.innerText = nomenclature.name
+                        selectSP.appendChild(ooptionSP);
+
+                        resultNOMForSP.set(nomenclature.id, nomenclature.name);
+                        resultPRNTForSP.set(nomenclature.id, nomenclature.parentNomenclatureId);
+
                         var transactionList = nomenclature;
 
                         addRow("nomenclatureTable", transactionList);
@@ -576,7 +753,7 @@
 
             var rowCount = table.rows.length;
             var row = table.insertRow(rowCount);
-            
+
             var nomenclatureName = data.name;
 
             var parentNomenclatureId = data.parentNomenclatureId;
