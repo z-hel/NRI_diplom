@@ -54,7 +54,17 @@
             margin: 10px 10px 10px 0;
         }
 
-        .table {
+        #addModal {
+            height: 500px;
+            overflow: auto;
+        }
+        #editModal {
+            height: 500px;
+            overflow: auto;
+        }
+
+        body {
+            overflow-y: hidden;
         }
     </style>
 </head>
@@ -112,8 +122,8 @@
                     <select name="usageType" id="selectUsageType"></select>
                 </div>
                 <div class="form-group">
-                    <label for="isAccessibitity">Доступность:</label>
-                    <select name="isAccessibitity" id="selectIsAccessibitity"></select>
+                    <label for="selectIsAccessibility">Доступность:</label>
+                    <select name="selectIsAccessibility" id="selectIsAccessibility"></select>
                 </div>
                 <div class="form-group">
                     <label for="mode">Режим:</label>
@@ -168,8 +178,8 @@
                     <select name="usageTypeEdit" id="selectUsageTypeEdit"></select>
                 </div>
                 <div class="form-group">
-                    <label for="isAccessibitityEdit">Доступность:</label>
-                    <select name="isAccessibitityEdit" id="selectIsAccessibitityEdit"></select>
+                    <label for="selectIsAccessibilityEdit">Доступность:</label>
+                    <select name="selectIsAccessibilityEdit" id="selectIsAccessibilityEdit"></select>
                 </div>
                 <div class="form-group">
                     <label for="modeEdit">Режим:</label>
@@ -264,7 +274,7 @@
                     equipmentId: equipmentIdPUT,
                     toolId: toolIdPUT,
                     usageTypeId: usageTypeIdPUT,
-                    isAccessibilityId: isAccessibilityIdPUT,
+                    isAccessibility: isAccessibilityIdPUT,
                     modeId: modeIdPUT,
                     productionUnitId: productionUnitIdPUT,
                     workCost: workCostPUT,
@@ -383,7 +393,7 @@
                         equipmentId: equipmentIdDEL,
                         toolId: toolIdDEL,
                         usageTypeId: usageTypeIdDEL,
-                        isAccessibilityId: isAccessibilityIdDEL,
+                        isAccessibility: isAccessibilityIdDEL,
                         modeId: modeIdDEL,
                         productionUnitId: productionUnitIdDEL,
                         workCost: workCostDEL,
@@ -661,25 +671,23 @@
 
             var ooptionTrue = document.createElement('option');
             ooptionTrue.value = 1;
-            ooptionTrue.innerText = 'true';
+            ooptionTrue.innerText = "true";
+            select.appendChild(ooptionTrue);
 
             var ooptionFalse = document.createElement('option');
             ooptionFalse.value = 2;
-            ooptionFalse.innerText = 'false';
+            ooptionFalse.innerText = "false";
+            select.appendChild(ooptionFalse);
 
             var ooptionTrueEdit = document.createElement('option');
             ooptionTrueEdit.value = 1;
-            ooptionTrueEdit.innerText = 'true';
+            ooptionTrueEdit.innerText = "true";
+            selectEdit.appendChild(ooptionTrueEdit);
 
             var ooptionFalseEdit = document.createElement('option');
             ooptionFalseEdit.value = 2;
-            ooptionFalseEdit.innerText = 'false';
+            ooptionFalseEdit.innerText = "false";
 
-            
-
-            select.appendChild(ooptionTrue);
-            select.appendChild(ooptionFalse);
-            selectEdit.appendChild(ooptionTrueEdit);
             selectEdit.appendChild(ooptionFalseEdit);
         }
         
@@ -893,7 +901,7 @@
 
         async function GetProductionUnitName(id) {
             var name;
-            var urlstr = '/api/Mode/' + id;
+            var urlstr = '/api/ProductionUnit/' + id;
             await $.ajax({
                 url: urlstr,
                 type: 'GET',
@@ -943,7 +951,7 @@
                 toolName = '-';
             }
             else {
-                toolName = await GetModeName(toolId);
+                toolName = await GetToolName(toolId);
             }
 
 
@@ -997,6 +1005,7 @@
             cell12.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
+        GetIsAccessibility();
         GetResources();
         GetPersonals();
         GetTools();
@@ -1004,7 +1013,7 @@
         GetUsageTypes();
         GetModes();
         GetProductionUnits();
-        GetIsAccessibility();
+
 
 
 

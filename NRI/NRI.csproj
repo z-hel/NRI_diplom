@@ -38,6 +38,9 @@
     <Content Update="Views\ResourceView.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\ScheduleView.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\ToolView.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

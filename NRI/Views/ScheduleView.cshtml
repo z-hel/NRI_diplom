@@ -1,0 +1,915 @@
+﻿@page
+@{
+
+}
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>NRI</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    @*<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>*@
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap -->
+    @*<script src="/examples/vendors/bootstrap-3.3.7/js/bootstrap.min.js"></script>*@
+
+    @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
+
+    <style type="text/css">
+        table {
+            font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+            text-align: left;
+            border-collapse: separate;
+            border-spacing: 3px;
+            background: #337ab7;
+            /*color: #656665;*/
+            /*color: rgb(162, 212, 255);*/
+            /*border: 3px solid #337ab7;*/
+            background-color: #337ab7;
+            border-radius: 0.375em;
+            box-shadow: inset 0 0 0 2px #337ab7;
+            color: #337ab7 !important;
+        }
+
+        tr {
+            background: #ffffff;
+            border: 3px solid #337ab7;
+        }
+
+        th {
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        td {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        INPUT {
+            margin: 10px 10px 10px 0;
+        }
+
+        .table {
+        }
+    </style>
+</head>
+
+
+<body>
+    <INPUT type="button" value="Добавить" data-modal="addModal" />
+    <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
+    <INPUT type="button" value="Удалить" onclick="openDeleteModal()"/>
+    <div class="table">
+        <table id="scheduleTable">
+            <thead>
+                <tr>
+                    <th>График</th>
+                    <th>Ресурс</th>
+                    <th>Шаблон</th>
+                    <th>Время работы</th>
+                    <th>Доступность</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="overlay" class="overlay fadeOut" data-close=""></div>
+    <div class="modal-outer" style="top: -460px;">
+        <span class="closer" id="closer" data-close=""></span>
+        <div id="addModal">
+            <form name="scheduleForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="name">График:</label>
+                    <input class="form-control" name="name" id="name" />
+                </div>
+                <div class="form-group">
+                    <label for="resource">Ресурс:</label>
+                    <select name="resource" id="selectResource"></select>
+                </div>
+                <div class="form-group">
+                    <label for="pattern">Шаблон:</label>
+                    <select name="pattern" id="selectPattern"></select>
+                </div>
+                <div class="form-group">
+                    <label for="selectIsAccessibility">Доступность:</label>
+                    <select name="selectIsAccessibility" id="selectIsAccessibility"></select>
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Добавить" onclick="AddSchedule()" />
+                    <input type="button" value="Сбросить" onclick="reset('scheduleForm')" />
+                </div>
+            </form>
+        </div>
+
+
+        <div id="editModal">
+            <form name="scheduleEditForm">
+                <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="nameEdit">График:</label>
+                    <input class="form-control" name="nameEdit" id="nameEdit" />
+                </div>
+                <div class="form-group">
+                    <label for="resourceEdit">Ресурс:</label>
+                    <select name="resourceEdit" id="selectResourceEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="patternEdit">Шаблон:</label>
+                    <select name="patternEdit" id="selectPatternEdit"></select>
+                </div>
+                <div class="form-group">
+                    <label for="isAccessibilityEdit">Доступность:</label>
+                    <select name="isAccessibilityEdit" id="selectIsAccessibilityEdit"></select>
+                </div>
+                <div class="panel-body">
+
+                    <input type="button" value="Изменить" onclick="EditSchedule()" />
+                    <input type="button" value="Сбросить" onclick="reset('scheduleEditForm')" />
+                </div>
+            </form>
+        </div>
+
+
+        <div id="deleteModal">
+                <div class="panel-body">
+                    <h3>Вы уверены, что хотите удалить запись?</h3>
+                    <input type="button" value="Удалить" onclick="DeleteSchedule()" />
+                    <input type="button" value="Отменить" onclick="CloseModal()" />
+                </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var selectedCheckbox;
+        var selectedForDelete = [];
+        var resultForDelete = new Map();
+
+        async function EditSchedule() {
+            
+
+            var indexTOSelected = document.getElementById("selectPatternEdit").options.selectedIndex;
+            var patternIdPUT = document.getElementById("selectPatternEdit").options[indexTOSelected].value;
+
+            var indexResourceSelected = document.getElementById("selectResourceEdit").options.selectedIndex;
+            var resourceIdPUT = document.getElementById("selectResourceEdit").options[indexResourceSelected].value;
+
+            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibilityEdit").options.selectedIndex;
+            var isAccessibilityIdPUT = document.getElementById("selectIsAccessibilityEdit").options[indexIsAccessibilitySelected].value;
+
+            var namePUT = document.getElementById("nameEdit").value;
+            var dateTimeStartPUT = await figurePatternDate(patternIdPUT);
+            
+
+            var idPUT = selectedCheckbox;
+
+            var urlstr = "api/Schedule/" + idPUT;
+            $.ajax({
+                url: urlstr,
+                contentType: "application/json",
+                method: "PUT",
+                data: JSON.stringify({
+                    patternId: patternIdPUT,
+                    resourceId: resourceIdPUT,
+                    dateTimeStart: dateTimeStartPUT,
+                    isAccessibility: isAccessibilityIdPUT,
+                    name: namePUT,
+                    id: idPUT
+                }),
+                success: async function (schedule) {
+                    reset('scheduleEditForm');
+                    alert('Запись успешно изменена');
+                    //update table
+
+                    var table = document.getElementById('scheduleTable');
+                    
+                    for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                    }
+                    await GetSchedules();
+                    CloseModal();
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            })
+        }
+
+        function openEditModal() {
+            
+            $('input[type=checkbox]').each(async function () {
+                //if ($(this).is(':checked')) {
+                if (this.checked) {
+                    selectedCheckbox = this.value;
+                    var editModal = document.getElementById('editModal');
+
+                    somebodyShow(editModal);
+                    //TODO SHOW EDIT MODAL
+
+
+                    //editButton.setAttribute('data-modal', 'editModal');
+                    //showForEdit(editModal);
+                    //modalShow(editModal);
+                    //$("#editModal").show();
+                    var id = selectedCheckbox;
+                    await GetScheduleById(id);
+                    
+                    return false;
+                }
+            });
+            if (selectedCheckbox == null) {
+                alert('Не выбрана ни одна запись');
+            }
+            return false;
+        }
+        
+        // сброс формы
+        function reset(formId) {
+            var form = document.forms[formId];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+
+
+        function CloseModal() {
+            var closer = document.getElementById('closer');
+            closer.click();
+        }
+
+
+        function openDeleteModal() {
+            selectedForDelete = [];
+
+            $('input[type=checkbox]').each(function () {
+                if (this.checked) {
+                    selectedForDelete.push(this.value)
+                }
+            });
+
+
+            if (selectedForDelete.length == 0) {
+                alert('Не выбрана ни одна запись');
+                return false;
+            }
+            
+
+            var deleteModal = document.getElementById('deleteModal');
+            //TODO SHOW DELETE MODAL
+            somebodyShow(deleteModal);
+
+            return false;
+        }
+
+        async function DeleteSchedule() {
+            selectedForDelete.forEach(async function (elem) {
+                await GetScheduleById(elem);
+                var idDEL = elem;
+                var patternIdDEL = resultForDelete.get('patternId');
+                var resourceIdDEL = resultForDelete.get('resourceId');
+                var nameDEL = resultForDelete.get('name');
+                var isAccessibilityDEL = resultForDelete.get('isAccessibility');
+                var dateTimeStartDEL = await figurePatternDate(patternIdDEL);
+                var urlstr = "api/Schedule/" + idDEL;
+                $.ajax({
+                    url: urlstr,
+                    contentType: "application/json",
+                    method: "DELETE",
+                    data: JSON.stringify({
+                        patternId: patternIdDEL,
+                        resourceId: resourceIdDEL,
+                        dateTimeStart: dateTimeStartDEL,
+                        name: nameDEL,
+                        isAccessibility: isAccessibilityDEL,
+                        id: idDEL
+                    }),
+                    success: async function (schedule) {
+                        alert('Запись удалена');
+
+                        //update table
+                        var table = document.getElementById('scheduleTable');
+
+                        for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                        }
+                        await GetSchedules();
+                        CloseModal();
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            })
+            //await GetSchedules();
+            //alert('Запись удалена');
+
+            //var table = document.getElementById('scheduleTable');
+
+            //for (var i = 1; i < table.rows.length;) {
+            //    table.deleteRow(i);
+            //}
+            //await GetSchedules();
+
+            //CloseModal();
+        }
+
+        async function GetPatternDateById(id) {
+            var urlstr = "api/Pattern/" + id;
+            var dateTimeStart;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success:  function (Pattern) {
+                    dateTimeStart = Pattern.dateTimeStart;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return dateTimeStart;
+        }
+
+
+        async function GetScheduleById(id) {
+            var urlstr = "api/Schedule/" + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (schedule) {
+                    var previousTO = document.getElementById('selectPatternEdit');
+                    previousTO.value = schedule.patternId;
+
+                    var previousResource = document.getElementById('selectResourceEdit');
+                    previousResource.value = schedule.resourceId;
+
+                    var previousIsAccessibility = document.getElementById('selectIsAccessibilityEdit');
+                    previousIsAccessibility.value = schedule.isAccessibility;
+
+                    var previousname = document.getElementById('nameEdit');
+                    previousname.value = schedule.name;
+                    
+
+                    resultForDelete.set('patternId', schedule.patternId);
+                    resultForDelete.set('resourceId', schedule.resourceId);
+                    resultForDelete.set('name', schedule.name);
+                    resultForDelete.set('dateTimeStart', schedule.dateTimeStart);
+                    resultForDelete.set('name', schedule.name);
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetPatterns() {
+            var select = document.getElementById('selectPattern');
+            var selectEdit = document.getElementById('selectPatternEdit');
+            $.ajax({
+                url: '/api/Pattern',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (patterns) {
+                    $.each(patterns, function (index, pattern) {
+                        var ooption = document.createElement('option');
+                        ooption.value = pattern.id;
+                        ooption.innerText = pattern.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = pattern.id;
+                        ooptionEdit.innerText = pattern.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+        function GetResources() {
+            var select = document.getElementById('selectResource');
+            var selectEdit = document.getElementById('selectResourceEdit');
+            $.ajax({
+                url: '/api/Resource',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (Resources) {
+                    $.each(Resources, function (index, Resource) {
+
+                        var ooption = document.createElement('option');
+                        ooption.value = Resource.id;
+                        ooption.innerText = Resource.name
+                        select.appendChild(ooption);
+
+                        var ooptionEdit = document.createElement('option');
+                        ooptionEdit.value = Resource.id;
+                        ooptionEdit.innerText = Resource.name
+                        selectEdit.appendChild(ooptionEdit);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+
+        async function AddSchedule() {
+            var indexTOSelected = document.getElementById("selectPattern").options.selectedIndex;
+            var patternId = document.getElementById("selectPattern").options[indexTOSelected].value;
+
+            var indexResourceSelected = document.getElementById("selectResource").options.selectedIndex;
+            var resourceId = document.getElementById("selectResource").options[indexResourceSelected].value;
+
+            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibility").options.selectedIndex;
+            var isAccessibility = document.getElementById("selectIsAccessibility").options[indexIsAccessibilitySelected].value;
+            
+            var dateTimeStart = await figurePatternDate(patternId);
+
+            var name = document.getElementById("name").value;
+
+
+            if (isAccessibility == 2) {
+                isAccessibility = false;
+            }
+            else {
+                isAccessibility = true;
+            }
+
+            $.ajax({
+                url: "api/Schedule",
+                contentType: "application/json",
+                method: "POST",
+                data: JSON.stringify({
+                    patternId: patternId,
+                    resourceId: resourceId,
+                    isAccessibility: isAccessibility,
+                    dateTimeStart: dateTimeStart,
+                    name: name
+                }),
+                success: function (schedule) {
+                    reset('scheduleForm');
+                    alert('Запись успешно добавлена');
+                    addRow('scheduleTable', schedule);
+                }
+            })
+        }
+
+
+        // Получение всех schedule
+        function GetSchedules() {
+            $.ajax({
+                url: '/api/Schedule',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (schedules) {
+                    
+                    $.each(schedules, function (index, schedule) {
+                        var transactionList = schedule;
+
+                        addRow("scheduleTable", transactionList);
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        async function GetPatternName(id) {
+            var name;
+            var urlstr = '/api/Pattern/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (pattern) {
+                    name = pattern.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        async function GetResourceName(id) {
+            var name;
+            var urlstr = '/api/Resource/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (resource) {
+                    name = resource.name;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return name;
+        }
+
+        function GetIsAccessibility() {
+            var select = document.getElementById('selectIsAccessibility');
+            var selectEdit = document.getElementById('selectIsAccessibilityEdit');
+
+            var ooptionTrue = document.createElement('option');
+            ooptionTrue.value = 1;
+            ooptionTrue.innerText = 'true';
+
+            var ooptionFalse = document.createElement('option');
+            ooptionFalse.value = 2;
+            ooptionFalse.innerText = 'false';
+
+            var ooptionTrueEdit = document.createElement('option');
+            ooptionTrueEdit.value = 1;
+            ooptionTrueEdit.innerText = 'true';
+
+            var ooptionFalseEdit = document.createElement('option');
+            ooptionFalseEdit.value = 2;
+            ooptionFalseEdit.innerText = 'false';
+
+
+
+            select.appendChild(ooptionTrue);
+            select.appendChild(ooptionFalse);
+            selectEdit.appendChild(ooptionTrueEdit);
+            selectEdit.appendChild(ooptionFalseEdit);
+        }
+
+        async function figurePatternDate(id) {
+            var result;
+            var urlstr = '/api/Pattern/' + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (pattern) {
+                    var dateTimeStart = pattern.dateTimeStart;
+                    var dateTimeEnd = pattern.dateTimeEnd;
+                    var workHour = pattern.workHour;
+                    var hour = dateTimeStart.substring(11, 13);
+                    var minute = dateTimeStart.substring(14, 16);
+                    var hourEnd = parseInt(hour) + parseInt(workHour);
+                    result = dateTimeStart.substring(0, 10) + ' - ' + dateTimeEnd.substring(0, 10) + ' ' + hour + ':' + minute + ' - ' + hourEnd + ':' + minute;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return result;
+        }
+
+        async function addRow(tableID, data) {
+
+            var table = document.getElementById(tableID);
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            var toId = data.patternId;
+            var patternName = await GetPatternName(toId);
+
+            var resId = data.resourceId;
+            var resourceName = await GetResourceName(resId);
+
+            var cell1 = row.insertCell(0);
+            cell1.innerText = data.name;
+
+            var cell2 = row.insertCell(1);
+            cell2.innerText = resourceName;
+
+            var cell3 = row.insertCell(2);
+            cell3.innerText = patternName;
+
+            var cell4 = row.insertCell(3);
+            cell4.innerText = await figurePatternDate(toId);
+
+            var cell5 = row.insertCell(4);
+            cell5.innerText = data.isAccessibility;
+
+            var cell6 = row.insertCell(5);
+            //var el = document.createElement('label');
+            //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
+            //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
+            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            //cell4.appendChild(el);
+        }
+        GetSchedules();
+        GetPatterns();
+        GetResources();
+        GetIsAccessibility();
+
+
+
+
+
+        var overlay = document.getElementById('overlay'),
+            mOpen = document.querySelectorAll('[data-modal]'),
+            mClose = document.querySelectorAll('[data-close]'),
+            outer = document.querySelector('.modal-outer'),
+            modals = document.querySelectorAll('.modal-outer > div'),
+            duration = 400,
+            mStatus = false,
+            h = null;
+
+        
+
+        setTopOuter();
+
+        function setTopOuter() {
+            outer.style.top = -outer.offsetHeight + 'px';
+        }
+
+
+        function somebodyShow(modal) {
+           
+            mStatus = true;
+            overlay.classList.remove('fadeOut');
+            overlay.classList.add('fadeIn');
+            modal.style.display = 'block';
+
+            var start = new Date().getTime(),
+                startTop = outer.getBoundingClientRect().top,
+                finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                offset = outer.offsetHeight + finalTop;
+
+            var fn = function () {
+                var now = new Date().getTime() - start,
+                    currTop = Math.round(startTop + offset * now / duration);
+
+                currTop = (currTop > finalTop) ? finalTop : currTop;
+                outer.style.top = currTop + 'px';
+
+                if (currTop < finalTop) {
+                    requestAnimationFrame(fn);
+                }
+            }
+            requestAnimationFrame(fn);
+            window.addEventListener('resize', setTopOpenOuter);
+        }
+
+        function setTopOpenOuter() {
+            outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+        }
+
+        (function () {
+            if (mOpen.length == 0) return;
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    somebodyShow(modal);
+                });
+            });
+        }());
+        
+
+        [].forEach.call(mClose, function (el) {
+            el.addEventListener('click', modalClose);
+        });
+
+        document.addEventListener('keydown', modalClose);
+
+
+        function modalClose(event) {
+            if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                mStatus = false;
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = -outer.offsetHeight,
+                    offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop - offset * now / duration);
+
+                    currTop = (currTop < finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop > finalTop) {
+                        requestAnimationFrame(fn);
+                    } else {
+                        overlay.classList.remove('fadeIn');
+                        overlay.classList.add('fadeOut');
+                        [].forEach.call(modals, function (modal) {
+                            modal.removeAttribute('style');
+                        });
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.removeEventListener('resize', setTopOpenOuter);
+            }
+        }
+
+
+
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
+    </script>
+
+    <script>var typeAnimate = 'slide';</script>
+    @*<script>
+        ; (function () {
+            var overlay = document.getElementById('overlay'),
+                mOpen = document.querySelectorAll('[data-modal]'),
+                mClose = document.querySelectorAll('[data-close]'),
+                outer = document.querySelector('.modal-outer'),
+                modals = document.querySelectorAll('.modal-outer > div'),
+                duration = 400,
+                mStatus = false,
+                h = null;
+
+            if (mOpen.length == 0) return;
+
+            setTopOuter();
+
+            function setTopOuter() {
+                outer.style.top = -outer.offsetHeight + 'px';
+            }
+
+            [].forEach.call(mOpen, function (el) {
+                el.addEventListener('click', function (e) {
+                    var modalId = el.getAttribute('data-modal'),
+                        modal = document.getElementById(modalId);
+                    modalShow(modal);
+                });
+            });
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
+            function modalShow(modal) {
+                mStatus = true;
+                overlay.classList.remove('fadeOut');
+                overlay.classList.add('fadeIn');
+                modal.style.display = 'block';
+
+                var start = new Date().getTime(),
+                    startTop = outer.getBoundingClientRect().top,
+                    finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                    offset = outer.offsetHeight + finalTop;
+
+                var fn = function () {
+                    var now = new Date().getTime() - start,
+                        currTop = Math.round(startTop + offset * now / duration);
+
+                    currTop = (currTop > finalTop) ? finalTop : currTop;
+                    outer.style.top = currTop + 'px';
+
+                    if (currTop < finalTop) {
+                        requestAnimationFrame(fn);
+                    }
+                }
+                requestAnimationFrame(fn);
+                window.addEventListener('resize', setTopOpenOuter);
+            }
+
+            function modalClose(event) {
+                if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                    mStatus = false;
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = -outer.offsetHeight,
+                        offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop - offset * now / duration);
+
+                        currTop = (currTop < finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop > finalTop) {
+                            requestAnimationFrame(fn);
+                        } else {
+                            overlay.classList.remove('fadeIn');
+                            overlay.classList.add('fadeOut');
+                            [].forEach.call(modals, function (modal) {
+                                modal.removeAttribute('style');
+                            });
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.removeEventListener('resize', setTopOpenOuter);
+                }
+            }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+        })();
+
+    </script>*@
+</body>
+
+
+</html>

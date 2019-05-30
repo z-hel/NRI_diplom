@@ -24,8 +24,6 @@
     <script src="~/16761-normal.js"></script>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/json-formatter-js@2.2.1/dist/json-formatter.min.js"></script>
-
 
     <style type="text/css">
         table {
@@ -63,6 +61,34 @@
         }
 
         .table {
+        }
+
+        .treeline .drop {
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 11px;
+            height: 11px;
+            line-height: 1em;
+            text-align: center;
+            background: #9F9F9F;
+            color: #fff; /* Фон и цвет кнопки, раскрывающей список */
+            font-size: 78%; /* Размер +/- */
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .treeline li:last-child > .drop {
+            margin-left: 1px;
+        }
+
+        .treeline .drop + ul {
+            display: none;
+        }
+
+        .treeline .dropM + ul {
+            display: block;
         }
     </style>
 </head>
@@ -146,7 +172,25 @@
                     <INPUT type="button" value="Показать" onclick="showExplosion()" />
                     @*<INPUT type="button" value="Выгрузить в pdf" onclick="downloadSP()" />*@
                 </div>
-                <div id="listExplosion" style="padding: 15px;"></div>
+                <div id="listExplosion" style="padding: 15px;">
+
+                    <ul class="treeline" id="tree">
+                        <li>Главное меню
+                            <ul>
+                                <li>
+                                    <div class="drop">+</div>База знаний
+                                    <ul>
+                                        <li>Компоненты</li>
+                                        <li>Плагины</li>
+                                        <li>Модули</li>
+                                    </ul>
+                                </li>
+                                <li>Отзывы</li>
+                                <li>Контакты</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </form>
         </div>
 
@@ -189,7 +233,21 @@
     </div>
 
 
-
+    <script type="text/javascript">
+        $(function () {
+            var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
+            for (var i = 0; i < ul.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'drop';
+                div.innerHTML = '+';
+                ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
+                div.onclick = function () {
+                    this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
+                    this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
+                }
+            }
+        })();
+    </script>   
     <script>
         var selectedCheckbox;
         var selectedForDelete = [];
@@ -258,44 +316,58 @@
             }
         }
 
+        <ul class="treeline">
+            <li>Главное меню
+                <ul>
+                    <li>
+                        <div class="drop">+</div>База знаний /* Блок раскрытия списка */
+                        <ul>
+                            <li>Компоненты</li>
+                            <li>Плагины</li>
+                            <li>Модули</li>
+                        </ul>
+                    </li>
+                    <li>Отзывы</li>
+                    <li>Контакты</li>
+                </ul>
+            </li>
+        </ul>
 
-        function showExplosion() {
+        async function showExplosion() {
 
             var indexNomenclatureSelected = document.getElementById("selectExplosion").options.selectedIndex;
             var nomenclatureId = document.getElementById("selectExplosion").options[indexNomenclatureSelected].value;
+            var nomenclatureText = document.getElementById("selectExplosion").options[indexNomenclatureSelected].text;
 
             var f = document.getElementById('listExplosion');
 
             $("label.ExplosionLabel").remove();
-            ExplosionNomenclatures = [];
 
-            resultPRNTForSP.forEach(function (keyPRNT, valuePRNT) {
-                var parentIdSP = resultPRNTForSP.get(valuePRNT);
 
-                resultNOMForSP.forEach(function (keyNOM, valueNOM) {
-                    var nomenclatureName = keyNOM;
+            await GetExplosion(nomenclatureId);
 
-                    if (valuePRNT == valueNOM && nomenclatureId == parentIdSP) {
-                        ExplosionNomenclatures.push(nomenclatureName);
+             
+            var root = document.getElementById("tree");
+            root.innerHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
+            //f.appendChild(root);
+
+            var stringHTML;
+
+            stringHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
+
+            var max = Math.max(explosionMap.values);
+
+            explosionMap.forEach(function (key, value) {
+                for (var i = 1; i < max; i++) {
+                    stringHTML += '<ul><li>' + key;
+                    if (value == i && value > 1 && i+1 > value) {
+                        stringHTML += '<div class="drop">+</div>' + key;
                     }
-                });
-
-
-                const myJSON = { ans: 42 };
-
-                const formatter = new JSONFormatter(myJSON);
-
-                document.getElementById("listExplosion").appendChild(formatter.render());
-
-            });
-
-            for (var i = 0; i < ExplosionNomenclatures.length; i++) {
-                var elem = ExplosionNomenclatures[i];
-                var sp = document.createElement("span");
-                sp.innerHTML = '<label for="listExplosion" class="ExplosionLabel" id="' + i + '">' + elem + '</label>';
-                sp.id = i;
-                f.appendChild(sp);
+                    
+                }
             }
+                
+            
         }
 
 
@@ -340,6 +412,7 @@
                         table.deleteRow(i);
                     }
                     await GetNomenclatures();
+                    await GetListNomenclatures();
                     CloseModal();
                     await GetParentNomenclature();
                 },
@@ -445,6 +518,7 @@
                             table.deleteRow(i);
                         }
                         await GetNomenclatures();
+                        await GetListNomenclatures();
                         CloseModal();
                         await GetParentNomenclature();
                     },
@@ -477,19 +551,41 @@
 
             var level = 1;
 
-            var parent = await GetNomenclatureById(id);
-            var noms = await GetNomenclatures();
-            
+            var parent = await GetNomId(id);
+            var noms = await GetListNomenclatures();
 
-            while ()
-            for (var i = 0; i < noms.length; i++) {
-                if (noms[i].parentNomenclatureId == parent.id) {
-                    explosionMap.set(level, noms[i].name);
+            for (var y = 0; y < noms.length; y++) {
+                while (parent.id == noms[y].parentNomenclatureId) {
+                    for (var i = 0; i < noms.length; i++) {
+
+                        if (noms[i].parentNomenclatureId == parent.id) {
+                            explosionMap.set(noms[i].name, level);
+                        }
+
+                    }
+
+                    parent = await GetNomId(noms[y].id);
+                    level = level + 1;
+
                 }
-                noms = await GetNomenclatures();
-                parent = await GetNomenclatureById(id);
             }
-            return map;
+            return explosionMap;
+        }
+        var nomById;
+        async function GetNomId(id) {
+            var urlstr = "api/Nomenclature/" + id;
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (nomenclature) {
+                    nomById = nomenclature;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return nomById;
         }
 
 
@@ -657,6 +753,8 @@
                     alert('Запись успешно добавлена');
                     await GetParentNomenclature();
                     await GetNomenclatures();
+                    await GetListNomenclatures();
+
                     addRow('nomenclatureTable', nomenclature);
                 },
                 error: function (e) {
@@ -665,10 +763,67 @@
             })
         }
 
-
+        var listNom = [];
         // Получение всех Nomenclature
         function GetNomenclatures() {
+            //var selectSP = document.getElementById('selectSPNomenclature');
+            //var selectExplosion = document.getElementById('selectExplosion');
+
+            //var optsSelect = selectSP.options;
+            //while (optsSelect.length > 0) {
+            //    optsSelect[optsSelect.length - 1] = null;
+            //}
+            //var optsSelect1 = selectExplosion.options;
+            //while (optsSelect1.length > 0) {
+            //    optsSelect1[optsSelect1.length - 1] = null;
+            //}
+
+            $.ajax({
+                url: '/api/Nomenclature',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (nomenclatures) {
+
+                    $.each(nomenclatures, function (index, nomenclature) {
+
+                        //var ooptionSP = document.createElement('option');
+                        //ooptionSP.value = nomenclature.id;
+                        //ooptionSP.innerText = nomenclature.name
+                        //selectSP.appendChild(ooptionSP);
+
+                        //var ooptionExplosion = document.createElement('option');
+                        //ooptionExplosion.value = nomenclature.id;
+                        //ooptionExplosion.innerText = nomenclature.name
+                        //selectExplosion.appendChild(ooptionExplosion);
+
+                        //resultNOMForSP.set(nomenclature.id, nomenclature.name);
+                        //resultPRNTForSP.set(nomenclature.id, nomenclature.parentNomenclatureId);
+
+                        var transactionList = nomenclature;
+
+                        addRow("nomenclatureTable", transactionList);
+
+                    })
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+        }
+
+        function GetListNomenclatures() {
             var selectSP = document.getElementById('selectSPNomenclature');
+            var selectExplosion = document.getElementById('selectExplosion');
+
+            var optsSelect = selectSP.options;
+            while (optsSelect.length > 0) {
+                optsSelect[optsSelect.length - 1] = null;
+            }
+            var optsSelect1 = selectExplosion.options;
+            while (optsSelect1.length > 0) {
+                optsSelect1[optsSelect1.length - 1] = null;
+            }
+
             $.ajax({
                 url: '/api/Nomenclature',
                 type: 'GET',
@@ -682,18 +837,23 @@
                         ooptionSP.innerText = nomenclature.name
                         selectSP.appendChild(ooptionSP);
 
+                        var ooptionExplosion = document.createElement('option');
+                        ooptionExplosion.value = nomenclature.id;
+                        ooptionExplosion.innerText = nomenclature.name
+                        selectExplosion.appendChild(ooptionExplosion);
+
                         resultNOMForSP.set(nomenclature.id, nomenclature.name);
                         resultPRNTForSP.set(nomenclature.id, nomenclature.parentNomenclatureId);
 
-                        var transactionList = nomenclature;
 
-                        addRow("nomenclatureTable", transactionList);
+                        listNom.push(nomenclature);
                     })
                 },
                 error: function (e) {
                     console.log(e.message);
                 }
             });
+            return listNom;
         }
 
         async function GetParentNomenclatureName(id) {
@@ -790,6 +950,7 @@
         GetReceiptType();
         GetNomenclatureType();
         GetNomenclatures();
+        GetListNomenclatures();
 
 
 
