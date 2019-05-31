@@ -175,7 +175,7 @@
                 <div id="listExplosion" style="padding: 15px;">
 
                     <ul class="treeline" id="tree">
-                        <li>Главное меню
+                        @*<li>Главное меню
                             <ul>
                                 <li>
                                     <div class="drop">+</div>База знаний
@@ -188,7 +188,7 @@
                                 <li>Отзывы</li>
                                 <li>Контакты</li>
                             </ul>
-                        </li>
+                        </li>*@
                     </ul>
                 </div>
             </form>
@@ -233,22 +233,26 @@
     </div>
 
 
-    <script type="text/javascript">
-        $(function () {
-            var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
-            for (var i = 0; i < ul.length; i++) {
-                var div = document.createElement('div');
-                div.className = 'drop';
-                div.innerHTML = '+';
-                ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
-                div.onclick = function () {
-                    this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
-                    this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
-                }
-            }
-        })();
-    </script>   
+    @*<script type="text/javascript">
+        //$(function () {
+        //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
+        //    for (var i = 0; i < ul.length; i++) {
+        //        var div = document.createElement('div');
+        //        div.className = 'drop';
+        //        div.innerHTML = '+';
+        //        ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
+        //        div.onclick = function () {
+        //            this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
+        //            this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
+        //        }
+        //    }
+        //})();
+    </script>*@   
     <script>
+        
+
+
+
         var selectedCheckbox;
         var selectedForDelete = [];
         var SPNomenclatures = [];
@@ -316,24 +320,38 @@
             }
         }
 
-        <ul class="treeline">
-            <li>Главное меню
-                <ul>
-                    <li>
-                        <div class="drop">+</div>База знаний /* Блок раскрытия списка */
-                        <ul>
-                            <li>Компоненты</li>
-                            <li>Плагины</li>
-                            <li>Модули</li>
-                        </ul>
-                    </li>
-                    <li>Отзывы</li>
-                    <li>Контакты</li>
-                </ul>
-            </li>
-        </ul>
+        //<ul class="treeline">
+        //    <li>Главное меню
+        //        <ul>
+        //            <li>
+        //                <div class="drop">+</div>База знаний /* Блок раскрытия списка */
+        //                <ul>
+        //                    <li>Компоненты</li>
+        //                    <li>Плагины</li>
+        //                    <li>Модули</li>
+        //                </ul>
+        //            </li>
+        //            <li>Отзывы</li>
+        //            <li>Контакты</li>
+        //        </ul>
+        //    </li>
+        //</ul>
 
         async function showExplosion() {
+
+            ; (function () {
+                var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
+                for (var i = 0; i < ul.length; i++) {
+                    var div = document.createElement('div');
+                    div.className = 'drop';
+                    div.innerHTML = '+';
+                    ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
+                    div.onclick = function () {
+                        this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
+                        this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
+                    }
+                }
+            })();
 
             var indexNomenclatureSelected = document.getElementById("selectExplosion").options.selectedIndex;
             var nomenclatureId = document.getElementById("selectExplosion").options[indexNomenclatureSelected].value;
@@ -348,24 +366,33 @@
 
              
             var root = document.getElementById("tree");
-            root.innerHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
+            //root.innerHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
             //f.appendChild(root);
 
             var stringHTML;
 
             stringHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
 
-            var max = Math.max(explosionMap.values);
-
+            var max = 2;
+            var k;
             explosionMap.forEach(function (key, value) {
-                for (var i = 1; i < max; i++) {
-                    stringHTML += '<ul><li>' + key;
-                    if (value == i && value > 1 && i+1 > value) {
-                        stringHTML += '<div class="drop">+</div>' + key;
+                for (var i = 1; i <= max; i++) {
+                    stringHTML += '<ul><li>' + value;
+                    if (key == i && key > 1) {
+                        stringHTML += '<div class="drop">+</div>' + value;
+                        k = i;
                     }
-                    
+                    if (key > 1 && i != max - 1) {
+                        stringHTML += '<ul><li>' + value + '</li>';
+                    }
+                    if (i == max) {
+                        stringHTML += '<ul><li>' + value + '</li>';
+                    }
+                    stringHTML += '</ul>';
+
                 }
-            }
+            });
+            root.innerHTML = stringHTML;
                 
             
         }
