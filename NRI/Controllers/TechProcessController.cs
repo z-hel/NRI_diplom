@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NRI.Models;
+using OfficeOpenXml;
 
 namespace NRI.Controllers
 {
@@ -58,19 +59,76 @@ namespace NRI.Controllers
             return Ok(techProcess);
         }
 
-        [HttpPost("import")]
-        //[Route("import")]
-        public IActionResult Import(IFormFile fileExcel)
+        [HttpPost] //("import")
+        [Route("import")]
+        public IActionResult Import() //IFormFile fileExcel
         {
+            IFormFile fileExcel = Request.Form.Files[0];
             //Stream stream = fileExcel.OpenReadStream();
-
+            Console.WriteLine(fileExcel + "!!!!!!!!!!!!!!!!!!!!!!!!!!");
             if (fileExcel != null)
             {
+                
+                var memoryStream = new MemoryStream();
+                fileExcel.OpenReadStream().CopyTo(memoryStream);
 
                 List<TechProcess> techProcesses = new List<TechProcess>();
                 List<TechOperation> techOperations = new List<TechOperation>();
 
-                using (XLWorkbook workBook = new XLWorkbook(fileExcel.OpenReadStream(), XLEventTracking.Disabled)) // TODO ??? fileExcel.InputStream
+                Console.WriteLine(memoryStream + " !!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                //var newfile = new FileInfo(fileExcel.FileName);
+                using (ExcelPackage package = new ExcelPackage(memoryStream))
+                {
+                    ExcelWorksheet workSheet = package.Workbook.Worksheets.First();
+                    int totalRows = workSheet.Dimension.Rows;
+
+                    //List<Customers> customerList = new List<Customers>();
+
+                    for (int i = 1; i <= totalRows; i++)
+                    {
+                        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!" + workSheet.Cells[i, 0].Value.ToString());
+                        TechProcess techProcess = new TechProcess();
+                        techProcess.Id = int.Parse(workSheet.Cells[i, 0].Value.ToString());
+                        techProcess.Name = workSheet.Cells[i, 1].Value.ToString();
+
+                        TechOperation techOperation = new TechOperation();
+                        techOperation.Id = int.Parse(workSheet.Cells[i, 2].Value.ToString());
+                        techOperation.Name = workSheet.Cells[i, 3].Value.ToString();
+                        techOperation.SerialNumber = int.Parse(workSheet.Cells[i, 4].Value.ToString());
+                        techOperation.TechProcessId = int.Parse(workSheet.Cells[i, 0].Value.ToString());
+
+                        techProcess.NomenclatureId = int.Parse(workSheet.Cells[i, 5].Value.ToString());
+                        techProcess.LaunchBatch = int.Parse(workSheet.Cells[i, 6].Value.ToString());
+                        techProcess.MinBatch = int.Parse(workSheet.Cells[i, 7].Value.ToString());
+                        techProcess.MaxBatch = int.Parse(workSheet.Cells[i, 8].Value.ToString());
+
+
+                        techProcesses.Add(techProcess);
+                        techOperations.Add(techOperation);
+                        this.Post(techProcess);
+
+                        TechOperationController techOperationController = new TechOperationController(appContext);
+                        techOperationController.Post(techOperation);
+
+
+                        //customerList.Add(new Customers
+                        //{
+                        //    CustomerName = workSheet.Cells[i, 1].Value.ToString(),
+                        //    CustomerEmail = workSheet.Cells[i, 2].Value.ToString(),
+                        //    CustomerCountry = workSheet.Cells[i, 3].Value.ToString()
+                        //});
+                    }
+
+                    //_db.Customers.AddRange(customerList);
+                    //_db.SaveChanges();
+
+                    //return customerList;
+                }
+                return Ok(techProcesses);
+
+
+                /*using (XLWorkbook workBook = new XLWorkbook(memoryStream, XLEventTracking.Disabled)) // TODO ??? fileExcel.InputStream
                 {
                     IXLWorksheet worksheet = workBook.Worksheets.First();
 
@@ -98,23 +156,23 @@ namespace NRI.Controllers
 
                                 techProcesses.Add(techProcess);
                                 techOperations.Add(techOperation);
-
-                                IActionResult techProcessResult = Post(techProcess);
+                                this.Post(techProcess);
 
                                 TechOperationController techOperationController = new TechOperationController(appContext);
-                                IActionResult techOperationResult = techOperationController.Post(techOperation);
+                                techOperationController.Post(techOperation);
 
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine(e.Message);
                             }
                         }
 
                     }
-                }
-                return Ok();
+                }*/
+                //return Ok(techProcesses);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("");
         }
 
         // PUT: api/techProcess/5

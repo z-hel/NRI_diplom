@@ -250,7 +250,7 @@
     </script>*@   
     <script>
         
-
+        
 
 
         var selectedCheckbox;
@@ -381,13 +381,16 @@
                     if (key == i && key > 1) {
                         stringHTML += '<div class="drop">+</div>' + value;
                         k = i;
+                        for (k; k < max; k++) {
+                            if (value > k + 1) { stringHTML += '<ul><li>' + value + '</li>'; }
+                        }
                     }
-                    if (key > 1 && i != max - 1) {
-                        stringHTML += '<ul><li>' + value + '</li>';
-                    }
-                    if (i == max) {
-                        stringHTML += '<ul><li>' + value + '</li>';
-                    }
+                    //if (key > 1 && i != max - 1) {
+                    //    stringHTML += '<ul><li>' + value + '</li>';
+                    //}
+                    //if (i == max) {
+                    //    stringHTML += '<ul><li>' + value + '</li>';
+                    //}
                     stringHTML += '</ul>';
 
                 }

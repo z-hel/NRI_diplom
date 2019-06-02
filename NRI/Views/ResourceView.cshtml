@@ -64,14 +64,14 @@
         }
 
         body {
-            overflow-y: hidden;
+            /*overflow-y: hidden;*/
         }
     </style>
 </head>
 
 
 <body>
-    <INPUT type="button" value="Добавить" data-modal="addModal" />
+    <INPUT type="button" value="Добавить" data-modal="addModal" onclick="styleBody()"/>
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <div class="table">
@@ -223,13 +223,40 @@
 
 
     <script>
+        
+
+
+        //$(window).scroll(function () {
+        //    $(window).scroll(function () {
+
+        //        var target = $(this).scrollTop();
+
+        //        if (target != 0) {
+        //            $("#sidebar .toggle").click();
+        //            // Действие, если страница в самом верху
+
+        //        }
+
+        //    });
+
+        //});
+
+
+
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
 
+        function styleBody() {
+            //document.body.style.overflow = "hidden";
+        }
+
         function EditResource() {
-            
+            var idPUT = selectedCheckbox;
             var resourceNamePUT = document.getElementById("resourceEdit").value;
+            var workCostPUT = document.getElementById("workCostEdit").value;
+            var setupCostPUT = document.getElementById("setupCostEdit").value;
+            var downtimeCostPUT = document.getElementById("downtimeCostEdit").value;
 
             var indexPersonalSelected = document.getElementById("selectPersonalEdit").options.selectedIndex;
             var personalIdPUT = document.getElementById("selectPersonalEdit").options[indexPersonalSelected].value;
@@ -252,16 +279,21 @@
             var indexProductionUnitSelected = document.getElementById("selectProductionUnitEdit").options.selectedIndex;
             var productionUnitIdPUT = document.getElementById("selectProductionUnitEdit").options[indexProductionUnitSelected].value;
 
-            var workCostPUT = document.getElementById("workCostEdit").value;
+            
             if (workCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость работы"'); }
 
-            var setupCostPUT = document.getElementById("setupCostEdit").value;
+            
             if (setupCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость наладки"'); }
 
-            var downtimeCostPUT = document.getElementById("downtimeCostEdit").value;
+            
             if (downtimeCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
 
-            var idPUT = selectedCheckbox;
+            if (isAccessibilityIdPUT == 2) {
+                isAccessibilityIdPUT = false;
+            }
+            else {
+                isAccessibilityIdPUT = true;
+            }
 
             var urlstr = "api/Resource/" + idPUT;
             $.ajax({
@@ -302,7 +334,7 @@
         }
 
         function openEditModal() {
-
+            //styleBody();
             $('input[type=checkbox]').each(async function () {
                 //if ($(this).is(':checked')) {
                 if (this.checked) {
@@ -338,12 +370,14 @@
 
 
         function CloseModal() {
+            //document.body.style.overflow = "auto";
             var closer = document.getElementById('closer');
             closer.click();
         }
 
 
         function openDeleteModal() {
+            //styleBody();
             selectedForDelete = [];
 
             $('input[type=checkbox]').each(function () {
@@ -498,15 +532,15 @@
             var select = document.getElementById('selectPersonal');
             var selectEdit = document.getElementById('selectPersonalEdit');
 
-            var ooptionNull = document.createElement('option');
-            ooptionNull.value = 0;
-            ooptionNull.innerText = '-';
-            select.appendChild(ooptionNull);
+            //var ooptionNull = document.createElement('option');
+            //ooptionNull.value = 0;
+            //ooptionNull.innerText = '-';
+            //select.appendChild(ooptionNull);
 
-            var ooptionNullEdit = document.createElement('option');
-            ooptionNullEdit.value = 0;
-            ooptionNullEdit.innerText = '-';
-            selectEdit.appendChild(ooptionNullEdit);
+            //var ooptionNullEdit = document.createElement('option');
+            //ooptionNullEdit.value = 0;
+            //ooptionNullEdit.innerText = '-';
+            //selectEdit.appendChild(ooptionNullEdit);
 
             $.ajax({
                 url: '/api/Personal',
@@ -535,15 +569,15 @@
             var select = document.getElementById('selectEquipment');
             var selectEdit = document.getElementById('selectEquipmentEdit');
 
-            var ooptionNull = document.createElement('option');
-            ooptionNull.value = 0;
-            ooptionNull.innerText = '-';
-            select.appendChild(ooptionNull);
+            //var ooptionNull = document.createElement('option');
+            //ooptionNull.value = 0;
+            //ooptionNull.innerText = '-';
+            //select.appendChild(ooptionNull);
 
-            var ooptionNullEdit = document.createElement('option');
-            ooptionNullEdit.value = 0;
-            ooptionNullEdit.innerText = '-';
-            selectEdit.appendChild(ooptionNullEdit);
+            //var ooptionNullEdit = document.createElement('option');
+            //ooptionNullEdit.value = 0;
+            //ooptionNullEdit.innerText = '-';
+            //selectEdit.appendChild(ooptionNullEdit);
 
             $.ajax({
                 url: '/api/Equipment',
@@ -572,15 +606,15 @@
             var select = document.getElementById('selectTool');
             var selectEdit = document.getElementById('selectToolEdit');
 
-            var ooptionNull = document.createElement('option');
-            ooptionNull.value = 0;
-            ooptionNull.innerText = '-';
-            select.appendChild(ooptionNull);
+            //var ooptionNull = document.createElement('option');
+            //ooptionNull.value = 0;
+            //ooptionNull.innerText = '-';
+            //select.appendChild(ooptionNull);
 
-            var ooptionNullEdit = document.createElement('option');
-            ooptionNullEdit.value = 0;
-            ooptionNullEdit.innerText = '-';
-            selectEdit.appendChild(ooptionNullEdit);
+            //var ooptionNullEdit = document.createElement('option');
+            //ooptionNullEdit.value = 0;
+            //ooptionNullEdit.innerText = '-';
+            //selectEdit.appendChild(ooptionNullEdit);
 
             $.ajax({
                 url: '/api/Tool',
@@ -725,36 +759,36 @@
 
 
         function AddResource() {
-            var resourceName = document.getElementById("resourceEdit").value;
+            var resourceName = document.getElementById("resource").value;
 
-            var indexPersonalSelected = document.getElementById("selectPersonalEdit").options.selectedIndex;
-            var personalId = document.getElementById("selectPersonalEdit").options[indexPersonalSelected].value;
+            var indexPersonalSelected = document.getElementById("selectPersonal").options.selectedIndex;
+            var personalId = document.getElementById("selectPersonal").options[indexPersonalSelected].value;
 
-            var indexEquipmentSelected = document.getElementById("selectEquipmentEdit").options.selectedIndex;
-            var equipmentId = document.getElementById("selectEquipmentEdit").options[indexEquipmentSelected].value;
+            var indexEquipmentSelected = document.getElementById("selectEquipment").options.selectedIndex;
+            var equipmentId = document.getElementById("selectEquipment").options[indexEquipmentSelected].value;
 
-            var indexToolSelected = document.getElementById("selectToolEdit").options.selectedIndex;
-            var toolId = document.getElementById("selectToolEdit").options[indexToolSelected].value;
+            var indexToolSelected = document.getElementById("selectTool").options.selectedIndex;
+            var toolId = document.getElementById("selectTool").options[indexToolSelected].value;
 
-            var indexUsageTypeSelected = document.getElementById("selectUsageTypeEdit").options.selectedIndex;
-            var usageTypeId = document.getElementById("selectUsageTypeEdit").options[indexUsageTypeSelected].value;
+            var indexUsageTypeSelected = document.getElementById("selectUsageType").options.selectedIndex;
+            var usageTypeId = document.getElementById("selectUsageType").options[indexUsageTypeSelected].value;
 
-            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibilityEdit").options.selectedIndex;
-            var isAccessibilityId = document.getElementById("selectIsAccessibilityEdit").options[indexIsAccessibilitySelected].value;
+            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibility").options.selectedIndex;
+            var isAccessibilityId = document.getElementById("selectIsAccessibility").options[indexIsAccessibilitySelected].value;
 
-            var indexModeSelected = document.getElementById("selectModeEdit").options.selectedIndex;
-            var modeId = document.getElementById("selectModeEdit").options[indexModeSelected].value;
+            var indexModeSelected = document.getElementById("selectMode").options.selectedIndex;
+            var modeId = document.getElementById("selectMode").options[indexModeSelected].value;
 
-            var indexProductionUnitSelected = document.getElementById("selectProductionUnitEdit").options.selectedIndex;
-            var productionUnitId = document.getElementById("selectProductionUnitEdit").options[indexProductionUnitSelected].value;
+            var indexProductionUnitSelected = document.getElementById("selectProductionUnit").options.selectedIndex;
+            var productionUnitId = document.getElementById("selectProductionUnit").options[indexProductionUnitSelected].value;
 
-            var workCost = document.getElementById("workCostEdit").value;
+            var workCost = document.getElementById("workCost").value;
             if (workCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость работы"'); }
 
-            var setupCost = document.getElementById("setupCostEdit").value;
+            var setupCost = document.getElementById("setupCost").value;
             if (setupCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость наладки"'); }
 
-            var downtimeCost = document.getElementById("downtimeCostEdit").value;
+            var downtimeCost = document.getElementById("downtimeCost").value;
             if (downtimeCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
 
             if (isAccessibilityId == 2) {

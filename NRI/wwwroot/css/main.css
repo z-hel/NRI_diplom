@@ -6,6 +6,8 @@
 }
 
 
+
+
 /*checkbox*/
 
 .check {
@@ -146,7 +148,7 @@
     -ms-flex-direction: row-reverse;
     flex-direction: row-reverse;
     min-height: 100vh;
-    overflow: auto;
+    overflow: scroll;
     padding: 1.5555556em 2.2222222222em 2.4444444444em 2.2222222222em;
     
     /*padding: 2em 2em 2em 2em;*/

@@ -172,6 +172,14 @@
 
             var idPUT = selectedCheckbox;
 
+            if (isAccessibilityIdPUT == 2) {
+                isAccessibilityIdPUT = false;
+            }
+            else {
+                isAccessibilityIdPUT = true;
+            }
+
+
             var urlstr = "api/Schedule/" + idPUT;
             $.ajax({
                 url: urlstr,
@@ -526,19 +534,19 @@
 
             var ooptionTrue = document.createElement('option');
             ooptionTrue.value = 1;
-            ooptionTrue.innerText = 'true';
+            ooptionTrue.innerText = true;
 
             var ooptionFalse = document.createElement('option');
             ooptionFalse.value = 2;
-            ooptionFalse.innerText = 'false';
+            ooptionFalse.innerText = false;
 
             var ooptionTrueEdit = document.createElement('option');
             ooptionTrueEdit.value = 1;
-            ooptionTrueEdit.innerText = 'true';
+            ooptionTrueEdit.innerText = true;
 
             var ooptionFalseEdit = document.createElement('option');
             ooptionFalseEdit.value = 2;
-            ooptionFalseEdit.innerText = 'false';
+            ooptionFalseEdit.innerText = false;
 
 
 

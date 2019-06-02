@@ -43,7 +43,7 @@
                         <h2>Меню</h2>
                     </header>
                     <ul>
-                        <li id="TechOperationOut"><a asp-page="/TechOperationOutView" onclick="renderTitle()">Выходы</a></li> 
+                        <li id="TechOperationOut"><a asp-page="/TechOperationOutView" onclick="renderTitle()">Выходы</a></li>
                         <li id="Schedule" class="pageName"><a asp-page="/ScheduleView">Графики</a></li>
                         <li id="Tool" class="pageName"><a asp-page="/ToolView">Инструменты</a></li>
                         <li id="Setup" class="pageName"><a asp-page="/SetupView">Наладки</a></li>
@@ -58,14 +58,14 @@
                         <li id="TechProcess" class="pageName"><a asp-page="/TechProcessView">Технологические процессы</a></li>
                         <li id="Pattern" class="pageName"><a asp-page="/PatternView">Шаблоны</a></li>
                         @*<li>
-                            <span class="opener">Submenu</span>
-                            <ul>
-                                <li><a href="#">Lorem Dolor</a></li>
-                                <li><a href="#">Ipsum Adipiscing</a></li>
-                                <li><a href="#">Tempus Magna</a></li>
-                                <li><a href="#">Feugiat Veroeros</a></li>
-                            </ul>
-                        </li>*@
+                                <span class="opener">Submenu</span>
+                                <ul>
+                                    <li><a href="#">Lorem Dolor</a></li>
+                                    <li><a href="#">Ipsum Adipiscing</a></li>
+                                    <li><a href="#">Tempus Magna</a></li>
+                                    <li><a href="#">Feugiat Veroeros</a></li>
+                                </ul>
+                            </li>*@
                     </ul>
                 </nav>
                 <!-- Footer -->
@@ -77,8 +77,9 @@
 
         <div class="content">
             <header class="major">
-                <h2 id="headerTitle">Веб-подсистема управления нормативно-справочной информацией</h2> 
+                <h2 id="headerTitle">Веб-подсистема управления нормативно-справочной информацией</h2>
             </header>
+
             @{
                 @RenderBody()
                 //Layout = "Index";
@@ -119,6 +120,7 @@
     </environment>
 
     <!-- Scripts -->
+    
     <script src="js/jquery.min.js"></script>
     <script src="js/browser.min.js"></script>
     <script src="js/breakpoints.min.js"></script>
@@ -138,10 +140,10 @@
                         elem.setAttribute('background-color', '#337ab726');
                         elem.setAttribute('border-left', '6px solid #337ab7');
                         elem.setAttribute('padding', '5px 10px');
-                        //result = "Выходы";
-                        //background - color: #337ab726;
-                        //border - left: 6px solid #337ab7;
-                        //padding: 5px 10px;
+                    //result = "Выходы";
+                    //background - color: #337ab726;
+                    //border - left: 6px solid #337ab7;
+                    //padding: 5px 10px;
                     case "TechOperationNeed":
                         result = "Потребности";
                     case "TechOperation":
@@ -151,9 +153,13 @@
                 header.innerText = 'Веб-подсистема управления нормативно-справочной информацией > ' + result;
             });
         }
-        
 
-        
+        $(".content").scroll(function () {
+
+            $("#sidebar .toggle").click();
+
+        });
+
     </script>
 
     @RenderSection("Scripts", required: false)
