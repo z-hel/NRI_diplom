@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,6 @@ namespace NRI.Controllers
         {
             this.appContext = context;
         }
-
         //public ViewResult TechProcessView(int id)
         //{
         //    TechProcess techProcess = appContext.techProcesses.Find(id);
@@ -65,65 +65,83 @@ namespace NRI.Controllers
         {
             IFormFile fileExcel = Request.Form.Files[0];
             //Stream stream = fileExcel.OpenReadStream();
-            Console.WriteLine(fileExcel + "!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //Console.WriteLine(fileExcel + "!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+            //var filePath = Path.GetTempPath();
             if (fileExcel != null)
             {
-                
-                var memoryStream = new MemoryStream();
-                fileExcel.OpenReadStream().CopyTo(memoryStream);
+                var path = Path.Combine("wwwroot", "Files",
+                        fileExcel.FileName);
+                //string sWebRootFolder = _hostingEnvironment.WebRootPath;
+                FileInfo newfile = new FileInfo(path);
 
                 List<TechProcess> techProcesses = new List<TechProcess>();
                 List<TechOperation> techOperations = new List<TechOperation>();
 
-                Console.WriteLine(memoryStream + " !!!!!!!!!!!!!!!!!!!!!!!!!!");
+                //Console.WriteLine(memoryStream + " !!!!!!!!!!!!!!!!!!!!!!!!!!");
 
                 //var newfile = new FileInfo(fileExcel.FileName);
-                using (ExcelPackage package = new ExcelPackage(memoryStream))
+                try
                 {
-                    ExcelWorksheet workSheet = package.Workbook.Worksheets.First();
-                    int totalRows = workSheet.Dimension.Rows;
-
-                    //List<Customers> customerList = new List<Customers>();
-
-                    for (int i = 1; i <= totalRows; i++)
+                    using (var package = new OfficeOpenXml.ExcelPackage())
                     {
-                        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!" + workSheet.Cells[i, 0].Value.ToString());
-                        TechProcess techProcess = new TechProcess();
-                        techProcess.Id = int.Parse(workSheet.Cells[i, 0].Value.ToString());
-                        techProcess.Name = workSheet.Cells[i, 1].Value.ToString();
 
-                        TechOperation techOperation = new TechOperation();
-                        techOperation.Id = int.Parse(workSheet.Cells[i, 2].Value.ToString());
-                        techOperation.Name = workSheet.Cells[i, 3].Value.ToString();
-                        techOperation.SerialNumber = int.Parse(workSheet.Cells[i, 4].Value.ToString());
-                        techOperation.TechProcessId = int.Parse(workSheet.Cells[i, 0].Value.ToString());
+                        using (var stream = fileExcel.OpenReadStream()) // new FileStream(path, FileMode.Create)
+                        {
+                            //fileExcel.CopyToAsync(stream);
+                            //stream.Position = 0;
+                            package.Load(stream);
+                        }
 
-                        techProcess.NomenclatureId = int.Parse(workSheet.Cells[i, 5].Value.ToString());
-                        techProcess.LaunchBatch = int.Parse(workSheet.Cells[i, 6].Value.ToString());
-                        techProcess.MinBatch = int.Parse(workSheet.Cells[i, 7].Value.ToString());
-                        techProcess.MaxBatch = int.Parse(workSheet.Cells[i, 8].Value.ToString());
+                        var workSheet = package.Workbook.Worksheets.First();
+                        int totalRows = workSheet.Dimension.Rows;
+                        //Console.WriteLine(workSheet + " !!!!!!!!!!!!!!!!!!!!!!!!!! " + totalRows + "  7777  " + workSheet.Cells.Columns);
+                        //List<Customers> customerList = new List<Customers>();
+
+                        for (int i = 2; i <= totalRows; i++)
+                        {
+                            //Console.WriteLine("1111111111111111 " + workSheet.Cells[i, 1].Value.ToString());
+                            TechProcess techProcess = new TechProcess();
+                            //techProcess.Id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
+                            techProcess.Name = workSheet.Cells[i, 2].Value.ToString();
+
+                            TechOperation techOperation = new TechOperation();
+                            //techOperation.Id = int.Parse(workSheet.Cells[i, 3].Value.ToString());
+                            techOperation.Name = workSheet.Cells[i, 4].Value.ToString();
+                            techOperation.SerialNumber = int.Parse(workSheet.Cells[i, 5].Value.ToString());
+                            techOperation.TechProcessId = int.Parse(workSheet.Cells[i, 1].Value.ToString());
+
+                            techProcess.NomenclatureId = int.Parse(workSheet.Cells[i, 6].Value.ToString());
+                            techProcess.LaunchBatch = int.Parse(workSheet.Cells[i, 7].Value.ToString());
+                            techProcess.MinBatch = int.Parse(workSheet.Cells[i, 8].Value.ToString());
+                            techProcess.MaxBatch = int.Parse(workSheet.Cells[i, 9].Value.ToString());
 
 
-                        techProcesses.Add(techProcess);
-                        techOperations.Add(techOperation);
-                        this.Post(techProcess);
+                            techProcesses.Add(techProcess);
+                            techOperations.Add(techOperation);
+                            this.Post(techProcess);
 
-                        TechOperationController techOperationController = new TechOperationController(appContext);
-                        techOperationController.Post(techOperation);
+                            TechOperationController techOperationController = new TechOperationController(appContext);
+                            techOperationController.Post(techOperation);
 
 
-                        //customerList.Add(new Customers
-                        //{
-                        //    CustomerName = workSheet.Cells[i, 1].Value.ToString(),
-                        //    CustomerEmail = workSheet.Cells[i, 2].Value.ToString(),
-                        //    CustomerCountry = workSheet.Cells[i, 3].Value.ToString()
-                        //});
+                            //customerList.Add(new Customers
+                            //{
+                            //    CustomerName = workSheet.Cells[i, 1].Value.ToString(),
+                            //    CustomerEmail = workSheet.Cells[i, 2].Value.ToString(),
+                            //    CustomerCountry = workSheet.Cells[i, 3].Value.ToString()
+                            //});
+                        }
+
+                        //_db.Customers.AddRange(customerList);
+                        //_db.SaveChanges();
+
+                        //return customerList;
                     }
-
-                    //_db.Customers.AddRange(customerList);
-                    //_db.SaveChanges();
-
-                    //return customerList;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+ex.Message);
                 }
                 return Ok(techProcesses);
 

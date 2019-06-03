@@ -75,14 +75,14 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
-    @*<INPUT type="button" value="Импорт" onclick="importXlsx()" />*@
+    <INPUT type="button" value="Импорт" onclick="importXlsx()" />
 
     <form id="form" name="form" enctype="multipart/form-data" method="post">
         <div class="buttons">
             <div class="upload-button">
                 @*<div class="label">Click me!</div>*@
                 @*<input id="files" name="files" type="file" size="1" multiple onchange="importXlsx('files');" />*@
-                <INPUT id="files" name="files" type="file" size="1" value="Импорт" onchange="importXlsx('files')" />
+                <INPUT id="files" name="files" type="file" size="1" value="Импорт" onchange="prepareFile('files')" />
             </div>
         </div>
     </form>
@@ -182,6 +182,7 @@
 
 
     <script>
+        var formData;
         //var spreadsheet = new dhx.Spreadsheet("content", {
         //    menu: true,
         //    toolbarBlocks: ["default", "file"]
@@ -195,14 +196,26 @@
         //});
         //spreadsheet.parse(dataset);
 
-        function importXlsx(inputId) {
+
+        function prepareFile(inputId) {
             var input = document.getElementById(inputId);
             var files = input.files;
-            var formData = new FormData();
+            formData = new FormData();
 
             for (var i = 0; i != files.length; i++) {
                 formData.append("files", files[i]);
             }
+        }
+
+
+        function importXlsx() {
+            //var input = document.getElementById(inputId);
+            //var files = input.files;
+            //var formData = new FormData();
+
+            //for (var i = 0; i != files.length; i++) {
+            //    formData.append("files", files[i]);
+            //}
             var _url = '@Url.Action("Import", "TechProcess")';
 
             $.ajax(
@@ -222,7 +235,7 @@
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        //await GetTechProcesss();
+                        await GetTechProcesss();
 
                     },
                     error: function (e) {
