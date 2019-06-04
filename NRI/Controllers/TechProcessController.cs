@@ -70,10 +70,9 @@ namespace NRI.Controllers
             //var filePath = Path.GetTempPath();
             if (fileExcel != null)
             {
-                var path = Path.Combine("wwwroot", "Files",
-                        fileExcel.FileName);
-                //string sWebRootFolder = _hostingEnvironment.WebRootPath;
-                FileInfo newfile = new FileInfo(path);
+                //var path = Path.Combine("wwwroot", "Files",
+                //        fileExcel.FileName);
+                //FileInfo newfile = new FileInfo(path);
 
                 List<TechProcess> techProcesses = new List<TechProcess>();
                 List<TechOperation> techOperations = new List<TechOperation>();
@@ -102,11 +101,11 @@ namespace NRI.Controllers
                         {
                             //Console.WriteLine("1111111111111111 " + workSheet.Cells[i, 1].Value.ToString());
                             TechProcess techProcess = new TechProcess();
-                            //techProcess.Id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
+                            techProcess.Id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
                             techProcess.Name = workSheet.Cells[i, 2].Value.ToString();
 
                             TechOperation techOperation = new TechOperation();
-                            //techOperation.Id = int.Parse(workSheet.Cells[i, 3].Value.ToString());
+                            techOperation.Id = int.Parse(workSheet.Cells[i, 3].Value.ToString());
                             techOperation.Name = workSheet.Cells[i, 4].Value.ToString();
                             techOperation.SerialNumber = int.Parse(workSheet.Cells[i, 5].Value.ToString());
                             techOperation.TechProcessId = int.Parse(workSheet.Cells[i, 1].Value.ToString());
@@ -119,10 +118,10 @@ namespace NRI.Controllers
 
                             techProcesses.Add(techProcess);
                             techOperations.Add(techOperation);
-                            this.Post(techProcess);
+                            //this.Post(techProcess);
 
-                            TechOperationController techOperationController = new TechOperationController(appContext);
-                            techOperationController.Post(techOperation);
+                            //TechOperationController techOperationController = new TechOperationController(appContext);
+                            //techOperationController.Post(techOperation);
 
 
                             //customerList.Add(new Customers
@@ -138,6 +137,33 @@ namespace NRI.Controllers
 
                         //return customerList;
                     }
+                    IEnumerable<TechProcess> distinctProcesses = techProcesses.Distinct();
+                    foreach (TechProcess techProcess in distinctProcesses)
+                    {
+                        IActionResult result = this.Get(techProcess.Id);
+                        if (result == NotFound())
+                        {
+                            this.Post(techProcess);
+                        }
+                        //else
+                        //{
+                        //    return CreatedAtAction(nameof(Post), result);
+                        //}
+                    }
+
+                    IEnumerable<TechOperation> distinctOperations = techOperations.Distinct();
+                    TechOperationController techOperationController = new TechOperationController(appContext);
+                    foreach (TechOperation techOperation in distinctOperations)
+                    {
+                        IActionResult result = this.Get(techOperation.Id);
+                        if (result == NotFound())
+                        {
+                            techOperationController.Post(techOperation);
+
+                        }
+                    }
+
+
                 }
                 catch (Exception ex)
                 {
