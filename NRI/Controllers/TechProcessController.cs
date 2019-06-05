@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NRI.Models;
 using OfficeOpenXml;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NRI.Controllers
 {
@@ -141,10 +142,14 @@ namespace NRI.Controllers
                     foreach (TechProcess techProcess in distinctProcesses)
                     {
                         IActionResult result = this.Get(techProcess.Id);
-                        if (result == NotFound())
-                        {
-                            this.Post(techProcess);
-                        }
+                        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TECHPROCESS " + result.GetType());
+                        //if (!(result.Equals(typeof(ObjectResult))))
+                        //{
+                            if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                            {
+                                this.Post(techProcess);
+                            }
+                        //}
                         //else
                         //{
                         //    return CreatedAtAction(nameof(Post), result);
@@ -155,21 +160,25 @@ namespace NRI.Controllers
                     TechOperationController techOperationController = new TechOperationController(appContext);
                     foreach (TechOperation techOperation in distinctOperations)
                     {
-                        IActionResult result = this.Get(techOperation.Id);
-                        if (result == NotFound())
-                        {
-                            techOperationController.Post(techOperation);
+                        IActionResult result = techOperationController.Get(techOperation.Id);
+                        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TECHOPERATION " + result);
+                        //if (!(result.Equals(typeof(ObjectResult))))
+                        //{
+                            if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                            {
+                                
+                                techOperationController.Post(techOperation);
 
-                        }
+                            }
+                        //}
                     }
-
-
+                    return Ok(techProcesses);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+ex.Message);
+                    Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + ex.Message);
                 }
-                return Ok(techProcesses);
+
 
 
                 /*using (XLWorkbook workBook = new XLWorkbook(memoryStream, XLEventTracking.Disabled)) // TODO ??? fileExcel.InputStream
