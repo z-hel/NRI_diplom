@@ -67,6 +67,38 @@
 
         .table {
         }
+
+        input[type="file"] {
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        input[type="file"]:before {
+            background-color: transparent;
+            border-radius: 0.375em;
+            border: 0;
+            box-shadow: inset 0 0 0 2px #337ab7;
+            color: #337ab7 !important;
+            cursor: pointer;
+            display: inline-block;
+            font-family: "Roboto Slab", serif;
+            font-size: 0.8em;
+            font-weight: 700;
+            content: "Выберите файл";
+            height: 3.5em;
+            letter-spacing: 0.075em;
+            line-height: 3.5em;
+            padding: 0 2.25em;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            white-space: nowrap;
+            /*-webkit-appearance: button;*/
+            /*cursor: pointer;*/
+        }
+        .upload-button {
+            display: -webkit-inline-box;
+        }
     </style>
 </head>
 
@@ -75,14 +107,15 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
-    <INPUT type="button" value="Импорт" onclick="importXlsx()" />
+    
 
     <form id="form" name="form" enctype="multipart/form-data" method="post">
         <div class="buttons">
             <div class="upload-button">
                 @*<div class="label">Click me!</div>*@
                 @*<input id="files" name="files" type="file" size="1" multiple onchange="importXlsx('files');" />*@
-                <INPUT id="files" name="files" type="file" size="1" value="Импорт" onchange="prepareFile('files')" />
+                <INPUT id="files" class="import" name="files" type="file" size="1" value="Импорт" onchange="prepareFile('files')" />
+                <INPUT id="import" type="button" value="Импорт" onclick="importXlsx()" style="visibility:hidden;" />
             </div>
         </div>
     </form>
@@ -183,19 +216,6 @@
 
     <script>
         var formData;
-        //var spreadsheet = new dhx.Spreadsheet("content", {
-        //    menu: true,
-        //    toolbarBlocks: ["default", "file"]
-        //});
-        //spreadsheet.parse(dataset);
-        //spreadsheet.load("", "xlsx").then(function () {
-        //    var state = spreadsheet1.serialize();
-
-        //    var spreadsheet2 = new dhx.Spreadsheet(document.body);
-        //    spreadsheet2.parse(state);
-        //});
-        //spreadsheet.parse(dataset);
-
 
         function prepareFile(inputId) {
             var input = document.getElementById(inputId);
@@ -205,45 +225,43 @@
             for (var i = 0; i != files.length; i++) {
                 formData.append("files", files[i]);
             }
+
+            var importButton = document.getElementById("import");
+            importButton.style = "visibility:visible;";
         }
 
 
         function importXlsx() {
-            //var input = document.getElementById(inputId);
-            //var files = input.files;
-            //var formData = new FormData();
-
-            //for (var i = 0; i != files.length; i++) {
-            //    formData.append("files", files[i]);
-            //}
             var _url = '@Url.Action("Import", "TechProcess")';
 
             $.ajax(
                 {
-                    url: _url, //"api/TechProcess/import",
+                    url: _url,
                     data: formData,
                     processData: false,
                     contentType: false,
                     type: "POST",
                     success: async function (techProcess) {
-                        console.log(techProcess);
-                        //reset('techProcessForm');
-                        alert('Запись успешно добавлена');
-
+                        //console.log(techProcess);
+                        
                         var table = document.getElementById('techProcessTable');
 
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
                         await GetTechProcesss();
-
+                        alert('Запись успешно добавлена');
+                        var importButton = document.getElementById("import");
+                        importButton.style = "visibility:hidden;";
                     },
                     error: function (e) {
                         console.log(e.message);
                     }
                 });
             
-        }</script>
+        }
+    </script>
+
     <script>
         var selectedCheckbox;
         var selectedForDelete = [];
