@@ -74,9 +74,9 @@
         <table id="techOperationTable">
             <thead>
                 <tr>
+                    <th>Порядковый номер</th>
                     <th>Технологическая операция</th>
                     <th>Технологический процесс</th>
-                    <th>Порядковый номер</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -133,6 +133,10 @@
             <form name="techOperationEditForm">
                 <input type="hidden" name="id" value="0" />
                 <div class="form-group">
+                    <label for="serialNumber">Порядковый номер:</label>
+                    <input class="form-control" name="serialNumber" id="serialNumberEdit" />
+                </div>
+                <div class="form-group">
                     <label for="techOperation">Технологическая операция:</label>
                     <input class="form-control" name="TechOperationEdit" id="TechOperationEdit" />
                 </div>
@@ -140,10 +144,7 @@
                     <label for="techProcess">Технологический процесс:</label>
                     <select name="techProcess" id="selectTechProcessEdit"></select>
                 </div>
-                <div class="form-group">
-                    <label for="serialNumber">Порядковый номер:</label>
-                    <input class="form-control" name="serialNumber" id="serialNumberEdit" />
-                </div>
+                
                 <div class="panel-body">
 
                     <input type="button" value="Изменить" onclick="EditTechOperation()" />
@@ -173,6 +174,7 @@
         var resultForDelete = new Map();
         var resultTOForTK = new Map();
         var resultTPForTK = new Map();
+        var resultNumTOForTK = new Map();
 
 
         function downloadTK() {
@@ -189,11 +191,13 @@
             doc.text("Технологический процесс: ", 20, 20);
             doc.text(techProcess, 20, 30);
 
-            var x = 30;
+            var x = 40;
+
+            doc.text("Технологическая операция:         Номер: ", 40, x);
 
             for (var i = 0; i < TKOperations.length; i++) {
                 x = x + 10;
-                doc.text("Технологическая операция: " + TKOperations[i], 40, x);
+                doc.text(TKOperations[i], 40, x);
             }
             
             
@@ -215,9 +219,10 @@
 
                     resultTOForTK.forEach(function (keyTO, valueTO) {
                         var techOperationName = keyTO;
+                        
 
                         if (valueTP == valueTO && techProcessId == techProcessIdTK) {
-                        TKOperations.push(techOperationName);
+                            TKOperations.push(resultNumTOForTK.get(valueTO) + "     " + techOperationName);
                     }
                 });
 
@@ -501,6 +506,7 @@
                         
                         resultTOForTK.set(techOperation.id, techOperation.name);
                         resultTPForTK.set(techOperation.id, techOperation.techProcessId);
+                        resultNumTOForTK.set(techOperation.id, techOperation.serialNumber);
 
                         var transactionList = techOperation;
 
@@ -543,13 +549,14 @@
             var techProcessName = await GetTechProcessName(techProcessId);
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = techOperationName;
+            cell1.innerText = data.serialNumber;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = techProcessName;
+            cell2.innerText = techOperationName;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = data.serialNumber;
+            cell3.innerText = techProcessName;
+
 
             var cell4 = row.insertCell(3);
             //var el = document.createElement('label');
