@@ -105,6 +105,7 @@
         <table id="nomenclatureTable">
             <thead>
                 <tr>
+                    <th>Код</th>
                     <th>Номенклатура</th>
                     <th>Тип получения</th>
                     <th>Тип номенклатуры</th>
@@ -121,6 +122,11 @@
         <div id="addModal">
             <form name="nomenclatureForm">
                 <input type="hidden" name="id" value="0" />
+
+                <div class="form-group">
+                    <label for="code">Код:</label>
+                    <input class="form-control" name="code" id="code" />
+                </div>
                 <div class="form-group">
                     <label for="nomenclature">Номенклатура:</label>
                     <input class="form-control" name="nomenclature" id="nomenclature" />
@@ -198,6 +204,10 @@
         <div id="editModal">
             <form name="nomenclatureEditForm">
                 <input type="hidden" name="id" value="0" />
+                <div class="form-group">
+                    <label for="codeEdit">Код:</label>
+                    <input class="form-control" name="codeEdit" id="codeEdit" />
+                </div>
                 <div class="form-group">
                     <label for="nomenclatureEdit">Номенклатура:</label>
                     <input class="form-control" name="nomenclatureEdit" id="nomenclatureEdit" />
@@ -405,6 +415,7 @@
         function EditNomenclature() {
 
             var nomenclatureNamePUT = document.getElementById("nomenclatureEdit").value;
+            var codePUT = document.getElementById("codeEdit").value;
 
             var indexReceiptTypeSelected = document.getElementById("selectReceiptTypeEdit").options.selectedIndex;
             var receiptTypeIdPUT = document.getElementById("selectReceiptTypeEdit").options[indexReceiptTypeSelected].value;
@@ -426,6 +437,7 @@
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
+                    code: codePUT,
                     name: nomenclatureNamePUT,
                     parentNomenclatureId: parentNomenclatureIdPUT,
                     receiptTypeId: receiptTypeIdPUT,
@@ -524,6 +536,7 @@
                 await GetNomenclatureById(elem);
                 var idDEL = elem;
                 var nomenclatureNameDEL = resultForDelete.get('nomenclatureName');
+                var codeDEL = resultForDelete.get('code');
                 var parentNomenclatureIdDEL = resultForDelete.get('parentNomenclatureId');
                 var receiptTypeIdDEL = resultForDelete.get('receiptTypeId');
                 var nomenclatureTypeIdDEL = resultForDelete.get('nomenclatureTypeId');
@@ -534,6 +547,7 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
+                        code: codeDEL,
                         name: nomenclatureNameDEL,
                         parentNomenclatureId: parentNomenclatureIdDEL,
                         receiptTypeId: receiptTypeIdDEL,
@@ -630,6 +644,9 @@
                     var previousNOM = document.getElementById('nomenclatureEdit');
                     previousNOM.value = nomenclature.name;
 
+                    var previouscode = document.getElementById('codeEdit');
+                    previouscode.value = nomenclature.code;
+
                     var previousParentNomenclature = document.getElementById('selectParentNomenclatureEdit');
                     previousParentNomenclature.value = nomenclature.parentNomenclatureId;
 
@@ -640,6 +657,7 @@
                     previousNomenclatureType.value = nomenclature.nomenclatureTypeId;
 
                     resultForDelete.set('nomenclatureName', nomenclature.name);
+                    resultForDelete.set('code', nomenclature.code);
                     resultForDelete.set('parentNomenclatureId', nomenclature.parentNomenclatureId);
                     resultForDelete.set('receiptTypeId', nomenclature.receiptTypeId);
                     resultForDelete.set('nomenclatureTypeId', nomenclature.nomenclatureTypeId);
@@ -755,6 +773,7 @@
 
         async function AddNomenclature() {
             var nomenclatureName = document.getElementById("nomenclature").value;
+            var code = document.getElementById("code").value;
 
             var indexReceiptTypeSelected = document.getElementById("selectReceiptType").options.selectedIndex;
             var receiptTypeId = document.getElementById("selectReceiptType").options[indexReceiptTypeSelected].value;
@@ -774,6 +793,7 @@
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
+                    code: code,
                     name: nomenclatureName,
                     parentNomenclatureId: parentNomenclatureId,
                     nomenclatureTypeId: nomenclatureTypeId,
@@ -959,22 +979,25 @@
             var nomenclatureTypeName = await GetNomenclatureTypeName(data.nomenclatureTypeId);
 
             var cell1 = row.insertCell(0);
-            cell1.innerText = nomenclatureName;
+            cell1.innerText = data.code;
 
             var cell2 = row.insertCell(1);
-            cell2.innerText = receiptTypeName;
+            cell2.innerText = nomenclatureName;
 
             var cell3 = row.insertCell(2);
-            cell3.innerText = nomenclatureTypeName;
+            cell3.innerText = receiptTypeName;
 
             var cell4 = row.insertCell(3);
-            cell4.innerText = parentNomenclatureName;
+            cell4.innerText = nomenclatureTypeName;
 
             var cell5 = row.insertCell(4);
+            cell5.innerText = parentNomenclatureName;
+
+            var cell6 = row.insertCell(5);
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell5.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
         GetParentNomenclature();
