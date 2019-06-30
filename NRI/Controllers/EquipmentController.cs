@@ -51,6 +51,61 @@ namespace NRI.Controllers
             return Ok(equipment);
         }
 
+        [HttpPost] //("import")
+        [Route("import")]
+        public IActionResult Import()
+        {
+            IFormFile fileExcel = Request.Form.Files[0];
+            if (fileExcel != null)
+            {
+
+                List<Equipment> equipments = new List<Equipment>();
+                try
+                {
+                    using (var package = new OfficeOpenXml.ExcelPackage())
+                    {
+
+                        using (var stream = fileExcel.OpenReadStream())
+                        {
+                            package.Load(stream);
+                        }
+
+                        var workSheet = package.Workbook.Worksheets.First();
+                        int totalRows = workSheet.Dimension.Rows;
+
+                        for (int i = 2; i <= totalRows; i++)
+                        {
+                            Equipment equipment = new Equipment();
+                            equipment.Id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
+                            equipment.Name = workSheet.Cells[i, 2].Value.ToString();
+                            equipment.Code = workSheet.Cells[i, 3].Value.ToString();
+
+                            equipments.Add(equipment);
+                        }
+
+                    }
+                    IEnumerable<Equipment> distinctEquipment = equipments.Distinct();
+                    foreach (Equipment equipment in distinctEquipment)
+                    {
+                        IActionResult result = this.Get(equipment.Id);
+                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TECHPROCESS " + result.GetType());
+                        if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                        {
+                            this.Post(equipment);
+                        }
+                    
+                    }
+                    return Ok(equipments);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + ex.Message);
+                }
+
+            }
+            return RedirectToAction("");
+        }
+
         // PUT: api/equipment/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Equipment equipment)

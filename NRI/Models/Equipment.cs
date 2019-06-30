@@ -13,6 +13,7 @@ namespace NRI.Models
         //private List<Setup> setups; //TODO list?
 
         public string Name { get; set; }
+        public string Code { get; set; }
         public int Id { get; set; }
     }
 }
