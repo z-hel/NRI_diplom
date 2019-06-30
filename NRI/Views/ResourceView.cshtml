@@ -51,6 +51,8 @@
             color: #337ab7;
         }
 
+        
+
         INPUT {
             margin: 10px 10px 10px 0;
         }
@@ -124,7 +126,7 @@
                 </div>
                 <div class="form-group">
                     <label for="selectIsAccessibility">Доступность:</label>
-                    <select name="selectIsAccessibility" id="selectIsAccessibility"></select>
+                    <input type="checkbox" name="selectIsAccessibility" value="0" id="selectIsAccessibility" /><label for="selectIsAccessibility"></label>
                 </div>
                 <div class="form-group">
                     <label for="mode">Режим:</label>
@@ -180,7 +182,8 @@
                 </div>
                 <div class="form-group">
                     <label for="selectIsAccessibilityEdit">Доступность:</label>
-                    <select name="selectIsAccessibilityEdit" id="selectIsAccessibilityEdit"></select>
+                    <input type="checkbox" name="selectIsAccessibilityEdit" value="0" id="selectIsAccessibilityEdit" /><label for="selectIsAccessibilityEdit"></label>
+                    @*<select name="selectIsAccessibilityEdit" id="selectIsAccessibilityEdit"></select>*@
                 </div>
                 <div class="form-group">
                     <label for="modeEdit">Режим:</label>
@@ -226,24 +229,6 @@
     <script>
         
 
-
-        //$(window).scroll(function () {
-        //    $(window).scroll(function () {
-
-        //        var target = $(this).scrollTop();
-
-        //        if (target != 0) {
-        //            $("#sidebar .toggle").click();
-        //            // Действие, если страница в самом верху
-
-        //        }
-
-        //    });
-
-        //});
-
-
-
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
@@ -271,8 +256,7 @@
             var indexUsageTypeSelected = document.getElementById("selectUsageTypeEdit").options.selectedIndex;
             var usageTypeIdPUT = document.getElementById("selectUsageTypeEdit").options[indexUsageTypeSelected].value;
 
-            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibilityEdit").options.selectedIndex;
-            var isAccessibilityIdPUT = document.getElementById("selectIsAccessibilityEdit").options[indexIsAccessibilitySelected].value;
+            var isAccessibilityIdPUT = document.getElementById("selectIsAccessibilityEdit").checked;
 
             var indexModeSelected = document.getElementById("selectModeEdit").options.selectedIndex;
             var modeIdPUT = document.getElementById("selectModeEdit").options[indexModeSelected].value;
@@ -289,12 +273,12 @@
             
             if (downtimeCostPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
 
-            if (isAccessibilityIdPUT == 2) {
-                isAccessibilityIdPUT = false;
-            }
-            else {
-                isAccessibilityIdPUT = true;
-            }
+            //if (isAccessibilityIdPUT == 2) {
+            //    isAccessibilityIdPUT = false;
+            //}
+            //else {
+            //    isAccessibilityIdPUT = true;
+            //}
 
             var urlstr = "api/Resource/" + idPUT;
             $.ajax({
@@ -336,7 +320,7 @@
 
         function openEditModal() {
             //styleBody();
-            $('input[type=checkbox]').each(async function () {
+            $('.selectForChange').each(async function () {
                 //if ($(this).is(':checked')) {
                 if (this.checked) {
                     selectedCheckbox = this.value;
@@ -381,7 +365,7 @@
             //styleBody();
             selectedForDelete = [];
 
-            $('input[type=checkbox]').each(function () {
+            $('.selectForChange').each(function () {
                 if (this.checked) {
                     selectedForDelete.push(this.value)
                 }
@@ -494,7 +478,7 @@
                     previousUsageType.value = resource.usageTypeId;
 
                     var previousisAccessibility = document.getElementById('selectIsAccessibilityEdit');
-                    previousisAccessibility.value = resource.isAccessibility;
+                    previousisAccessibility.checked = resource.isAccessibility;
 
                     var previousmode = document.getElementById('selectModeEdit');
                     previousmode.value = resource.modeId;
@@ -700,31 +684,31 @@
             });
         }
 
-        function GetIsAccessibility() {
-            var select = document.getElementById('selectIsAccessibility');
-            var selectEdit = document.getElementById('selectIsAccessibilityEdit');
+        //function GetIsAccessibility() {
+        //    var select = document.getElementById('selectIsAccessibility');
+        //    var selectEdit = document.getElementById('selectIsAccessibilityEdit');
 
-            var ooptionTrue = document.createElement('option');
-            ooptionTrue.value = 1;
-            ooptionTrue.innerText = "true";
-            select.appendChild(ooptionTrue);
+        //    var ooptionTrue = document.createElement('option');
+        //    ooptionTrue.value = 1;
+        //    ooptionTrue.innerText = "true";
+        //    select.appendChild(ooptionTrue);
 
-            var ooptionFalse = document.createElement('option');
-            ooptionFalse.value = 2;
-            ooptionFalse.innerText = "false";
-            select.appendChild(ooptionFalse);
+        //    var ooptionFalse = document.createElement('option');
+        //    ooptionFalse.value = 2;
+        //    ooptionFalse.innerText = "false";
+        //    select.appendChild(ooptionFalse);
 
-            var ooptionTrueEdit = document.createElement('option');
-            ooptionTrueEdit.value = 1;
-            ooptionTrueEdit.innerText = "true";
-            selectEdit.appendChild(ooptionTrueEdit);
+        //    var ooptionTrueEdit = document.createElement('option');
+        //    ooptionTrueEdit.value = 1;
+        //    ooptionTrueEdit.innerText = "true";
+        //    selectEdit.appendChild(ooptionTrueEdit);
 
-            var ooptionFalseEdit = document.createElement('option');
-            ooptionFalseEdit.value = 2;
-            ooptionFalseEdit.innerText = "false";
+        //    var ooptionFalseEdit = document.createElement('option');
+        //    ooptionFalseEdit.value = 2;
+        //    ooptionFalseEdit.innerText = "false";
 
-            selectEdit.appendChild(ooptionFalseEdit);
-        }
+        //    selectEdit.appendChild(ooptionFalseEdit);
+        //}
         
 
         function GetProductionUnits() {
@@ -773,9 +757,8 @@
 
             var indexUsageTypeSelected = document.getElementById("selectUsageType").options.selectedIndex;
             var usageTypeId = document.getElementById("selectUsageType").options[indexUsageTypeSelected].value;
-
-            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibility").options.selectedIndex;
-            var isAccessibilityId = document.getElementById("selectIsAccessibility").options[indexIsAccessibilitySelected].value;
+            
+            var isAccessibilityId = document.getElementById("selectIsAccessibility").checked;
 
             var indexModeSelected = document.getElementById("selectMode").options.selectedIndex;
             var modeId = document.getElementById("selectMode").options[indexModeSelected].value;
@@ -792,12 +775,12 @@
             var downtimeCost = document.getElementById("downtimeCost").value;
             if (downtimeCost.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Стоимость простоя"'); }
 
-            if (isAccessibilityId == 2) {
-                isAccessibilityId = false;
-            }
-            else {
-                isAccessibilityId = true;
-            }
+            //if (isAccessibilityId == 2) {
+            //    isAccessibilityId = false;
+            //}
+            //else {
+            //    isAccessibilityId = true;
+            //}
 
 
             $.ajax({
@@ -1015,7 +998,15 @@
             cell5.innerText = usageTypeName;
 
             var cell6 = row.insertCell(5);
-            cell6.innerText = data.isAccessibility;
+            //var input = document.createElement('input');
+            //input.type = 'checkbox';
+            //input.checked = data.isAccessibility;
+            //cell6.appendChild(input);
+            cell6.innerHTML = '<input type="checkbox" value="isAccessibility' + data.id + '" id="isAccessibility' + data.id + '"/><label for="isAccessibility' + data.id + '"></label>'
+
+            var input = document.getElementById('isAccessibility' + data.id + '');
+            input.checked = data.isAccessibility;
+            input.disabled = 1;
 
             var cell7 = row.insertCell(6);
             cell7.innerText = data.workCost;
@@ -1037,10 +1028,10 @@
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell12.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell12.innerHTML = '<input type="checkbox" class="selectForChange" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
-        GetIsAccessibility();
+        //GetIsAccessibility();
         GetResources();
         GetPersonals();
         GetTools();

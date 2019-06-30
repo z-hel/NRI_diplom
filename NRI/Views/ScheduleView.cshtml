@@ -100,7 +100,7 @@
                 </div>
                 <div class="form-group">
                     <label for="selectIsAccessibility">Доступность:</label>
-                    <select name="selectIsAccessibility" id="selectIsAccessibility"></select>
+                    <input type="checkbox" name="selectIsAccessibility" value="0" id="selectIsAccessibility" /><label for="selectIsAccessibility"></label>
                 </div>
                 <div class="panel-body">
 
@@ -128,7 +128,7 @@
                 </div>
                 <div class="form-group">
                     <label for="isAccessibilityEdit">Доступность:</label>
-                    <select name="isAccessibilityEdit" id="selectIsAccessibilityEdit"></select>
+                    <input type="checkbox" name="selectIsAccessibilityEdit" value="0" id="selectIsAccessibilityEdit" /><label for="selectIsAccessibilityEdit"></label>
                 </div>
                 <div class="panel-body">
 
@@ -151,6 +151,7 @@
 
 
     <script>
+
         var selectedCheckbox;
         var selectedForDelete = [];
         var resultForDelete = new Map();
@@ -164,21 +165,14 @@
             var indexResourceSelected = document.getElementById("selectResourceEdit").options.selectedIndex;
             var resourceIdPUT = document.getElementById("selectResourceEdit").options[indexResourceSelected].value;
 
-            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibilityEdit").options.selectedIndex;
-            var isAccessibilityIdPUT = document.getElementById("selectIsAccessibilityEdit").options[indexIsAccessibilitySelected].value;
+            var isAccessibilityIdPUT = document.getElementById("selectIsAccessibilityEdit").checked;
 
             var namePUT = document.getElementById("nameEdit").value;
             var dateTimeStartPUT = await figurePatternDate(patternIdPUT);
             
 
             var idPUT = selectedCheckbox;
-
-            if (isAccessibilityIdPUT == 2) {
-                isAccessibilityIdPUT = false;
-            }
-            else {
-                isAccessibilityIdPUT = true;
-            }
+            
 
 
             var urlstr = "api/Schedule/" + idPUT;
@@ -215,7 +209,7 @@
 
         function openEditModal() {
             
-            $('input[type=checkbox]').each(async function () {
+            $('.selectForChange').each(async function () {
                 //if ($(this).is(':checked')) {
                 if (this.checked) {
                     selectedCheckbox = this.value;
@@ -258,7 +252,7 @@
         function openDeleteModal() {
             selectedForDelete = [];
 
-            $('input[type=checkbox]').each(function () {
+            $('.selectForChange').each(function () {
                 if (this.checked) {
                     selectedForDelete.push(this.value)
                 }
@@ -361,8 +355,8 @@
                     var previousResource = document.getElementById('selectResourceEdit');
                     previousResource.value = schedule.resourceId;
 
-                    var previousIsAccessibility = document.getElementById('selectIsAccessibilityEdit');
-                    previousIsAccessibility.value = schedule.isAccessibility;
+                    var previousisAccessibility = document.getElementById('selectIsAccessibilityEdit');
+                    previousisAccessibility.checked = schedule.isAccessibility;
 
                     var previousname = document.getElementById('nameEdit');
                     previousname.value = schedule.name;
@@ -370,8 +364,7 @@
 
                     resultForDelete.set('patternId', schedule.patternId);
                     resultForDelete.set('resourceId', schedule.resourceId);
-                    resultForDelete.set('name', schedule.name);
-                    resultForDelete.set('dateTimeStart', schedule.dateTimeStart);
+                    resultForDelete.set('isAccessibility', schedule.isAccessibility);
                     resultForDelete.set('name', schedule.name);
                 },
                 error: function (e) {
@@ -440,20 +433,13 @@
             var indexResourceSelected = document.getElementById("selectResource").options.selectedIndex;
             var resourceId = document.getElementById("selectResource").options[indexResourceSelected].value;
 
-            var indexIsAccessibilitySelected = document.getElementById("selectIsAccessibility").options.selectedIndex;
-            var isAccessibility = document.getElementById("selectIsAccessibility").options[indexIsAccessibilitySelected].value;
+            var isAccessibility = document.getElementById("selectIsAccessibility").checked;
             
             var dateTimeStart = await figurePatternDate(patternId);
 
             var name = document.getElementById("name").value;
 
-
-            if (isAccessibility == 2) {
-                isAccessibility = false;
-            }
-            else {
-                isAccessibility = true;
-            }
+            
 
             $.ajax({
                 url: "api/Schedule",
@@ -529,34 +515,7 @@
             return name;
         }
 
-        function GetIsAccessibility() {
-            var select = document.getElementById('selectIsAccessibility');
-            var selectEdit = document.getElementById('selectIsAccessibilityEdit');
-
-            var ooptionTrue = document.createElement('option');
-            ooptionTrue.value = 1;
-            ooptionTrue.innerText = true;
-
-            var ooptionFalse = document.createElement('option');
-            ooptionFalse.value = 2;
-            ooptionFalse.innerText = false;
-
-            var ooptionTrueEdit = document.createElement('option');
-            ooptionTrueEdit.value = 1;
-            ooptionTrueEdit.innerText = true;
-
-            var ooptionFalseEdit = document.createElement('option');
-            ooptionFalseEdit.value = 2;
-            ooptionFalseEdit.innerText = false;
-
-
-
-            select.appendChild(ooptionTrue);
-            select.appendChild(ooptionFalse);
-            selectEdit.appendChild(ooptionTrueEdit);
-            selectEdit.appendChild(ooptionFalseEdit);
-        }
-
+        
         async function figurePatternDate(id) {
             var result;
             var urlstr = '/api/Pattern/' + id;
@@ -606,19 +565,22 @@
             cell4.innerText = await figurePatternDate(toId);
 
             var cell5 = row.insertCell(4);
-            cell5.innerText = data.isAccessibility;
+            cell5.innerHTML = '<input type="checkbox" value="isAccessibility' + data.id + '" id="isAccessibility' + data.id + '"/><label for="isAccessibility' + data.id + '"></label>'
+
+            var input = document.getElementById('isAccessibility' + data.id + '');
+            input.checked = data.isAccessibility;
+            input.disabled = 1;
 
             var cell6 = row.insertCell(5);
             //var el = document.createElement('label');
             //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
             //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+            cell6.innerHTML = '<input type="checkbox" class="selectForChange" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
             //cell4.appendChild(el);
         }
         GetSchedules();
         GetPatterns();
         GetResources();
-        GetIsAccessibility();
 
 
 

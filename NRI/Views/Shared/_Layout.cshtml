@@ -163,35 +163,53 @@
     <script src="js/main.js"></script>
 
     <script>
-        function renderTitle() {
-            var header = document.getElementById('headerTitle');
-            var elem;
-            $('ul > li').click(function () {
-                var clicked = $(this).text();
-                var result;
-                switch (clicked) {
-                    case "TechOperationOut":
-                        elem = document.getElementById('TechOperationOut');
-                        elem.setAttribute('background-color', '#337ab726');
-                        elem.setAttribute('border-left', '6px solid #337ab7');
-                        elem.setAttribute('padding', '5px 10px');
-                    //result = "Выходы";
-                    //background - color: #337ab726;
-                    //border - left: 6px solid #337ab7;
-                    //padding: 5px 10px;
-                    case "TechOperationNeed":
-                        result = "Потребности";
-                    case "TechOperation":
-                        result = "Технологические операции";
+        //function renderTitle() {
+        //    var header = document.getElementById('headerTitle');
+        //    var elem;
+        //    $('ul > li').click(function () {
+        //        var clicked = $(this).text();
+        //        var result;
+        //        switch (clicked) {
+        //            case "TechOperationOut":
+        //                elem = document.getElementById('TechOperationOut');
+        //                elem.setAttribute('background-color', '#337ab726');
+        //                elem.setAttribute('border-left', '6px solid #337ab7');
+        //                elem.setAttribute('padding', '5px 10px');
+        //            //result = "Выходы";
+        //            //background - color: #337ab726;
+        //            //border - left: 6px solid #337ab7;
+        //            //padding: 5px 10px;
+        //            case "TechOperationNeed":
+        //                result = "Потребности";
+        //            case "TechOperation":
+        //                result = "Технологические операции";
 
-                }
-                header.innerText = 'Веб-подсистема управления нормативно-справочной информацией > ' + result;
-            });
-        }
+        //        }
+        //        header.innerText = 'Веб-подсистема управления нормативно-справочной информацией > ' + result;
+        //    });
+        //}
 
-        $(".content").scroll(function () {
+        //$(".content").scroll(function () {
+        //    var sidebar = document.getElementById('#sidebar');
+        //    sidebar.className= "inactive";
 
-            $("#sidebar .toggle").click();
+        //});
+
+
+        $(window).scroll(function () {
+
+            var target = $(this).scrollTop();
+
+            if (target == 0) {
+
+                // Действие, если страница вверху
+
+            }
+            else {
+                //var sidebar = document.getElementById('#sidebar');
+                document.getElementById('#sidebar').className = "inactive";
+            }
+
 
         });
 
