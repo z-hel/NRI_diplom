@@ -77,8 +77,8 @@ namespace NRI.Controllers
                         {
                             Equipment equipment = new Equipment();
                             equipment.Id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
-                            equipment.Name = workSheet.Cells[i, 2].Value.ToString();
-                            equipment.Code = workSheet.Cells[i, 3].Value.ToString();
+                            equipment.Code = workSheet.Cells[i, 2].Value.ToString();
+                            equipment.Name = workSheet.Cells[i, 3].Value.ToString();
 
                             equipments.Add(equipment);
                         }
@@ -88,7 +88,7 @@ namespace NRI.Controllers
                     foreach (Equipment equipment in distinctEquipment)
                     {
                         IActionResult result = this.Get(equipment.Id);
-                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TECHPROCESS " + result.GetType());
+                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! EQUIPMENT " + result.GetType());
                         if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
                         {
                             this.Post(equipment);
