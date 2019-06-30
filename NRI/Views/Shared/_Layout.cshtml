@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - NRI</title>
+    <title>@ViewData["Title"] NRI</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -16,7 +16,29 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+
+    <style type="text/css">
+        .menuelembottom {
+            /*margin: 0.5em 0 0 0;*/
+            /*padding: 0.5em 0 0 0;*/
+            border-bottom: solid 1px rgba(51, 122, 183, 0.51);
+            /*padding-top: 0.5em;
+            padding-bottom: 0.5em;*/
+            /*padding-top: 0.5em;*/
+        }
+
+        .menuelemtop {
+            /*margin: 0.5em 0 0 0;*/
+            /*padding: 0.5em 0 0 0;*/
+            border-top: solid 1px rgba(51, 122, 183, 0.51);
+            border-bottom: solid 1px rgba(51, 122, 183, 0.51);
+            padding-bottom: 0.5em;
+            /*padding-top: 0.5em;*/
+        }
+    </style>
+
 </head>
+
 
 
 <body class="is-preload">
@@ -42,31 +64,44 @@
                     <header class="major">
                         <h2>Меню</h2>
                     </header>
-                    <ul>
-                        <li id="TechOperationOut"><a asp-page="/TechOperationOutView" onclick="renderTitle()">Выходы</a></li>
-                        <li id="Schedule" class="pageName"><a asp-page="/ScheduleView">Графики</a></li>
-                        <li id="Tool" class="pageName"><a asp-page="/ToolView">Инструменты</a></li>
-                        <li id="Setup" class="pageName"><a asp-page="/SetupView">Наладки</a></li>
-                        <li id="Nomenclature" class="pageName"><a asp-page="/NomenclatureView">Номенклатура</a></li>
+                    <ul class="menuelemtop">
+
                         <li id="Equipment" class="pageName"><a asp-page="/EquipmentView">Оборудование</a></li>
                         <li id="Personal" class="pageName"><a asp-page="/PersonalView">Персонал</a></li>
-                        <li id="TechOperationNeed" class="pageName"><a asp-page="/TechOperationNeedView">Потребности</a></li>
-                        <li id="ProductionUnit" class="pageName"><a asp-page="/ProductionUnitView">Производственные подразделения</a></li>
-                        <li id="Mode" class="pageName"><a asp-page="/ModeView">Режимы</a></li>
-                        <li id="Resource" class="pageName"><a asp-page="/ResourceView">Ресурсы</a></li>
-                        <li id="TechOperation" class="pageName"><a asp-page="/TechOperationView">Технологические операции</a></li>
-                        <li id="TechProcess" class="pageName"><a asp-page="/TechProcessView">Технологические процессы</a></li>
-                        <li id="Pattern" class="pageName"><a asp-page="/PatternView">Шаблоны</a></li>
-                        @*<li>
-                                <span class="opener">Submenu</span>
-                                <ul>
-                                    <li><a href="#">Lorem Dolor</a></li>
-                                    <li><a href="#">Ipsum Adipiscing</a></li>
-                                    <li><a href="#">Tempus Magna</a></li>
-                                    <li><a href="#">Feugiat Veroeros</a></li>
-                                </ul>
-                            </li>*@
+                        <li id="Tool" class="pageName"><a asp-page="/ToolView">Инструменты</a></li>
+                        <li id="Resource" style="padding-bottom: 0.5em;" class="pageName"><a asp-page="/ResourceView">Ресурсы</a></li>
+
                     </ul>
+
+                    <ul class="menuelembottom">
+                        <li id="Nomenclature" class="pageName"><a asp-page="/NomenclatureView">Номенклатура</a></li>
+                        <li id="TechProcess" class="pageName"><a asp-page="/TechProcessView">Технологические процессы</a></li>
+                        <li id="TechOperation" class="pageName"><a asp-page="/TechOperationView">Технологические операции</a></li>
+                        <li id="TechOperationNeed" class="pageName"><a asp-page="/TechOperationNeedView">Потребности</a></li>
+                        <li id="TechOperationOut" style="padding-bottom: 0.5em;" class="pageName"><a asp-page="/TechOperationOutView">Выходы</a></li>
+
+                    </ul>
+
+                    <ul class="menuelembottom">
+                        <li id="Mode" class="pageName"><a asp-page="/ModeView">Режимы</a></li>
+                        <li id="Setup" class="pageName"><a asp-page="/SetupView">Наладки</a></li>
+                        <li id="ProductionUnit" style="padding-bottom: 0.5em;" class="pageName"><a asp-page="/ProductionUnitView">Производственные подразделения</a></li>
+                    </ul>
+
+                    <ul class="menuelembottom">
+                        <li id="Schedule" class="pageName"><a asp-page="/ScheduleView">Графики</a></li>
+                        <li id="Pattern" style="padding-bottom: 0.5em;" class="pageName" ><a asp-page="/PatternView">Шаблоны</a></li>
+                    </ul>
+                        @*<li>
+                <span class="opener">Submenu</span>
+                <ul>
+                    <li><a href="#">Lorem Dolor</a></li>
+                    <li><a href="#">Ipsum Adipiscing</a></li>
+                    <li><a href="#">Tempus Magna</a></li>
+                    <li><a href="#">Feugiat Veroeros</a></li>
+                </ul>
+            </li>*@
+                    
                 </nav>
                 <!-- Footer -->
                 <footer id="footer">
