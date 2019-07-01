@@ -239,10 +239,17 @@ namespace NRI.Controllers
         public IActionResult Delete(int id)
         {
             Nomenclature nomenclature;
+            Nomenclature parentNomenclature;
 
             try
             {
                 nomenclature = appContext.nomenclatures.FirstOrDefault(x => x.Id == id);
+                try { 
+                    parentNomenclature = appContext.nomenclatures.FirstOrDefault(x => x.Id == nomenclature.ParentNomenclatureId);
+                } catch (ArgumentNullException e)
+                {
+                    nomenclature.ParentNomenclatureId = null;
+                }
             }
             catch (ArgumentNullException e)
             {

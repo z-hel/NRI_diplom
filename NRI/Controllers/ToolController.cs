@@ -51,6 +51,61 @@ namespace NRI.Controllers
             return Ok(tool);
         }
 
+        [HttpPost] //("import")
+        [Route("import")]
+        public IActionResult Import()
+        {
+            IFormFile fileExcel = Request.Form.Files[0];
+            if (fileExcel != null)
+            {
+
+                List<Tool> tools = new List<Tool>();
+                try
+                {
+                    using (var package = new OfficeOpenXml.ExcelPackage())
+                    {
+
+                        using (var stream = fileExcel.OpenReadStream())
+                        {
+                            package.Load(stream);
+                        }
+
+                        var workSheet = package.Workbook.Worksheets.First();
+                        int totalRows = workSheet.Dimension.Rows;
+
+                        for (int i = 2; i <= totalRows; i++)
+                        {
+                            Tool tool = new Tool();
+                            tool.Id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
+                            tool.Name = workSheet.Cells[i, 2].Value.ToString();
+                            tool.WearCount = int.Parse(workSheet.Cells[i, 3].Value.ToString());
+
+                            tools.Add(tool);
+                        }
+
+                    }
+                    IEnumerable<Tool> distinctTool = tools.Distinct();
+                    foreach (Tool tool in distinctTool)
+                    {
+                        IActionResult result = this.Get(tool.Id);
+                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Tool " + result.GetType());
+                        if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                        {
+                            this.Post(tool);
+                        }
+
+                    }
+                    return Ok(tools);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + ex.Message);
+                }
+
+            }
+            return RedirectToAction("");
+        }
+
         // PUT: api/tool/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Tool tool)
