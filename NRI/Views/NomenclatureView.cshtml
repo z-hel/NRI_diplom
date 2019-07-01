@@ -99,6 +99,48 @@
         #form {
             margin: 0 0 0 0;
         }
+
+
+        /* Remove default bullets */
+        ul, #myUL {
+            list-style-type: none;
+        }
+
+        /* Remove margins and padding from the parent ul */
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the caret/arrow */
+        .caret {
+            cursor: pointer;
+            user-select: none; /* Prevent text selection */
+        }
+
+            /* Create the caret/arrow with a unicode, and style it */
+            .caret::before {
+                content: "\25B6";
+                color: black;
+                display: inline-block;
+                margin-right: 6px;
+            }
+
+        /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+        .caret-down::before {
+            transform: rotate(90deg);
+        }
+
+        /* Hide the nested list */
+        .nested {
+            display: none;
+        }
+
+        /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+        .active {
+            display: block;
+        }
+
     </style>
 </head>
 
@@ -420,64 +462,97 @@
 
         async function showExplosion() {
 
-            ; (function () {
-                var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
-                for (var i = 0; i < ul.length; i++) {
-                    var div = document.createElement('div');
-                    div.className = 'drop';
-                    div.innerHTML = '+';
-                    ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
-                    div.onclick = function () {
-                        this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
-                        this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
-                    }
-                }
-            })();
+            //; (function () {
+            //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
+            //    for (var i = 0; i < ul.length; i++) {
+            //        var div = document.createElement('div');
+            //        div.className = 'drop';
+            //        div.innerHTML = '+';
+            //        ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
+            //        div.onclick = function () {
+            //            this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
+            //            this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
+            //        }
+            //    }
+            //})();
 
             var indexNomenclatureSelected = document.getElementById("selectExplosion").options.selectedIndex;
             var nomenclatureId = document.getElementById("selectExplosion").options[indexNomenclatureSelected].value;
             var nomenclatureText = document.getElementById("selectExplosion").options[indexNomenclatureSelected].text;
 
-            var f = document.getElementById('listExplosion');
+            //var f = document.getElementById('listExplosion');
 
-            $("label.ExplosionLabel").remove();
+            //$("label.ExplosionLabel").remove();
 
 
             await GetExplosion(nomenclatureId);
 
 
             var root = document.getElementById("tree");
-            //root.innerHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
-            //f.appendChild(root);
 
-            var stringHTML;
+            //var stringHTML;
 
-            stringHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
+            //stringHTML = '<div class="drop">+</div><li id="' + nomenclatureId + '">' + nomenclatureText;
 
-            var max = 2;
-            var k;
-            explosionMap.forEach(function (key, value) {
-                for (var i = 1; i <= max; i++) {
-                    stringHTML += '<ul><li>' + value;
-                    if (key == i && key > 1) {
-                        stringHTML += '<div class="drop">+</div>' + value;
-                        k = i;
-                        for (k; k < max; k++) {
-                            if (value > k + 1) { stringHTML += '<ul><li>' + value + '</li>'; }
-                        }
+            //var max = 2;
+            //var k;
+            //explosionMap.forEach(function (key, value) {
+            //    for (var i = 1; i <= max; i++) {
+            //        stringHTML += '<ul><li>' + value;
+            //        if (key == i && key > 1) {
+            //            stringHTML += '<div class="drop">+</div>' + value;
+            //            k = i;
+            //            for (k; k < max; k++) {
+            //                if (value > k + 1) { stringHTML += '<ul><li>' + value + '</li>'; }
+            //            }
+            //        }
+            //        stringHTML += '</ul>';
+
+            //    }
+            //});
+            //root.innerHTML = stringHTML;
+
+
+
+            var parentId = nomenclatureId;
+            var string = '<li><span class="caret">' + nomenclatureText + '</span> <ul class="nested">';
+            var values = explosionMap.values();
+            var keys = explosionMap.keys();
+
+            for (var i = 0; i < explosionMap.size; i++) {
+                var lvl = 1;
+                var array = values.next();
+                var key = keys.next();
+                if (parentId == array[1]) {
+                    if (array[2] == lvl && values.next().value[2] == lvl + 1)
+                        string += '<li><span class="caret">' + array[0] + '</span><ul class="nested">';
+                    else {
+                        string += '<li>' + array[0] + '</li>';
                     }
-                    //if (key > 1 && i != max - 1) {
-                    //    stringHTML += '<ul><li>' + value + '</li>';
-                    //}
-                    //if (i == max) {
-                    //    stringHTML += '<ul><li>' + value + '</li>';
-                    //}
-                    stringHTML += '</ul>';
-
                 }
-            });
-            root.innerHTML = stringHTML;
+                parentId = key;
+                lvl++;
+            }
 
+            
+
+            //explosionMap.forEach(function (key, value) {
+                
+            //    for (var i = 0; i < value.length - 1; i++) {
+            //        var lvl = 1;
+            //        if (parentId == value[i][1]) {
+            //            if (value[i][2] == lvl && value[i + 1][2] == lvl + 1)
+            //                string += '<li><span class="caret">' + value[i][0] + '</span><ul class="nested">';
+            //            else {
+            //                string += '<li>' + value[i][0] + '</li>';
+            //            }
+            //        }
+            //        parentId = value[i][1];
+            //        lvl++;
+            //    }
+            //});
+
+            root.innerHTML = string;
 
         }
 
