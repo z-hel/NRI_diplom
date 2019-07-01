@@ -188,6 +188,7 @@
             if (nextModePUT == 0) {
                 nextModePUT = null;
             }
+            if (currentModePUT == 0) { alert('Параметр "Текущий режим" не должен быть пустым'); }
 
             var idPUT = selectedCheckbox;
 
@@ -498,16 +499,16 @@
             var indexTOSelected = document.getElementById("selectEquipment").options.selectedIndex;
             var equipmentId = document.getElementById("selectEquipment").options[indexTOSelected].value;
 
-            var indexCurrentModeSelected = document.getElementById("selectCurrentModeEdit").options.selectedIndex;
-            var currentMode = document.getElementById("selectCurrentModeEdit").options[indexCurrentModeSelected].value;
+            var indexCurrentModeSelected = document.getElementById("selectCurrentMode").options.selectedIndex;
+            var currentMode = document.getElementById("selectCurrentMode").options[indexCurrentModeSelected].value;
 
-            var indexPreviousModeSelected = document.getElementById("selectPreviousModeEdit").options.selectedIndex;
-            var previousMode = document.getElementById("selectPreviousModeEdit").options[indexPreviousModeSelected].value;
+            var indexPreviousModeSelected = document.getElementById("selectPreviousMode").options.selectedIndex;
+            var previousMode = document.getElementById("selectPreviousMode").options[indexPreviousModeSelected].value;
 
-            var indexNextModeSelected = document.getElementById("selectNextModeEdit").options.selectedIndex;
-            var nextMode = document.getElementById("selectNextModeEdit").options[indexNextModeSelected].value;
+            var indexNextModeSelected = document.getElementById("selectNextMode").options.selectedIndex;
+            var nextMode = document.getElementById("selectNextMode").options[indexNextModeSelected].value;
 
-            var duration = document.getElementById("durationEdit").value;
+            var duration = document.getElementById("duration").value;
             if (duration.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Длительность"'); }
 
             if (previousMode == 0) {
@@ -516,6 +517,7 @@
             if (nextMode == 0) {
                 nextMode = null;
             }
+            if (currentMode == 0) { alert('Параметр "Текущий режим" не должен быть пустым'); }
 
 
             $.ajax({

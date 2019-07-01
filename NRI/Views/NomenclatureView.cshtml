@@ -315,7 +315,7 @@
                         for (var i = 1; i < table.rows.length;) {
                             table.deleteRow(i);
                         }
-                        await GetEquipments();
+                        await GetNomenclatures();
                         alert('Запись успешно добавлена');
                         var importButton = document.getElementById("import");
                         importButton.style = "visibility:hidden;";
@@ -669,14 +669,23 @@
             var parent = await GetNomId(id);
             var noms = await GetListNomenclatures();
 
+            
+
+
+
+
             for (var y = 0; y < noms.length; y++) {
                 while (parent.id == noms[y].parentNomenclatureId) {
                     for (var i = 0; i < noms.length; i++) {
-
+                        var explosionArray = [];
                         if (noms[i].parentNomenclatureId == parent.id) {
-                            explosionMap.set(noms[i].name, level);
+                            //explosionMap.set(noms[i].name, level);
+                            explosionArray.push(noms[i].name);
+                            explosionArray.push(noms[i].parentNomenclatureId);
+                            explosionArray.push(level);
+                            explosionMap.set(noms[i].id, explosionArray);
                         }
-
+                        
                     }
 
                     parent = await GetNomId(noms[y].id);
