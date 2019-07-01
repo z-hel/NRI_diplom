@@ -121,6 +121,7 @@ namespace NRI.Controllers
 
                             nomenclature.Id = specPositionId;
                             nomenclature.Name = name;
+                            nomenclature.Code = code;
                             nomenclature.NomenclatureTypeId = nomTypeId;
                             nomenclature.ReceiptTypeId = receiptTypeId;
 
@@ -129,7 +130,7 @@ namespace NRI.Controllers
                                 TOOut.NomenclatureOutId = specParentId;
                                 TOOut.Count = count;
                                 TOOut.TechOperationId = techOperationId;
-                                TOOut.Id = specPositionId;
+                                //TOOut.Id = specPositionId;
                                 nomenclature.ParentNomenclatureId = null;
                             }
                             else
@@ -137,7 +138,7 @@ namespace NRI.Controllers
                                 TONeed.NomenclatureNeedId = specPositionId;
                                 TONeed.Count = count;
                                 TONeed.TechOperationId = techOperationId;
-                                TONeed.Id = specPositionId;
+                                //TONeed.Id = specPositionId;
                                 nomenclature.ParentNomenclatureId = specParentId;
                             }
 
@@ -150,11 +151,14 @@ namespace NRI.Controllers
                     IEnumerable<Nomenclature> distinctNomenclature = nomenclatures.Distinct();
                     foreach (Nomenclature nomenclature in distinctNomenclature)
                     {
-                        IActionResult result = this.Get(nomenclature.Id);
-                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! nomenclature " + result.GetType());
-                        if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                        if (nomenclature.Id != 0)
                         {
-                            this.Post(nomenclature);
+                            IActionResult result = this.Get(nomenclature.Id);
+                            //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! nomenclature " + result.GetType());
+                            if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                            {
+                                this.Post(nomenclature);
+                            }
                         }
 
                     }
@@ -163,28 +167,32 @@ namespace NRI.Controllers
                     TechOperationNeedController techOperationNeedController = new TechOperationNeedController(appContext);
                     foreach (TechOperationNeed need in distinctNeeds)
                     {
-                        IActionResult result = techOperationNeedController.Get(need.Id);
-                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TechOperationNeed " + result.GetType());
-                        if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                        if (need.NomenclatureNeedId != 0)
                         {
-                            
-                            techOperationNeedController.Post(need);
-                        }
+                            //IActionResult result = techOperationNeedController.Get(need.Id);
+                            ////Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TechOperationNeed " + result.GetType());
+                            //if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                            //{
 
+                            techOperationNeedController.Post(need);
+                            //}
+                        }
                     }
 
                     IEnumerable<TechOperationOut> distinctOuts = outs.Distinct();
                     TechOperationOutController techOperationOutController = new TechOperationOutController(appContext);
                     foreach (TechOperationOut out1 in distinctOuts)
                     {
-                        IActionResult result = techOperationOutController.Get(out1.Id);
-                        //Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TechOperationOut " + result.GetType());
-                        if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                        if (out1.NomenclatureOutId != 0)
                         {
-                            
-                            techOperationOutController.Post(out1);
-                        }
+                            //IActionResult result = techOperationOutController.Get(out1.Id);
+                            ////Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TechOperationOut " + result.GetType());
+                            //if (result.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult"))
+                            //{
 
+                            techOperationOutController.Post(out1);
+                            //}
+                        }
                     }
                     
                     return Ok(nomenclatures);

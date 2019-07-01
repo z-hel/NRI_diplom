@@ -91,6 +91,14 @@
         .treeline .dropM + ul {
             display: block;
         }
+
+        .upload-button {
+            display: -webkit-inline-box;
+        }
+
+        #form {
+            margin: 0 0 0 0;
+        }
     </style>
 </head>
 
@@ -101,6 +109,16 @@
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
     <INPUT type="button" value="Спецификация" data-modal="SPModal" />
     <INPUT type="button" value="Разузлование" data-modal="explosionModal" />
+
+    <form id="form" name="form" enctype="multipart/form-data" method="post">
+        <div class="buttons">
+            <div class="upload-button">
+                <INPUT id="files" class="import" name="files" type="file" size="1" value="Импорт" onchange="prepareFile('files')" />
+                <INPUT id="import" type="button" value="Импорт" onclick="importXlsx()" style="visibility:hidden;" />
+            </div>
+        </div>
+    </form>
+
     <div class="table">
         <table id="nomenclatureTable">
             <thead>
@@ -183,19 +201,19 @@
 
                     <ul class="treeline" id="tree">
                         @*<li>Главное меню
-                            <ul>
-                                <li>
-                                    <div class="drop">+</div>База знаний
-                                    <ul>
-                                        <li>Компоненты</li>
-                                        <li>Плагины</li>
-                                        <li>Модули</li>
-                                    </ul>
-                                </li>
-                                <li>Отзывы</li>
-                                <li>Контакты</li>
-                            </ul>
-                        </li>*@
+                                <ul>
+                                    <li>
+                                        <div class="drop">+</div>База знаний
+                                        <ul>
+                                            <li>Компоненты</li>
+                                            <li>Плагины</li>
+                                            <li>Модули</li>
+                                        </ul>
+                                    </li>
+                                    <li>Отзывы</li>
+                                    <li>Контакты</li>
+                                </ul>
+                            </li>*@
                     </ul>
                 </div>
             </form>
@@ -245,23 +263,75 @@
 
 
     @*<script type="text/javascript">
-        //$(function () {
-        //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
-        //    for (var i = 0; i < ul.length; i++) {
-        //        var div = document.createElement('div');
-        //        div.className = 'drop';
-        //        div.innerHTML = '+';
-        //        ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
-        //        div.onclick = function () {
-        //            this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
-        //            this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
-        //        }
-        //    }
-        //})();
-    </script>*@   
+            //$(function () {
+            //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
+            //    for (var i = 0; i < ul.length; i++) {
+            //        var div = document.createElement('div');
+            //        div.className = 'drop';
+            //        div.innerHTML = '+';
+            //        ul[i].parentNode.insertBefore(div, ul[i].previousSibling);
+            //        div.onclick = function () {
+            //            this.innerHTML = (this.innerHTML == '+' ? '−' : '+');
+            //            this.className = (this.className == 'drop' ? 'drop dropM' : 'drop');
+            //        }
+            //    }
+            //})();
+        </script>*@
+
+
     <script>
-        
-        
+
+        var formData;
+
+        function prepareFile(inputId) {
+            var input = document.getElementById(inputId);
+            var files = input.files;
+            formData = new FormData();
+
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]);
+            }
+
+            var importButton = document.getElementById("import");
+            importButton.style = "visibility:visible;";
+        }
+
+
+        function importXlsx() {
+            var _url = '@Url.Action("Import", "Nomenclature")';
+
+            $.ajax(
+                {
+                    url: _url,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: async function (nomenclature) {
+                        //console.log(techProcess);
+
+                        var table = document.getElementById('nomenclatureTable');
+
+                        for (var i = 1; i < table.rows.length;) {
+                            table.deleteRow(i);
+                        }
+                        await GetEquipments();
+                        alert('Запись успешно добавлена');
+                        var importButton = document.getElementById("import");
+                        importButton.style = "visibility:hidden;";
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+
+        }
+    </script>
+
+
+    <script>
+
+
 
 
         var selectedCheckbox;
@@ -375,7 +445,7 @@
 
             await GetExplosion(nomenclatureId);
 
-             
+
             var root = document.getElementById("tree");
             //root.innerHTML = '<li id="' + nomenclatureId + '">' + nomenclatureText;
             //f.appendChild(root);
@@ -407,8 +477,8 @@
                 }
             });
             root.innerHTML = stringHTML;
-                
-            
+
+
         }
 
 
