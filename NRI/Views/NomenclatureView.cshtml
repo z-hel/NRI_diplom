@@ -64,7 +64,7 @@
         .table {
         }
 
-        .treeline .drop {
+        /*.treeline .drop {
             position: absolute;
             left: -6px;
             top: 5px;
@@ -73,8 +73,8 @@
             line-height: 1em;
             text-align: center;
             background: #9F9F9F;
-            color: #fff; /* Фон и цвет кнопки, раскрывающей список */
-            font-size: 78%; /* Размер +/- */
+            color: #fff; 
+            font-size: 78%; 
             cursor: pointer;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -89,6 +89,12 @@
         }
 
         .treeline .dropM + ul {
+            display: block;
+        }*/
+
+        #explosionModal {
+            height: 500px;
+            overflow: auto;
             display: block;
         }
 
@@ -116,6 +122,10 @@
         .caret {
             cursor: pointer;
             user-select: none; /* Prevent text selection */
+            width: 100%;
+            height: 100%;
+            border-top: none;
+
         }
 
             /* Create the caret/arrow with a unicode, and style it */
@@ -241,7 +251,7 @@
                 </div>
                 <div id="listExplosion" style="padding: 15px;">
 
-                    <ul class="treeline" id="tree">
+                    @*<ul class="treeline" id="tree">*@
                         @*<li>Главное меню
                                 <ul>
                                     <li>
@@ -256,7 +266,7 @@
                                     <li>Контакты</li>
                                 </ul>
                             </li>*@
-                    </ul>
+                    @*</ul>*@
                 </div>
             </form>
         </div>
@@ -322,7 +332,20 @@
 
 
     <script>
+        ; (function () {
+            var toggler = document.getElementsByClassName("caret");
+            var i;
 
+            for (i = 0; i < toggler.length; i++) {
+                toggler[i].addEventListener("click", function () {
+                    this.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+            }
+        })()
+    </script>
+
+    <script>
         var formData;
 
         function prepareFile(inputId) {
@@ -488,7 +511,7 @@
             await GetExplosion(nomenclatureId);
 
 
-            var root = document.getElementById("tree");
+            var root = document.getElementById("listExplosion");
 
             //var stringHTML;
 
@@ -515,25 +538,34 @@
 
 
             var parentId = nomenclatureId;
-            var string = '<li><span class="caret">' + nomenclatureText + '</span> <ul class="nested">';
+            var string = '<ul><li><span class="caret">' + nomenclatureText + '</span> <ul class="nested">';
             var values = explosionMap.values();
             var keys = explosionMap.keys();
 
+            var lvl = 1;
             for (var i = 0; i < explosionMap.size; i++) {
-                var lvl = 1;
-                var array = values.next();
-                var key = keys.next();
-                if (parentId == array[1]) {
-                    if (array[2] == lvl && values.next().value[2] == lvl + 1)
-                        string += '<li><span class="caret">' + array[0] + '</span><ul class="nested">';
-                    else {
-                        string += '<li>' + array[0] + '</li>';
-                    }
-                }
-                parentId = key;
-                lvl++;
-            }
 
+                var array = values.next().value;
+                var key = keys.next().value;
+                if (array != null) {
+                    if (parentId == array[1]) {
+                        if (array[2] == lvl && values.next().value[2] == lvl + 1)
+                            string += '<li><span class="caret">' + array[0] + '</span><ul class="nested">';
+                        else {
+                            string += '<li>' + array[0] + '</li>';
+                        }
+                    }
+                    var q0 = array[0];
+                    var q1 = array[1];
+                    var q2 = array[2];
+                    parentId = key;
+                    lvl++;
+                }
+            }
+            for (var i = 0; i < explosionMap.size; i++) {
+                string += '</ul></li>';
+            }
+            string += '</ul>';
             
 
             //explosionMap.forEach(function (key, value) {
