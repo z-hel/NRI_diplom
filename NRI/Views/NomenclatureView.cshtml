@@ -92,11 +92,11 @@
             display: block;
         }*/
 
-        #explosionModal {
+        /*#explosionModal {
             height: 500px;
             overflow: auto;
             display: block;
-        }
+        }*/
 
         .upload-button {
             display: -webkit-inline-box;
@@ -250,23 +250,25 @@
                     @*<INPUT type="button" value="Выгрузить в pdf" onclick="downloadSP()" />*@
                 </div>
                 <div id="listExplosion" style="padding: 15px;">
+                    <ul id="myUL"></ul>
 
-                    @*<ul class="treeline" id="tree">*@
+
+                        @*<ul class="treeline" id="tree">*@
                         @*<li>Главное меню
-                                <ul>
-                                    <li>
-                                        <div class="drop">+</div>База знаний
-                                        <ul>
-                                            <li>Компоненты</li>
-                                            <li>Плагины</li>
-                                            <li>Модули</li>
-                                        </ul>
-                                    </li>
-                                    <li>Отзывы</li>
-                                    <li>Контакты</li>
-                                </ul>
-                            </li>*@
-                    @*</ul>*@
+                <ul>
+                    <li>
+                        <div class="drop">+</div>База знаний
+                        <ul>
+                            <li>Компоненты</li>
+                            <li>Плагины</li>
+                            <li>Модули</li>
+                        </ul>
+                    </li>
+                    <li>Отзывы</li>
+                    <li>Контакты</li>
+                </ul>
+            </li>*@
+                        @*</ul>*@
                 </div>
             </form>
         </div>
@@ -331,19 +333,7 @@
         </script>*@
 
 
-    <script>
-        ; (function () {
-            var toggler = document.getElementsByClassName("caret");
-            var i;
-
-            for (i = 0; i < toggler.length; i++) {
-                toggler[i].addEventListener("click", function () {
-                    this.parentElement.querySelector(".nested").classList.toggle("active");
-                    this.classList.toggle("caret-down");
-                });
-            }
-        })()
-    </script>
+   
 
     <script>
         var formData;
@@ -395,8 +385,21 @@
 
 
     <script>
+        
+        //activateToggler();
+        function activateToggler() {
+            var toggler = document.getElementsByClassName("caret");
+            var x;
 
+            for (x = 0; x < toggler.length; x++) {
+                toggler[x].addEventListener("click", function () {
+                    this.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+            }
+            
 
+        }
 
 
         var selectedCheckbox;
@@ -484,7 +487,7 @@
         //</ul>
 
         async function showExplosion() {
-
+            activateToggler();
             //; (function () {
             //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
             //    for (var i = 0; i < ul.length; i++) {
@@ -511,7 +514,7 @@
             await GetExplosion(nomenclatureId);
 
 
-            var root = document.getElementById("listExplosion");
+            var root = document.getElementById("myUL");
 
             //var stringHTML;
 
@@ -538,27 +541,29 @@
 
 
             var parentId = nomenclatureId;
-            var string = '<ul><li><span class="caret">' + nomenclatureText + '</span> <ul class="nested">';
+            var string = '<li><span class="caret" onclick="activateToggler();">' + nomenclatureText + '</span> <ul class="nested">';
             var values = explosionMap.values();
-            var keys = explosionMap.keys();
+            var nexts = explosionMap.values();
+            var keys = nexts.next().value;
 
             var lvl = 1;
             for (var i = 0; i < explosionMap.size; i++) {
 
                 var array = values.next().value;
-                var key = keys.next().value;
+                var next = nexts.next().value;
+                
                 if (array != null) {
-                    if (parentId == array[1]) {
-                        if (array[2] == lvl && values.next().value[2] == lvl + 1)
-                            string += '<li><span class="caret">' + array[0] + '</span><ul class="nested">';
+                    var id = array[0];
+                    if (parentId == array[2]) {
+                        if (next != null && array[3] == lvl && next[3] == lvl + 1)
+                            string += '<li><span class="caret" onclick="activateToggler();">' + array[1] + '</span><ul class="nested">';
                         else {
-                            string += '<li>' + array[0] + '</li>';
+                            string += '<li>' + array[1] + '</li>';
                         }
                     }
-                    var q0 = array[0];
-                    var q1 = array[1];
-                    var q2 = array[2];
-                    parentId = key;
+                    if (next != null) {
+                        parentId = next[2];
+                    }
                     lvl++;
                 }
             }
@@ -787,6 +792,7 @@
                         var explosionArray = [];
                         if (noms[i].parentNomenclatureId == parent.id) {
                             //explosionMap.set(noms[i].name, level);
+                            explosionArray.push(noms[i].id);
                             explosionArray.push(noms[i].name);
                             explosionArray.push(noms[i].parentNomenclatureId);
                             explosionArray.push(level);
