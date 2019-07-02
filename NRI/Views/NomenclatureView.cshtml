@@ -595,7 +595,8 @@
 
 
         async function showExplosion() {
-            document.getElementsById("treeRoot").clear();
+            //var el = document.getElementById("treeRoot");
+            //el.innerHTML = '';
             //activateToggler();
             //; (function () {
             //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
@@ -614,6 +615,8 @@
             var indexNomenclatureSelected = document.getElementById("selectExplosion").options.selectedIndex;
             var nomenclatureId = document.getElementById("selectExplosion").options[indexNomenclatureSelected].value;
             var nomenclatureText = document.getElementById("selectExplosion").options[indexNomenclatureSelected].text;
+
+            //document.getElementById("listExplosion").innerText = nomenclatureText;
 
             //var f = document.getElementById('listExplosion');
 
@@ -642,7 +645,7 @@
             //var root = document.getElementById("myUL");
 
             treeCreater(result, 'treeRoot')
-
+            document.getElementById("selectExplosion").options[indexNomenclatureSelected].selected = true;
 
             //var stringHTML;
 
