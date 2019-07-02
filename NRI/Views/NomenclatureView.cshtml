@@ -22,6 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
     @*<script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>*@
     <script src="~/16761-normal.js"></script>
+    @*<script src="~/js/treeCreater.js"></script>*@
 
 
 
@@ -73,8 +74,8 @@
             line-height: 1em;
             text-align: center;
             background: #9F9F9F;
-            color: #fff; 
-            font-size: 78%; 
+            color: #fff;
+            font-size: 78%;
             cursor: pointer;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -125,7 +126,6 @@
             width: 100%;
             height: 100%;
             border-top: none;
-
         }
 
             /* Create the caret/arrow with a unicode, and style it */
@@ -151,6 +151,62 @@
             display: block;
         }
 
+
+
+
+
+
+
+
+
+
+        .treeRoot li {
+            list-style: none;
+            margin: 5px 0 5px 20px;
+        }
+
+            .treeRoot li[level='0'] {
+                margin-left: 0;
+            }
+
+            .treeRoot li:not(.parentNode) {
+                padding-left: 15px;
+            }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            font-size: 0; /*是因为, 虽然宽高度为0, 但在IE6下会具有默认的 */
+            line-height: 0; /* 字体大小和行高, 导致盒子呈现被撑开的长矩形 */
+            border-width: 5px;
+            transition: transform .2s;
+            transform-origin: left center;
+            border-style: solid dashed dashed dashed; /*IE6下, 设置余下三条边的border-style为dashed,即可达到透明的效果*/
+            border-color: transparent transparent transparent #000;
+        }
+
+        .closed .triangle {
+            transform: rotateZ(90deg);
+        }
+
+        .treeRoot div.title {
+            height: 21px;
+            position: relative;
+        }
+
+            .treeRoot div.title i {
+                position: absolute;
+                top: 6px;
+                left: 0;
+            }
+
+            .treeRoot div.title p {
+                position: absolute;
+                top: 0;
+                left: 15px;
+                margin: 0;
+            }
     </style>
 </head>
 
@@ -250,7 +306,7 @@
                     @*<INPUT type="button" value="Выгрузить в pdf" onclick="downloadSP()" />*@
                 </div>
                 <div id="listExplosion" style="padding: 15px;">
-                    <ul id="myUL"></ul>
+                    <ul id ="treeRoot" class="treeRoot"></ul>
 
 
                         @*<ul class="treeline" id="tree">*@
@@ -486,8 +542,61 @@
         //    </li>
         //</ul>
 
+
+        function getNestedChildren(arr, parent) {
+            var out = []
+            for (var i in arr) {
+                if (arr[i].parent == parent) {
+                    var children = getNestedChildren(arr, arr[i].id)
+
+                    if (children.length) {
+                        arr[i].children = children
+                    }
+                    out.push(arr[i])
+                }
+            }
+            return out
+        }
+
+
+        function treeCreater(treeArr, className) {
+            var $ = treeArr,
+                root = document.createDocumentFragment(),
+                childLevel = 0
+            function insertChildren(parentNode, traverseArr) {
+                for (let i = 0; i < traverseArr.length; i++) {
+                    if (parentNode === root) {
+                        childLevel = 0
+                    }
+                    var currentLi = document.createElement('li')
+                    currentLi.setAttribute('level', childLevel)
+                    if (traverseArr[i].children && traverseArr[i].children.length > 0) {
+                        var title = document.createElement('div')
+                        var triangle = document.createElement('i')
+                        var text = document.createElement('p')
+                        currentLi.classList.add('parentNode')
+                        title.classList.add('title')
+                        triangle.classList.add('triangle')
+                        text.innerText = traverseArr[i].title
+                        title.appendChild(triangle)
+                        title.appendChild(text)
+                        currentLi.appendChild(title)
+                        childLevel++
+                        insertChildren(currentLi, traverseArr[i].children)
+                    } else {
+                        currentLi.innerText = traverseArr[i].title
+                    }
+                    parentNode.appendChild(currentLi)
+                }
+            }
+            insertChildren(root, $)
+            document.querySelector('ul.' + className + '').appendChild(root)
+        }
+
+
         async function showExplosion() {
-            activateToggler();
+            document.getElementsById("treeRoot").clear();
+            //activateToggler();
             //; (function () {
             //    var ul = document.querySelectorAll('.treeline > li:not(:only-child) ul, .treeline ul ul');
             //    for (var i = 0; i < ul.length; i++) {
@@ -514,7 +623,26 @@
             await GetExplosion(nomenclatureId);
 
 
-            var root = document.getElementById("myUL");
+            var list = new Array();
+            j = 0;
+            explosionMap.forEach(function (value, key) {
+                list[j] = new Object({ id: value[0], title: value[1], parent: value[2]});
+                //var arr = [];
+                //arr.push(value[0]);
+                //arr.push(value[1]);
+                //arr.push(value[2]);
+                //arr.push(value[3]);
+                //list.push(arr);
+                j++;
+            })
+
+            var result = getNestedChildren(list, nomenclatureId);
+
+
+            //var root = document.getElementById("myUL");
+
+            treeCreater(result, 'treeRoot')
+
 
             //var stringHTML;
 
@@ -540,7 +668,7 @@
 
 
 
-            var parentId = nomenclatureId;
+            /*var parentId = nomenclatureId;
             var string = '<li><span class="caret" onclick="activateToggler();">' + nomenclatureText + '</span> <ul class="nested">';
             var values = explosionMap.values();
             var nexts = explosionMap.values();
@@ -570,8 +698,11 @@
             for (var i = 0; i < explosionMap.size; i++) {
                 string += '</ul></li>';
             }
-            string += '</ul>';
-            
+            string += '</ul>';*/
+
+
+
+
 
             //explosionMap.forEach(function (key, value) {
                 
@@ -589,7 +720,10 @@
             //    }
             //});
 
-            root.innerHTML = string;
+
+
+
+            //root.innerHTML = string;
 
         }
 
@@ -783,8 +917,8 @@
 
             
 
-
-
+            var parentArray = new Array(parent.id, parent.name, parent.parentNomenclatureId, 0);
+            explosionMap.set(parent.id, parentArray);
 
             for (var y = 0; y < noms.length; y++) {
                 while (parent.id == noms[y].parentNomenclatureId) {
@@ -994,11 +1128,12 @@
                 success: async function (nomenclature) {
                     reset('nomenclatureForm');
                     alert('Запись успешно добавлена');
+                    addRow('nomenclatureTable', nomenclature);
                     await GetParentNomenclature();
                     await GetNomenclatures();
                     await GetListNomenclatures();
 
-                    addRow('nomenclatureTable', nomenclature);
+                    
                 },
                 error: function (e) {
                     console.log(e.message);

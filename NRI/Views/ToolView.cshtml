@@ -410,9 +410,11 @@
                 success: function (tools) {
 
                     $.each(tools, function (index, tool) {
-                        var transactionList = tool;
+                        if (tool.name != "-") {
+                            var transactionList = tool;
 
-                        addRow("toolTable", transactionList);
+                            addRow("toolTable", transactionList);
+                        }
                     })
                 },
                 error: function (e) {

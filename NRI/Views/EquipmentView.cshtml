@@ -403,9 +403,11 @@
                 success: function (equipments) {
 
                     $.each(equipments, function (index, equipment) {
-                        var transactionList = equipment;
+                        if (equipment.name != "-") {
+                            var transactionList = equipment;
 
-                        addRow("equipmentTable", transactionList);
+                            addRow("equipmentTable", transactionList);
+                        }
                     })
                 },
                 error: function (e) {
