@@ -854,6 +854,7 @@
                 },
                 error: function (e) {
                     console.log(e.message);
+                    alert('Составляющих выбранной номенклатуры нет в таблице "Потребности"');
                 }
             });
             return needCount;
@@ -876,6 +877,7 @@
                 },
                 error: function (e) {
                     console.log(e.message);
+                    alert('Выбранной номенклатуры нет в таблице "Выходы"');
                 }
             });
             return outCount;
@@ -1004,6 +1006,7 @@
                 },
                 error: function (e) {
                     console.log(e.message);
+                    
                 }
             });
         }
@@ -1128,6 +1131,9 @@
                 },
                 error: function (e) {
                     console.log(e.message);
+                    if (e.status == 500) {
+                        alert('Нет соединения с базой данных');
+                    }
                 }
             });
         }

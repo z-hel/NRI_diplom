@@ -507,8 +507,8 @@
                     $.each(techOperations, function (index, techOperation) {
                         i = i + 1;
 
-                        var TOIndex = 'techOperationName' + techOperation.id;
-                        var TPIndex = 'techProcessId' + techOperation.id;
+                        //var TOIndex = 'techOperationName' + techOperation.id;
+                        //var TPIndex = 'techProcessId' + techOperation.id;
 
                         resultTOForTK.set(techOperation.id, techOperation.name);
                         resultTPForTK.set(techOperation.id, techOperation.techProcessId);
@@ -521,6 +521,9 @@
                 },
                 error: function (e) {
                     console.log(e.message);
+                    if (e.status == 500) {
+                        alert('Нет соединения с базой данных');
+                    }
                 }
             })
         }

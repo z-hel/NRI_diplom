@@ -418,6 +418,9 @@
                 },
                 error: function (e) {
                     console.log(e.message);
+                    if (e.status == 500) {
+                        alert('Нет соединения с базой данных');
+                    }
                 }
             });
         }
