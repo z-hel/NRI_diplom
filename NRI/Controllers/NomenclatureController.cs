@@ -100,24 +100,26 @@ namespace NRI.Controllers
                             package.Load(stream);
                         }
 
-                        var workSheet = package.Workbook.Worksheets.First();
-                        int totalRows = workSheet.Dimension.Rows;
+                        var workSheetNomenclature = package.Workbook.Worksheets.First();
+                        var workSheetTechOperation = package.Workbook.Worksheets.ElementAt(1);
+                        int totalRowsNomenclature = workSheetNomenclature.Dimension.Rows;
+                        int totalRowsTechOperation = workSheetTechOperation.Dimension.Rows;
 
-                        for (int i = 2; i <= totalRows; i++)
+                        for (int i = 2; i <= totalRowsNomenclature; i++)
                         {
                             Nomenclature nomenclature = new Nomenclature();
                             TechOperationNeed TONeed = new TechOperationNeed();
                             TechOperationOut TOOut = new TechOperationOut();
 
                             //var id = int.Parse(workSheet.Cells[i, 1].Value.ToString());
-                            var code = workSheet.Cells[i, 1].Value.ToString();
-                            var name = workSheet.Cells[i, 2].Value.ToString();
-                            var nomTypeId = int.Parse(workSheet.Cells[i, 3].Value.ToString());
-                            var receiptTypeId = int.Parse(workSheet.Cells[i, 4].Value.ToString());
-                            var specPositionId = int.Parse(workSheet.Cells[i, 5].Value.ToString());
-                            var specParentId = int.Parse(workSheet.Cells[i, 6].Value.ToString());
-                            var count = int.Parse(workSheet.Cells[i, 7].Value.ToString());
-                            var techOperationId = int.Parse(workSheet.Cells[i, 8].Value.ToString()); //TODO about techProcess or TechOperation
+                            var code = workSheetNomenclature.Cells[i, 1].Value.ToString();
+                            var name = workSheetNomenclature.Cells[i, 2].Value.ToString();
+                            var nomTypeId = int.Parse(workSheetNomenclature.Cells[i, 3].Value.ToString());
+                            var receiptTypeId = int.Parse(workSheetNomenclature.Cells[i, 4].Value.ToString());
+                            var specPositionId = int.Parse(workSheetNomenclature.Cells[i, 5].Value.ToString());
+                            var specParentId = int.Parse(workSheetNomenclature.Cells[i, 6].Value.ToString());
+                            var count = int.Parse(workSheetNomenclature.Cells[i, 7].Value.ToString());
+                            var techProcessId = int.Parse(workSheetNomenclature.Cells[i, 8].Value.ToString());
 
                             nomenclature.Id = specPositionId;
                             nomenclature.Name = name;
@@ -125,26 +127,73 @@ namespace NRI.Controllers
                             nomenclature.NomenclatureTypeId = nomTypeId;
                             nomenclature.ReceiptTypeId = receiptTypeId;
 
-                            if (specPositionId == specParentId)
+                            TechProcessController techProcessController = new TechProcessController(appContext);
+                            var techProcess = techProcessController.Get(techProcessId);
+
+                            if (techProcess != NotFound())
                             {
-                                TOOut.NomenclatureOutId = specParentId;
-                                TOOut.Count = count;
-                                TOOut.TechOperationId = techOperationId;
-                                //TOOut.Id = specPositionId;
-                                nomenclature.ParentNomenclatureId = null;
+                                
+                                var techOperationId = 0;
+                                List<int> techOperationsList = new List<int>();
+
+                                for (int y = 2; y <= totalRowsTechOperation; y++)
+                                {
+                                    var processId = int.Parse(workSheetTechOperation.Cells[i, 1].Value.ToString());
+                                    if (processId == techProcessId)
+                                    {
+                                        techOperationsList.Add(int.Parse(workSheetTechOperation.Cells[i, 2].Value.ToString()));
+                                    }
+                                }
+                                var techOperationIdOut = techOperationsList.Last();
+                                var techOperationIdNeed = techOperationsList.First();
+
+                                TechOperationController techOperationController = new TechOperationController(appContext);
+                                var techOperationForOut = techOperationController.Get(techOperationIdOut);
+                                var techOperationForNeed = techOperationController.Get(techOperationIdNeed);
+
+                                for (int x = 2; x <= totalRowsTechOperation; x++)
+                                {
+                                    var id = int.Parse(workSheetTechOperation.Cells[x, 2].Value.ToString());
+                                    if ((techOperationForNeed == NotFound() || techOperationForOut == NotFound()) && (techOperationIdNeed == id || techOperationIdOut == id))
+                                    {
+                                        TechOperation techOperation = new TechOperation();
+                                        techOperation.Id = id;
+                                        techOperation.Name = workSheetTechOperation.Cells[x, 3].Value.ToString();
+                                        techOperation.TechProcessId = int.Parse(workSheetTechOperation.Cells[x, 1].Value.ToString());
+                                        techOperation.SerialNumber = int.Parse(workSheetTechOperation.Cells[x, 4].Value.ToString());
+                                        techOperationController.Post(techOperation);
+                                    }
+                                }
+
+                                if (specPositionId == specParentId)
+                                {
+                                    TOOut.NomenclatureOutId = specParentId;
+                                    TOOut.Count = count;
+                                    TOOut.TechOperationId = techOperationIdOut;
+                                    //TOOut.Id = specPositionId;
+                                    nomenclature.ParentNomenclatureId = null;
+                                }
+                                else
+                                {
+                                    TONeed.NomenclatureNeedId = specPositionId;
+                                    TONeed.Count = count;
+                                    TONeed.TechOperationId = techOperationIdNeed;
+                                    //TONeed.Id = specPositionId;
+                                    nomenclature.ParentNomenclatureId = specParentId;
+                                }
+
+
+
+                                nomenclatures.Add(nomenclature);
+                                needs.Add(TONeed);
+                                outs.Add(TOOut);
+
+
                             }
                             else
                             {
-                                TONeed.NomenclatureNeedId = specPositionId;
-                                TONeed.Count = count;
-                                TONeed.TechOperationId = techOperationId;
-                                //TONeed.Id = specPositionId;
-                                nomenclature.ParentNomenclatureId = specParentId;
+                                return NotFound();
                             }
-
-                            nomenclatures.Add(nomenclature);
-                            needs.Add(TONeed);
-                            outs.Add(TOOut);
                         }
 
                     }
