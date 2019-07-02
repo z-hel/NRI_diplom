@@ -562,6 +562,8 @@
 
 
         async function showExplosion() {
+            var treeRoot = document.getElementById('treeRoot');
+            treeRoot.innerHTML = '';
             //var el = document.getElementById("treeRoot");
             //el.innerHTML = '';
             //activateToggler();
@@ -584,16 +586,17 @@
             var nomenclatureText = document.getElementById("selectExplosion").options[indexNomenclatureSelected].text;
 
             document.getElementById("nameParent").innerText = nomenclatureText;
-            //document.getElementById("selectExplosion").options[indexNomenclatureSelected].selected = true;
+            
 
 
             await GetExplosion(nomenclatureId);
 
+            
 
             var list = new Array();
             j = 0;
             explosionMap.forEach(function (value, key) {
-                list[j] = new Object({ id: value[0], title: value[1], parent: value[2] });
+                list[j] = new Object({ id: value[0], title: value[1] + " " + value[3] + " шт.", parent: value[2] });
                 //var arr = [];
                 //arr.push(value[0]);
                 //arr.push(value[1]);
@@ -611,7 +614,8 @@
             treeCreater(result, 'treeRoot');
             //document.getElementById("selectExplosion").options[indexNomenclatureSelected].selected = true;
 
-
+            var selectExplosion = document.getElementById("selectExplosion");
+            selectExplosion.options[indexNomenclatureSelected].selected = true;
         }
 
 
@@ -803,8 +807,9 @@
             var noms = await GetListNomenclatures();
 
 
-
-            var parentArray = new Array(parent.id, parent.name, parent.parentNomenclatureId, 0);
+            var parentOutCount = await outCountExplosion(id);
+            
+            var parentArray = new Array(parent.id, parent.name, parent.parentNomenclatureId, parentOutCount);
             explosionMap.set(parent.id, parentArray);
 
             for (var y = 0; y < noms.length; y++) {
@@ -813,10 +818,11 @@
                         var explosionArray = [];
                         if (noms[i].parentNomenclatureId == parent.id) {
                             //explosionMap.set(noms[i].name, level);
+                            var count = await needCountExplosion(noms[i].id);
                             explosionArray.push(noms[i].id);
                             explosionArray.push(noms[i].name);
                             explosionArray.push(noms[i].parentNomenclatureId);
-                            explosionArray.push(level);
+                            explosionArray.push(count);
                             explosionMap.set(noms[i].id, explosionArray);
                         }
 
@@ -829,6 +835,53 @@
             }
             return explosionMap;
         }
+
+        var needCount;
+        async function needCountExplosion(id) {
+            
+            var urlstr = "api/TechOperationNeed/";
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (needs) {
+                    $.each(needs, function (index, need) {
+                        if (need.nomenclatureNeedId == id) {
+                            needCount = need.count;
+                        }
+                    });
+                    //needCount = need.count;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return needCount;
+        }
+
+        var outCount;
+        async function outCountExplosion(id) {
+            var urlstr = "api/TechOperationOut/";
+            await $.ajax({
+                url: urlstr,
+                type: 'GET',
+                contentType: "application/json",
+                success: async function (outs) {
+                    $.each(outs, function (index, out) {
+                        if (out.nomenclatureOutId == id) {
+                            outCount = out.count;
+                        }
+                    });
+                    //outCount = out.count;
+                },
+                error: function (e) {
+                    console.log(e.message);
+                }
+            });
+            return outCount;
+        }
+
+
         var nomById;
         async function GetNomId(id) {
             var urlstr = "api/Nomenclature/" + id;
