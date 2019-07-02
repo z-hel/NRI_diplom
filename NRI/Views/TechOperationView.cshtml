@@ -67,7 +67,8 @@
     <INPUT type="button" value="Добавить" data-modal="addModal" />
     <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
     <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
-    <INPUT type="button" value="Технологическая карта" data-modal="TKModal" />
+    <INPUT type="button" value="Технологическая карта" onclick="openTKModal()" /> 
+    @*data-modal="TKModal"*@
     <div class="table">
         <table id="techOperationTable">
             <thead>
@@ -142,7 +143,7 @@
                     <label for="techProcess">Технологический процесс:</label>
                     <select name="techProcess" id="selectTechProcessEdit"></select>
                 </div>
-                
+
                 <div class="panel-body">
 
                     <input type="button" value="Изменить" onclick="EditTechOperation()" />
@@ -164,7 +165,7 @@
 
 
     <script>
-        
+
 
         var selectedCheckbox;
         var selectedForDelete = [];
@@ -182,49 +183,50 @@
             var techProcess = document.getElementById("selectTKTechProcess").options[indexTechProcessSelected].text;
 
             var doc = new jsPDF()
-            
+
 
             doc.setFont('16761')
-            
+
             doc.text("Технологический процесс: ", 20, 20);
             doc.text(techProcess, 20, 30);
 
             var x = 40;
 
-            doc.text("Технологическая операция:         Номер: ", 40, x);
+            doc.text("Номер | Технологическая операция", 40, x);
 
             for (var i = 0; i < TKOperations.length; i++) {
                 x = x + 10;
                 doc.text(TKOperations[i], 40, x);
             }
-            
-            
+
+
             doc.save('techMap.pdf')
         }
 
         async function showTK() {
-            
+
             var indexTechProcessSelected = document.getElementById("selectTKTechProcess").options.selectedIndex;
             var techProcessId = document.getElementById("selectTKTechProcess").options[indexTechProcessSelected].value;
 
             var f = document.getElementById('listOperationsTK');
+            f.innerHTML = '<label for="listOperationsTK" class="tk" id="tk">Номер | Технологическая операция</label>';
 
             $("label.tkLabel").remove();
             TKOperations = [];
-            
-                resultTPForTK.forEach(function (keyTP, valueTP) {
-                    var techProcessIdTK = resultTPForTK.get(valueTP);
 
-                    resultTOForTK.forEach(function (keyTO, valueTO) {
-                        var techOperationName = keyTO;
-                        
+            resultTPForTK.forEach(function (keyTP, valueTP) {
+                var techProcessIdTK = resultTPForTK.get(valueTP);
 
-                        if (valueTP == valueTO && techProcessId == techProcessIdTK) {
-                            TKOperations.push(resultNumTOForTK.get(valueTO) + "     " + techOperationName);
+                resultTOForTK.forEach(function (keyTO, valueTO) {
+                    var techOperationName = keyTO;
+
+
+                    if (valueTP == valueTO && techProcessId == techProcessIdTK) {
+                        TKOperations.push(resultNumTOForTK.get(valueTO) + "     " + techOperationName);
                     }
                 });
 
-                });
+            });
 
             for (var i = 0; i < TKOperations.length; i++) {
                 var elem = TKOperations[i];
@@ -276,6 +278,12 @@
                     console.log(e.message);
                 }
             })
+        }
+
+        function openTKModal() {
+            var tkModal = document.getElementById('TKModal');
+            document.getElementById('listOperationsTK').innerHTML = '';
+            somebodyShow(tkModal);
         }
 
         function openEditModal() {
@@ -495,13 +503,13 @@
                 type: 'GET',
                 contentType: "application/json",
                 success: function (techOperations) {
-                    
+
                     $.each(techOperations, function (index, techOperation) {
                         i = i + 1;
 
                         var TOIndex = 'techOperationName' + techOperation.id;
                         var TPIndex = 'techProcessId' + techOperation.id;
-                        
+
                         resultTOForTK.set(techOperation.id, techOperation.name);
                         resultTPForTK.set(techOperation.id, techOperation.techProcessId);
                         resultNumTOForTK.set(techOperation.id, techOperation.serialNumber);
