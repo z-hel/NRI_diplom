@@ -612,7 +612,12 @@
             function GetTechProcesss() {
                 //techProcessesMap.clear();
 
+
+
                 var select = document.getElementById('selectFilterTechProcess');
+
+                select.options.length = 0;
+
                 var option = document.createElement('option');
                 option.value = 'Все';
                 option.innerText = 'Все';
@@ -632,18 +637,26 @@
                             ooption.value = techProcess.id;
                             ooption.innerText = techProcess.name;
 
+                            var options = select.options;
+
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].text == ooption.text) {
+                                    flag = 1;
+                                }
+                            }
+
                             //select.options.forEach(function () {
                             //    if (this == option) {
                             //        flag = 1;
                             //    }
                             //});
-                            //if (flag != 1) {
+                            if (flag != 1) {
                                 select.appendChild(ooption);
+                                
+                            }
+                            var transactionList = techProcess;
 
-                                var transactionList = techProcess;
-
-                                addRow("techProcessTable", transactionList);
-                            //}
+                            addRow("techProcessTable", transactionList);
                         })
                     },
                     error: function (e) {
