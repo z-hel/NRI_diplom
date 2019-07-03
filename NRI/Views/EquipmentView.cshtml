@@ -301,11 +301,11 @@
         }
 
         async function DeleteEquipment() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetEquipmentById(elem);
+            var count = selectedForDelete.length;
+
+
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var nameDEL = resultForDelete.get('name');
-                var codeDEL = resultForDelete.get('code');
 
                 var urlstr = "api/Equipment/" + idDEL;
                 $.ajax({
@@ -313,39 +313,26 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        code: codeDEL,
-                        name: nameDEL,
                         id: idDEL
                     }),
                     success: async function (equipment) {
-                        alert('Запись удалена');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        var table = document.getElementById('equipmentTable');
+                            var table = document.getElementById('equipmentTable');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetEquipments();
+                            CloseModal();
                         }
-                        await GetEquipments();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);
                     }
                 });
             })
-            //alert('Запись удалена');
-            //CloseModal();
-            //if (res) {
-            //    alert('Запись удалена');
-
-            //    var table = document.getElementById('equipmentTable');
-
-            //    for (var i = 1; i < table.rows.length;) {
-            //        table.deleteRow(i);
-            //    }
-            //    await GetEquipments();
-            //    CloseModal();
-            //}
 
 
 

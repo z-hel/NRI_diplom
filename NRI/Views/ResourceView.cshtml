@@ -386,20 +386,9 @@
         }
 
         async function DeleteResource() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetResourceById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var resourceNameDEL = resultForDelete.get('resourceName');
-                var personalIdDEL = resultForDelete.get('personalId');
-                var equipmentIdDEL = resultForDelete.get('equipmentId');
-                var toolIdDEL = resultForDelete.get('toolId');
-                var usageTypeIdDEL = resultForDelete.get('usageTypeId');
-                var isAccessibilityIdDEL = resultForDelete.get('isAccessibilityId');
-                var modeIdDEL = resultForDelete.get('modeId');
-                var productionUnitIdDEL = resultForDelete.get('productionUnitId');
-                var workCostDEL = resultForDelete.get('workCost');
-                var setupCostDEL = resultForDelete.get('setupCost');
-                var downtimeCostDEL = resultForDelete.get('downtimeCost');
 
                 var urlstr = "api/Resource/" + idDEL;
                 $.ajax({
@@ -407,29 +396,20 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: resourceNameDEL,
-                        personalId: personalIdDEL,
-                        equipmentId: equipmentIdDEL,
-                        toolId: toolIdDEL,
-                        usageTypeId: usageTypeIdDEL,
-                        isAccessibility: isAccessibilityIdDEL,
-                        modeId: modeIdDEL,
-                        productionUnitId: productionUnitIdDEL,
-                        workCost: workCostDEL,
-                        setupCost: setupCostDEL,
-                        downtimeCost: downtimeCostDEL,
                         id: idDEL
                     }),
                     success: async function (resource) {
-                        alert('Запись удалена');
-                        
-                        var table = document.getElementById('resourceTable');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            var table = document.getElementById('resourceTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetResources();
+                            CloseModal();
                         }
-                        await GetResources();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

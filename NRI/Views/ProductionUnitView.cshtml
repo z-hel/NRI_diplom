@@ -247,11 +247,9 @@
         }
 
         async function DeleteProductionUnit() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetProductionUnitById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var productionUnitNameDEL = resultForDelete.get('productionUnitName');
-                var parentProductionUnitIdDEL = resultForDelete.get('parentProductionUnitId');
 
                 var urlstr = "api/ProductionUnit/" + idDEL;
                 $.ajax({
@@ -259,21 +257,21 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: productionUnitNameDEL,
-                        parentProductionUnitId: parentProductionUnitIdDEL,
                         id: idDEL
                     }),
                     success: async function (productionUnit) {
-                        alert('Запись удалена');
-                        
-                        var table = document.getElementById('productionUnitTable');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            var table = document.getElementById('productionUnitTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetProductionUnits();
+                            CloseModal();
+                            await GetParentProductionUnit();
                         }
-                        await GetProductionUnits();
-                        CloseModal();
-                        await GetParentProductionUnit();
                     },
                     error: function (e) {
                         console.log(e.message);

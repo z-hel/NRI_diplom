@@ -250,12 +250,9 @@
         }
 
         async function DeletePersonal() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetPersonalById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var nameDEL = resultForDelete.get('name');
-                var qualificationDEL = resultForDelete.get('qualification');
-                var changeDEL = resultForDelete.get('change');
 
                 var urlstr = "api/Personal/" + idDEL;
                 $.ajax({
@@ -263,21 +260,20 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: nameDEL,
-                        qualification: qualificationDEL,
-                        change: changeDEL,
                         id: idDEL
                     }),
                     success: async function (personal) {
-                        alert('Запись удалена');
-                        
-                        var table = document.getElementById('personalTable');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            var table = document.getElementById('personalTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetPersonals();
+                            CloseModal();
                         }
-                        await GetPersonals();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

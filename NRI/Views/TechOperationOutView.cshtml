@@ -256,12 +256,9 @@
         }
 
         async function DeleteTechOperationOut() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetTechOperationOutById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var techOperationIdDEL = resultForDelete.get('techOperationId');
-                var nomOutIdDEL = resultForDelete.get('nomenclatureOutId');
-                var countDEL = resultForDelete.get('count');
 
                 var urlstr = "api/TechOperationOut/" + idDEL;
                 $.ajax({
@@ -269,21 +266,20 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        techOperationId: techOperationIdDEL,
-                        nomenclatureOutId: nomOutIdDEL,
-                        count: countDEL,
                         id: idDEL
                     }),
                     success: async function (techOperationOut) {
-                        alert('Запись удалена');
-                        
-                        var table = document.getElementById('techOperationOutTable');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            var table = document.getElementById('techOperationOutTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetTechOperationOuts();
+                            CloseModal();
                         }
-                        await GetTechOperationOuts();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

@@ -306,11 +306,9 @@
         }
 
         async function DeleteTool() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetToolById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var nameDEL = resultForDelete.get('name');
-                var wearCountDEL = resultForDelete.get('wearCount');
 
                 var urlstr = "api/Tool/" + idDEL;
                 $.ajax({
@@ -318,20 +316,20 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: nameDEL,
-                        wearCount: wearCountDEL,
                         id: idDEL
                     }),
                     success: async function (tool) {
-                        alert('Запись удалена');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        var table = document.getElementById('toolTable');
+                            var table = document.getElementById('toolTable');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetTools();
+                            CloseModal();
                         }
-                        await GetTools();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

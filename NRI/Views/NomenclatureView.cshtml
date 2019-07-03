@@ -742,14 +742,10 @@
         }
 
         async function DeleteNomenclature() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetNomenclatureById(elem);
+            var count = selectedForDelete.length;
+
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var nomenclatureNameDEL = resultForDelete.get('nomenclatureName');
-                var codeDEL = resultForDelete.get('code');
-                var parentNomenclatureIdDEL = resultForDelete.get('parentNomenclatureId');
-                var receiptTypeIdDEL = resultForDelete.get('receiptTypeId');
-                var nomenclatureTypeIdDEL = resultForDelete.get('nomenclatureTypeId');
 
                 var urlstr = "api/Nomenclature/" + idDEL;
                 $.ajax({
@@ -757,45 +753,31 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        code: codeDEL,
-                        name: nomenclatureNameDEL,
-                        parentNomenclatureId: parentNomenclatureIdDEL,
-                        receiptTypeId: receiptTypeIdDEL,
-                        nomenclatureTypeId: nomenclatureTypeIdDEL,
                         id: idDEL
                     }),
                     success: async function (nomenclature) {
-                        alert('Запись удалена');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        var table = document.getElementById('nomenclatureTable');
+                            var table = document.getElementById('nomenclatureTable');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetNomenclatures();
+                            await GetListNomenclatures();
+                            CloseModal();
+                            await GetParentNomenclature();
                         }
-                        await GetNomenclatures();
-                        //await GetListNomenclatures();
-                        CloseModal();
-                        await GetParentNomenclature();
+                        
                     },
                     error: function (e) {
                         console.log(e.message);
                     }
                 });
-            })
-            //alert('Запись удалена');
-            //CloseModal();
-            //if (res) {
-            //    alert('Запись удалена');
-
-            //    var table = document.getElementById('nomenclatureTable');
-
-            //    for (var i = 1; i < table.rows.length;) {
-            //        table.deleteRow(i);
-            //    }
-            //    await GetNomenclatures();
-            //    CloseModal();
-            //}
-
+                
+                
+            });
 
 
         }
@@ -937,6 +919,7 @@
                     console.log(e.message);
                 }
             });
+            return resultForDelete;
         }
 
         function GetParentNomenclature() {
@@ -1076,8 +1059,8 @@
                     alert('Запись успешно добавлена');
                     addRow('nomenclatureTable', nomenclature);
                     await GetParentNomenclature();
-                    await GetNomenclatures();
-                    //await GetListNomenclatures();
+                    //await GetNomenclatures();
+                    await GetListNomenclatures();
 
 
                 },
@@ -1090,11 +1073,13 @@
         var listNom = [];
         // Получение всех Nomenclature
         function GetNomenclatures() {
-            var selectSP = document.getElementById('selectSPNomenclature');
-            var selectExplosion = document.getElementById('selectExplosion');
+            //var selectSP = document.getElementById('selectSPNomenclature');
+            //var selectExplosion = document.getElementById('selectExplosion');
 
-            selectSP.options.length = 0;
-            selectExplosion.options.length = 0;
+            //selectSP.options.length = 0;
+            //selectExplosion.options.length = 0;
+
+
 
             //var lengthSP = selectSP.options.length;
             //for (i = 0; i < lengthSP; i++) {
@@ -1113,15 +1098,17 @@
 
                     $.each(nomenclatures, function (index, nomenclature) {
 
-                        var ooptionSP = document.createElement('option');
-                        ooptionSP.value = nomenclature.id;
-                        ooptionSP.innerText = nomenclature.name;
-                        selectSP.appendChild(ooptionSP);
+                        //var ooptionSP = document.createElement('option');
+                        //ooptionSP.value = nomenclature.id;
+                        //ooptionSP.innerText = nomenclature.name;
+                        //selectSP.appendChild(ooptionSP);
 
-                        var ooptionExplosion = document.createElement('option');
-                        ooptionExplosion.value = nomenclature.id;
-                        ooptionExplosion.innerText = nomenclature.name;
-                        selectExplosion.appendChild(ooptionExplosion);
+                        //var ooptionExplosion = document.createElement('option');
+                        //ooptionExplosion.value = nomenclature.id;
+                        //ooptionExplosion.innerText = nomenclature.name;
+                        //selectExplosion.appendChild(ooptionExplosion);
+
+
 
                         //resultNOMForSP.set(nomenclature.id, nomenclature.name);
                         //resultPRNTForSP.set(nomenclature.id, nomenclature.parentNomenclatureId);
@@ -1142,23 +1129,28 @@
         }
 
         function GetListNomenclatures() {
+            listNom = [];
             var selectSP = document.getElementById('selectSPNomenclature');
             var selectExplosion = document.getElementById('selectExplosion');
 
-            var optsSelect = selectSP.options;
-            while (optsSelect.length > 0) {
-                optsSelect[optsSelect.length - 1] = null;
-            }
-            var optsSelect1 = selectExplosion.options;
-            while (optsSelect1.length > 0) {
-                optsSelect1[optsSelect1.length - 1] = null;
-            }
+            selectSP.options.length = 0;
+            selectExplosion.options.length = 0;
+
+            //var optsSelect = selectSP.options;
+            //while (optsSelect.length > 0) {
+            //    optsSelect[optsSelect.length - 1] = null;
+            //}
+            //var optsSelect1 = selectExplosion.options;
+            //while (optsSelect1.length > 0) {
+            //    optsSelect1[optsSelect1.length - 1] = null;
+            //}
 
             $.ajax({
                 url: '/api/Nomenclature',
                 type: 'GET',
                 contentType: "application/json",
-                success: function (nomenclatures) {
+                success: function (nomenclatures) {selectSP.options.length = 0;
+            selectExplosion.options.length = 0;
 
                     $.each(nomenclatures, function (index, nomenclature) {
 

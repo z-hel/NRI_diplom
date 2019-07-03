@@ -262,13 +262,9 @@
         }
 
         async function DeletePattern() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetPatternById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var nameDEL = resultForDelete.get('name');
-                var workHourDEL = resultForDelete.get('workHour');
-                var dateTimeStartDEL = resultForDelete.get('dateTimeStart');
-                var dateTimeEndDEL = resultForDelete.get('dateTimeEnd');
 
                 var urlstr = "api/Pattern/" + idDEL;
                 $.ajax({
@@ -276,22 +272,20 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: nameDEL,
-                        workHour: workHourDEL,
-                        dateTimeStart: dateTimeStartDEL,
-                        dateTimeEnd: dateTimeEndDEL,
                         id: idDEL
                     }),
                     success: async function (pattern) {
-                        alert('Запись удалена');
-                        
-                        var table = document.getElementById('patternTable');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            var table = document.getElementById('patternTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetPatterns();
+                            CloseModal();
                         }
-                        await GetPatterns();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

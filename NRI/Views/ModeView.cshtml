@@ -275,14 +275,9 @@
         }
 
         async function DeleteMode() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetModeById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var modeNameDEL = resultForDelete.get('modeName');
-                var techOperationIdDEL = resultForDelete.get('techOperationId');
-                var singleProcessingTimeDEL = resultForDelete.get('singleProcessingTime');
-                var execOperationTimeDEL = resultForDelete.get('execOperationTime');
-                var execResourceTimeDEL = resultForDelete.get('execResourceTime');
 
                 var urlstr = "api/Mode/" + idDEL;
                 $.ajax({
@@ -290,23 +285,20 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        name: modeNameDEL,
-                        techOperationId: techOperationIdDEL,
-                        singleProcessingTime: singleProcessingTimeDEL,
-                        execOperationTime: execOperationTimeDEL,
-                        execResourceTime: execResourceTimeDEL,
                         id: idDEL
                     }),
                     success: async function (mode) {
-                        alert('Запись удалена');
-                        
-                        var table = document.getElementById('modeTable');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            var table = document.getElementById('modeTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetModes();
+                            CloseModal();
                         }
-                        await GetModes();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

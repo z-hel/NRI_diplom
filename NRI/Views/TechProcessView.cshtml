@@ -450,14 +450,9 @@
             }
 
             async function DeleteTechProcess() {
-                selectedForDelete.forEach(async function (elem) {
-                    await GetTechProcessById(elem);
+                var count = selectedForDelete.length;
+                selectedForDelete.map(async function (elem, index) {
                     var idDEL = elem;
-                    var techProcessNameDEL = resultForDelete.get('techProcessName');
-                    var nomenclatureIdDEL = resultForDelete.get('nomenclatureId');
-                    var launchBatchDEL = resultForDelete.get('launchBatch');
-                    var minBatchDEL = resultForDelete.get('minBatch');
-                    var maxBatchDEL = resultForDelete.get('maxBatch');
 
                     var urlstr = "api/TechProcess/" + idDEL;
                     $.ajax({
@@ -465,23 +460,20 @@
                         contentType: "application/json",
                         method: "DELETE",
                         data: JSON.stringify({
-                            name: techProcessNameDEL,
-                            nomenclatureId: nomenclatureIdDEL,
-                            launchBatch: launchBatchDEL,
-                            minBatch: minBatchDEL,
-                            maxBatch: maxBatchDEL,
                             id: idDEL
                         }),
                         success: async function (techProcess) {
-                            alert('Запись удалена');
+                            if (index == count - 1) {
+                                alert('Запись удалена');
 
-                            var table = document.getElementById('techProcessTable');
+                                var table = document.getElementById('techProcessTable');
 
-                            for (var i = 1; i < table.rows.length;) {
-                                table.deleteRow(i);
+                                for (var i = 1; i < table.rows.length;) {
+                                    table.deleteRow(i);
+                                }
+                                await GetTechProcesss();
+                                CloseModal();
                             }
-                            await GetTechProcesss();
-                            CloseModal();
                         },
                         error: function (e) {
                             console.log(e.message);

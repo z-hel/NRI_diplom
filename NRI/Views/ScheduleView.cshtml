@@ -273,38 +273,30 @@
         }
 
         async function DeleteSchedule() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetScheduleById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var patternIdDEL = resultForDelete.get('patternId');
-                var resourceIdDEL = resultForDelete.get('resourceId');
-                var nameDEL = resultForDelete.get('name');
-                var isAccessibilityDEL = resultForDelete.get('isAccessibility');
-                var dateTimeStartDEL = await figurePatternDate(patternIdDEL);
                 var urlstr = "api/Schedule/" + idDEL;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        patternId: patternIdDEL,
-                        resourceId: resourceIdDEL,
-                        dateTimeStart: dateTimeStartDEL,
-                        name: nameDEL,
-                        isAccessibility: isAccessibilityDEL,
                         id: idDEL
                     }),
                     success: async function (schedule) {
-                        alert('Запись удалена');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        //update table
-                        var table = document.getElementById('scheduleTable');
+                            //update table
+                            var table = document.getElementById('scheduleTable');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetSchedules();
+                            CloseModal();
                         }
-                        await GetSchedules();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);

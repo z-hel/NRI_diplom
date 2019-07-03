@@ -290,14 +290,9 @@
         }
 
         async function DeleteSetup() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetSetupById(elem);
+            var count = selectedForDelete.length;
+            selectedForDelete.map(async function (elem, index) {
                 var idDEL = elem;
-                var equipmentIdDEL = resultForDelete.get('equipmentId');
-                var currentModeDEL = resultForDelete.get('currentModeId');
-                var previousModeDEL = resultForDelete.get('previousModeId');
-                var nextModeDEL = resultForDelete.get('nextModeId');
-                var durationDEL = resultForDelete.get('duration');
 
                 var urlstr = "api/Setup/" + idDEL;
                 $.ajax({
@@ -305,24 +300,21 @@
                     contentType: "application/json",
                     method: "DELETE",
                     data: JSON.stringify({
-                        equipmentId: equipmentIdDEL,
-                        currentModeId: currentModeDEL,
-                        previousModeId: previousModeDEL,
-                        nextModeId: nextModeDEL,
-                        duration: durationDEL,
                         id: idDEL
                     }),
                     success: async function (setup) {
-                        alert('Запись удалена');
+                        if (index == count - 1) {
+                            alert('Запись удалена');
 
-                        //update table
-                        var table = document.getElementById('setupTable');
+                            //update table
+                            var table = document.getElementById('setupTable');
 
-                        for (var i = 1; i < table.rows.length;) {
-                            table.deleteRow(i);
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetSetups();
+                            CloseModal();
                         }
-                        await GetSetups();
-                        CloseModal();
                     },
                     error: function (e) {
                         console.log(e.message);
