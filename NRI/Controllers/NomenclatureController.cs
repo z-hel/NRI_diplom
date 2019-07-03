@@ -128,9 +128,9 @@ namespace NRI.Controllers
                             nomenclature.ReceiptTypeId = receiptTypeId;
 
                             TechProcessController techProcessController = new TechProcessController(appContext);
-                            var techProcess = techProcessController.Get(techProcessId);
+                            IActionResult techProcess = techProcessController.Get(techProcessId);
 
-                            if (techProcess != NotFound())
+                            if (!(techProcess.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult")))
                             {
                                 
                                 var techOperationId = 0;
@@ -138,23 +138,33 @@ namespace NRI.Controllers
 
                                 for (int y = 2; y <= totalRowsTechOperation; y++)
                                 {
-                                    var processId = int.Parse(workSheetTechOperation.Cells[i, 1].Value.ToString());
+                                    var processId = int.Parse(workSheetTechOperation.Cells[y, 1].Value.ToString());
                                     if (processId == techProcessId)
                                     {
-                                        techOperationsList.Add(int.Parse(workSheetTechOperation.Cells[i, 2].Value.ToString()));
+                                        techOperationsList.Add(int.Parse(workSheetTechOperation.Cells[y, 2].Value.ToString()));
                                     }
                                 }
                                 var techOperationIdOut = techOperationsList.Last();
                                 var techOperationIdNeed = techOperationsList.First();
 
                                 TechOperationController techOperationController = new TechOperationController(appContext);
-                                var techOperationForOut = techOperationController.Get(techOperationIdOut);
-                                var techOperationForNeed = techOperationController.Get(techOperationIdNeed);
+                                IActionResult techOperationForOut = techOperationController.Get(techOperationIdOut);
+                                IActionResult techOperationForNeed = techOperationController.Get(techOperationIdNeed);
 
                                 for (int x = 2; x <= totalRowsTechOperation; x++)
                                 {
                                     var id = int.Parse(workSheetTechOperation.Cells[x, 2].Value.ToString());
-                                    if ((techOperationForNeed == NotFound() || techOperationForOut == NotFound()) && (techOperationIdNeed == id || techOperationIdOut == id))
+                                    if (techOperationForNeed.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult") && techOperationIdNeed == id) //TODO == NotFound???
+                                    {
+                                        TechOperation techOperation = new TechOperation();
+                                        techOperation.Id = id;
+                                        techOperation.Name = workSheetTechOperation.Cells[x, 3].Value.ToString();
+                                        techOperation.TechProcessId = int.Parse(workSheetTechOperation.Cells[x, 1].Value.ToString());
+                                        techOperation.SerialNumber = int.Parse(workSheetTechOperation.Cells[x, 4].Value.ToString());
+                                        techOperationController.Post(techOperation);
+                                    }
+
+                                    if (techOperationForOut.ToString().Equals("Microsoft.AspNetCore.Mvc.NotFoundResult") && techOperationIdOut == id) //TODO == NotFound???
                                     {
                                         TechOperation techOperation = new TechOperation();
                                         techOperation.Id = id;
