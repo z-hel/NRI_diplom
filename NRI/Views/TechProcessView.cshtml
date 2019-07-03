@@ -100,122 +100,138 @@
         #form {
             margin: 0 0 0 0;
         }
+
+        #selectFilterTechProcess {
+            width: 50%;
+            float: right;
+        }
     </style>
 </head>
 
 
 <body>
-    <INPUT type="button" value="Добавить" data-modal="addModal" />
-    <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
-    <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
-    
+    <div style="display: inline-block; width: 100%;">
+        <div style="float: left;">
+            <INPUT type="button" value="Добавить" data-modal="addModal" />
+            <INPUT type="button" value="Редактировать" onclick="openEditModal()" />
+            <INPUT type="button" value="Удалить" onclick="openDeleteModal()" />
 
-    <form id="form" name="form" enctype="multipart/form-data" method="post">
-        <div class="buttons">
-            <div class="upload-button">
-                @*<div class="label">Click me!</div>*@
-                @*<input id="files" name="files" type="file" size="1" multiple onchange="importXlsx('files');" />*@
-                <INPUT id="files" class="import" name="files" type="file" size="1" value="Импорт" onchange="prepareFile('files')" />
-                <INPUT id="import" type="button" value="Импорт" onclick="importXlsx()" style="visibility:hidden;" />
-            </div>
-        </div>
-    </form>
 
-    @*<INPUT id="files" name="files" type="file" size="1" value="Импорт" onclick="importXlsx('files')" class="button" />*@
-    <div class="table">
-        <table id="techProcessTable">
-            <thead>
-                <tr>
-                    <th>Технологический процесс</th>
-                    <th>Номенклатура изделия</th>
-                    <th>Количество в партии запуска</th>
-                    <th>Минимальное количество в партии</th>
-                    <th>Максимальное количество в партии</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
 
-    <div id="overlay" class="overlay fadeOut" data-close=""></div>
-    <div class="modal-outer" style="top: -460px;">
-        <span class="closer" id="closer" data-close=""></span>
-        <div id="addModal">
-            <form name="techProcessForm">
-                <input type="hidden" name="id" value="0" />
-                <div class="form-group">
-                    <label for="techProcess">Технологический процесс:</label>
-                    <input class="form-control" name="techProcess" id="techProcess" />
-                </div>
-                <div class="form-group">
-                    <label for="nomenclature">Номенклатура изделия:</label>
-                    <select name="nomenclature" id="selectNomenclature"></select>
-                </div>
-                <div class="form-group">
-                    <label for="launchBatch">Количество в партии запуска:</label>
-                    <input class="form-control" name="launchBatch" id="launchBatch" />
-                </div>
-                <div class="form-group">
-                    <label for="minBatch">Минимальное количество в партии:</label>
-                    <input class="form-control" name="minBatch" id="minBatch" />
-                </div>
-                <div class="form-group">
-                    <label for="maxBatch">Максимальное количество в партии:</label>
-                    <input class="form-control" name="maxBatch" id="maxBatch" />
-                </div>
-                <div class="panel-body">
 
-                    <input type="button" value="Добавить" onclick="AddTechProcess()" />
-                    <input type="button" value="Сбросить" onclick="reset('techProcessForm')" />
+            <form id="form" name="form" enctype="multipart/form-data" method="post">
+                <div class="buttons">
+                    <div class="upload-button">
+                        @*<div class="label">Click me!</div>*@
+                        @*<input id="files" name="files" type="file" size="1" multiple onchange="importXlsx('files');" />*@
+                        <INPUT id="files" class="import" name="files" type="file" size="1" value="Импорт" onchange="prepareFile('files')" />
+                        <INPUT id="import" type="button" value="Импорт" onclick="importXlsx()" style="visibility:hidden;" />
+                    </div>
                 </div>
             </form>
         </div>
 
-
-        <div id="editModal">
-            <form name="techProcessEditForm">
-                <input type="hidden" name="id" value="0" />
-                <div class="form-group">
-                    <label for="techProcess">Технологический процесс:</label>
-                    <input class="form-control" name="techProcessEdit" id="techProcessEdit" />
-                </div>
-                <div class="form-group">
-                    <label for="nomenclature">Номенклатура изделия:</label>
-                    <select name="nomenclatureEdit" id="selectNomenclatureEdit"></select>
-                </div>
-                <div class="form-group">
-                    <label for="launchBatch">Количество в партии запуска:</label>
-                    <input class="form-control" name="launchBatchEdit" id="launchBatchEdit" />
-                </div>
-                <div class="form-group">
-                    <label for="minBatch">Минимальное количество в партии:</label>
-                    <input class="form-control" name="minBatchEdit" id="minBatchEdit" />
-                </div>
-                <div class="form-group">
-                    <label for="maxBatch">Максимальное количество в партии:</label>
-                    <input class="form-control" name="maxBatchEdit" id="maxBatchEdit" />
-                </div>
-                <div class="panel-body">
-
-                    <input type="button" value="Изменить" onclick="EditTechProcess()" />
-                    @*TODO*@
-                    <input type="button" value="Сбросить" onclick="reset('techProcessEditForm')" />
-                </div>
-            </form>
-        </div>
-
-
-        <div id="deleteModal">
-            <div class="panel-body">
-                <h3>Вы уверены, что хотите удалить запись?</h3>
-                <input type="button" value="Удалить" onclick="DeleteTechProcess()" />
-                <input type="button" value="Отменить" onclick="CloseModal()" />
-            </div>
+        <div style="float: right; display: inline-block; margin: 10px;">
+            <label for="filterTechProcess" style="float: left; margin-top: 10px; margin-bottom: 10px;">Технологический процесс:</label>
+            <select name="selectFilterTechProcess" id="selectFilterTechProcess" onchange="FilterTechProcess()"></select>
         </div>
     </div>
 
+        @*<INPUT id="files" name="files" type="file" size="1" value="Импорт" onclick="importXlsx('files')" class="button" />*@
+        <div class="table">
+            <table id="techProcessTable">
+                <thead>
+                    <tr>
+                        <th>Технологический процесс</th>
+                        <th>Номенклатура изделия</th>
+                        <th>Количество в партии запуска</th>
+                        <th>Минимальное количество в партии</th>
+                        <th>Максимальное количество в партии</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
-    <script>
+        <div id="overlay" class="overlay fadeOut" data-close=""></div>
+        <div class="modal-outer" style="top: -460px;">
+            <span class="closer" id="closer" data-close=""></span>
+            <div id="addModal">
+                <form name="techProcessForm">
+                    <input type="hidden" name="id" value="0" />
+                    <div class="form-group">
+                        <label for="techProcess">Технологический процесс:</label>
+                        <input class="form-control" name="techProcess" id="techProcess" />
+                    </div>
+                    <div class="form-group">
+                        <label for="nomenclature">Номенклатура изделия:</label>
+                        <select name="nomenclature" id="selectNomenclature"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="launchBatch">Количество в партии запуска:</label>
+                        <input class="form-control" name="launchBatch" id="launchBatch" />
+                    </div>
+                    <div class="form-group">
+                        <label for="minBatch">Минимальное количество в партии:</label>
+                        <input class="form-control" name="minBatch" id="minBatch" />
+                    </div>
+                    <div class="form-group">
+                        <label for="maxBatch">Максимальное количество в партии:</label>
+                        <input class="form-control" name="maxBatch" id="maxBatch" />
+                    </div>
+                    <div class="panel-body">
+
+                        <input type="button" value="Добавить" onclick="AddTechProcess()" />
+                        <input type="button" value="Сбросить" onclick="reset('techProcessForm')" />
+                    </div>
+                </form>
+            </div>
+
+
+            <div id="editModal">
+                <form name="techProcessEditForm">
+                    <input type="hidden" name="id" value="0" />
+                    <div class="form-group">
+                        <label for="techProcess">Технологический процесс:</label>
+                        <input class="form-control" name="techProcessEdit" id="techProcessEdit" />
+                    </div>
+                    <div class="form-group">
+                        <label for="nomenclature">Номенклатура изделия:</label>
+                        <select name="nomenclatureEdit" id="selectNomenclatureEdit"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="launchBatch">Количество в партии запуска:</label>
+                        <input class="form-control" name="launchBatchEdit" id="launchBatchEdit" />
+                    </div>
+                    <div class="form-group">
+                        <label for="minBatch">Минимальное количество в партии:</label>
+                        <input class="form-control" name="minBatchEdit" id="minBatchEdit" />
+                    </div>
+                    <div class="form-group">
+                        <label for="maxBatch">Максимальное количество в партии:</label>
+                        <input class="form-control" name="maxBatchEdit" id="maxBatchEdit" />
+                    </div>
+                    <div class="panel-body">
+
+                        <input type="button" value="Изменить" onclick="EditTechProcess()" />
+                        @*TODO*@
+                        <input type="button" value="Сбросить" onclick="reset('techProcessEditForm')" />
+                    </div>
+                </form>
+            </div>
+
+
+            <div id="deleteModal">
+                <div class="panel-body">
+                    <h3>Вы уверены, что хотите удалить запись?</h3>
+                    <input type="button" value="Удалить" onclick="DeleteTechProcess()" />
+                    <input type="button" value="Отменить" onclick="CloseModal()" />
+                </div>
+            </div>
+        </div>
+
+
+        <script>
 
         var formData;
 
@@ -245,7 +261,7 @@
                     type: "POST",
                     success: async function (techProcess) {
                         //console.log(techProcess);
-                        
+
                         var table = document.getElementById('techProcessTable');
 
                         for (var i = 1; i < table.rows.length;) {
@@ -260,157 +276,99 @@
                         console.log(e.message);
                     }
                 });
-            
+
         }
-    </script>
+        </script>
 
-    <script>
-        var selectedCheckbox;
-        var selectedForDelete = [];
-        var resultForDelete = new Map();
+        <script>
+            var selectedCheckbox;
+            var selectedForDelete = [];
+            var resultForDelete = new Map();
+            //var techProcessesMap = new Map();
 
-        
+            async function FilterTechProcess() {
+                //techProcessesMap.clear();
+                var select = document.getElementById("selectFilterTechProcess");
+                var indexTechProcessSelected = select.options.selectedIndex;
+                //var value = select.options[indexTechProcessSelected].value;
+                var text = select.options[indexTechProcessSelected].text;
+                var table = document.getElementById('techProcessTable');
 
-        function EditTechProcess() {
+                for (var i = 1; i < table.rows.length;) {
+                    table.deleteRow(i);
+                }
 
-            var techProcessNamePUT = document.getElementById("techProcessEdit").value;
+                if (text == 'Все') {
 
-            var indexNomenclatureSelected = document.getElementById("selectNomenclatureEdit").options.selectedIndex;
-            var nomenclatureIdPUT = document.getElementById("selectNomenclatureEdit").options[indexNomenclatureSelected].value;
-
-            var launchBatchPUT = document.getElementById("launchBatchEdit").value;
-            if (launchBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
-
-            var minBatchPUT = document.getElementById("minBatchEdit").value;
-            if (minBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
-
-            var maxBatchPUT = document.getElementById("maxBatchEdit").value;
-            if (maxBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
-
-            var idPUT = selectedCheckbox;
-
-            var urlstr = "api/TechProcess/" + idPUT;
-            $.ajax({
-                url: urlstr,
-                contentType: "application/json",
-                method: "PUT",
-                data: JSON.stringify({
-                    name: techProcessNamePUT,
-                    nomenclatureId: nomenclatureIdPUT,
-                    launchBatch: launchBatchPUT,
-                    minBatch: minBatchPUT,
-                    maxBatch: maxBatchPUT,
-                    id: idPUT
-                }),
-                success: async function (techProcess) {
-                    reset('techProcessEditForm');
-                    alert('Запись успешно изменена');
-                    //update table
-
-                    var table = document.getElementById('techProcessTable');
-
-                    for (var i = 1; i < table.rows.length;) {
-                        table.deleteRow(i);
-                    }
                     await GetTechProcesss();
-                    CloseModal();
-                },
-                error: function (e) {
-                    console.log(e.message);
                 }
-            })
-        }
+                else {
 
-        function openEditModal() {
+                    await $.ajax({
+                        url: '/api/TechProcess',
+                        type: 'GET',
+                        contentType: "application/json",
+                        success: function (techProcesses) {
 
-            $('input[type=checkbox]').each(async function () {
-                //if ($(this).is(':checked')) {
-                if (this.checked) {
-                    selectedCheckbox = this.value;
-                    var editModal = document.getElementById('editModal');
-
-                    somebodyShow(editModal);
-                    //TODO SHOW EDIT MODAL
+                            $.each(techProcesses, function (index, techProcess) {
+                                if (techProcess.name == text) {
+                                    //techProcessesMap.set(techProcess.id, techProcess);
 
 
-                    //editButton.setAttribute('data-modal', 'editModal');
-                    //showForEdit(editModal);
-                    //modalShow(editModal);
-                    //$("#editModal").show();
-                    var id = selectedCheckbox;
-                    await GetTechProcessById(id);
+                                    var transactionList = techProcess;
 
-                    return false;
+                                    addRow("techProcessTable", transactionList);
+                                }
+                            })
+                        },
+                        error: function (e) {
+                            console.log(e.message);
+                            if (e.status == 500) {
+                                alert('Нет соединения с базой данных');
+                            }
+                        }
+                    });
+                    
+
                 }
-            });
-            if (selectedCheckbox == null) {
-                alert('Не выбрана ни одна запись');
-            }
-            return false;
-        }
 
-        // сброс формы
-        function reset(formId) {
-            var form = document.forms[formId];
-            form.reset();
-            form.elements["id"].value = 0;
-        }
-
-
-        function CloseModal() {
-            var closer = document.getElementById('closer');
-            closer.click();
-        }
-
-
-        function openDeleteModal() {
-            selectedForDelete = [];
-
-            $('input[type=checkbox]').each(function () {
-                if (this.checked) {
-                    selectedForDelete.push(this.value)
-                }
-            });
-
-
-            if (selectedForDelete.length == 0) {
-                alert('Не выбрана ни одна запись');
-                return false;
             }
 
+            function EditTechProcess() {
 
-            var deleteModal = document.getElementById('deleteModal');
-            //TODO SHOW DELETE MODAL
-            somebodyShow(deleteModal);
+                var techProcessNamePUT = document.getElementById("techProcessEdit").value;
 
-            return false;
-        }
+                var indexNomenclatureSelected = document.getElementById("selectNomenclatureEdit").options.selectedIndex;
+                var nomenclatureIdPUT = document.getElementById("selectNomenclatureEdit").options[indexNomenclatureSelected].value;
 
-        async function DeleteTechProcess() {
-            selectedForDelete.forEach(async function (elem) {
-                await GetTechProcessById(elem);
-                var idDEL = elem;
-                var techProcessNameDEL = resultForDelete.get('techProcessName');
-                var nomenclatureIdDEL = resultForDelete.get('nomenclatureId');
-                var launchBatchDEL = resultForDelete.get('launchBatch');
-                var minBatchDEL = resultForDelete.get('minBatch');
-                var maxBatchDEL = resultForDelete.get('maxBatch');
+                var launchBatchPUT = document.getElementById("launchBatchEdit").value;
+                if (launchBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
 
-                var urlstr = "api/TechProcess/" + idDEL;
+                var minBatchPUT = document.getElementById("minBatchEdit").value;
+                if (minBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
+
+                var maxBatchPUT = document.getElementById("maxBatchEdit").value;
+                if (maxBatchPUT.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
+
+                var idPUT = selectedCheckbox;
+
+                var urlstr = "api/TechProcess/" + idPUT;
                 $.ajax({
                     url: urlstr,
                     contentType: "application/json",
-                    method: "DELETE",
+                    method: "PUT",
                     data: JSON.stringify({
-                        name: techProcessNameDEL,
-                        nomenclatureId: nomenclatureIdDEL,
-                        launchBatch: launchBatchDEL,
-                        minBatch: minBatchDEL,
-                        maxBatch: maxBatchDEL,
-                        id: idDEL
+                        name: techProcessNamePUT,
+                        nomenclatureId: nomenclatureIdPUT,
+                        launchBatch: launchBatchPUT,
+                        minBatch: minBatchPUT,
+                        maxBatch: maxBatchPUT,
+                        id: idPUT
                     }),
                     success: async function (techProcess) {
-                        alert('Запись удалена');
+                        reset('techProcessEditForm');
+                        alert('Запись успешно изменена');
+                        //update table
 
                         var table = document.getElementById('techProcessTable');
 
@@ -423,312 +381,344 @@
                     error: function (e) {
                         console.log(e.message);
                     }
+                })
+            }
+
+            function openEditModal() {
+
+                $('input[type=checkbox]').each(async function () {
+                    //if ($(this).is(':checked')) {
+                    if (this.checked) {
+                        selectedCheckbox = this.value;
+                        var editModal = document.getElementById('editModal');
+
+                        somebodyShow(editModal);
+                        //TODO SHOW EDIT MODAL
+
+
+                        //editButton.setAttribute('data-modal', 'editModal');
+                        //showForEdit(editModal);
+                        //modalShow(editModal);
+                        //$("#editModal").show();
+                        var id = selectedCheckbox;
+                        await GetTechProcessById(id);
+
+                        return false;
+                    }
                 });
-            })
-            //alert('Запись удалена');
-            //CloseModal();
-            //if (res) {
-            //    alert('Запись удалена');
+                if (selectedCheckbox == null) {
+                    alert('Не выбрана ни одна запись');
+                }
+                return false;
+            }
 
-            //    var table = document.getElementById('techProcessTable');
+            // сброс формы
+            function reset(formId) {
+                var form = document.forms[formId];
+                form.reset();
+                form.elements["id"].value = 0;
+            }
 
-            //    for (var i = 1; i < table.rows.length;) {
-            //        table.deleteRow(i);
-            //    }
-            //    await GetTechProcesss();
-            //    CloseModal();
+
+            function CloseModal() {
+                var closer = document.getElementById('closer');
+                closer.click();
+            }
+
+
+            function openDeleteModal() {
+                selectedForDelete = [];
+
+                $('input[type=checkbox]').each(function () {
+                    if (this.checked) {
+                        selectedForDelete.push(this.value)
+                    }
+                });
+
+
+                if (selectedForDelete.length == 0) {
+                    alert('Не выбрана ни одна запись');
+                    return false;
+                }
+
+
+                var deleteModal = document.getElementById('deleteModal');
+                //TODO SHOW DELETE MODAL
+                somebodyShow(deleteModal);
+
+                return false;
+            }
+
+            async function DeleteTechProcess() {
+                selectedForDelete.forEach(async function (elem) {
+                    await GetTechProcessById(elem);
+                    var idDEL = elem;
+                    var techProcessNameDEL = resultForDelete.get('techProcessName');
+                    var nomenclatureIdDEL = resultForDelete.get('nomenclatureId');
+                    var launchBatchDEL = resultForDelete.get('launchBatch');
+                    var minBatchDEL = resultForDelete.get('minBatch');
+                    var maxBatchDEL = resultForDelete.get('maxBatch');
+
+                    var urlstr = "api/TechProcess/" + idDEL;
+                    $.ajax({
+                        url: urlstr,
+                        contentType: "application/json",
+                        method: "DELETE",
+                        data: JSON.stringify({
+                            name: techProcessNameDEL,
+                            nomenclatureId: nomenclatureIdDEL,
+                            launchBatch: launchBatchDEL,
+                            minBatch: minBatchDEL,
+                            maxBatch: maxBatchDEL,
+                            id: idDEL
+                        }),
+                        success: async function (techProcess) {
+                            alert('Запись удалена');
+
+                            var table = document.getElementById('techProcessTable');
+
+                            for (var i = 1; i < table.rows.length;) {
+                                table.deleteRow(i);
+                            }
+                            await GetTechProcesss();
+                            CloseModal();
+                        },
+                        error: function (e) {
+                            console.log(e.message);
+                        }
+                    });
+                })
+                //alert('Запись удалена');
+                //CloseModal();
+                //if (res) {
+                //    alert('Запись удалена');
+
+                //    var table = document.getElementById('techProcessTable');
+
+                //    for (var i = 1; i < table.rows.length;) {
+                //        table.deleteRow(i);
+                //    }
+                //    await GetTechProcesss();
+                //    CloseModal();
+                //}
+
+
+
+            }
+
+
+            async function GetTechProcessById(id) {
+                var urlstr = "api/TechProcess/" + id;
+                await $.ajax({
+                    url: urlstr,
+                    type: 'GET',
+                    contentType: "application/json",
+                    success: async function (techProcess) {
+                        var previousTO = document.getElementById('techProcessEdit');
+                        previousTO.value = techProcess.name;
+
+                        var previousNomenclature = document.getElementById('selectNomenclatureEdit');
+                        previousNomenclature.value = techProcess.nomenclatureId;
+
+                        var previousLaunchBatch = document.getElementById('launchBatchEdit');
+                        previousLaunchBatch.value = techProcess.launchBatch;
+
+                        var previousMinBatch = document.getElementById('minBatchEdit');
+                        previousMinBatch.value = techProcess.minBatch;
+
+                        var previousMaxBatch = document.getElementById('maxBatchEdit');
+                        previousMaxBatch.value = techProcess.maxBatch;
+
+                        resultForDelete.set('techProcessName', techProcess.name);
+                        resultForDelete.set('nomenclatureId', techProcess.NomenclatureId);
+                        resultForDelete.set('launchBatch', techProcess.launchBatch);
+                        resultForDelete.set('minBatch', techProcess.minBatch);
+                        resultForDelete.set('maxBatch', techProcess.maxBatch);
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            }
+
+            function GetNomenclatures() {
+                var select = document.getElementById('selectNomenclature');
+                var selectEdit = document.getElementById('selectNomenclatureEdit');
+                $.ajax({
+                    url: '/api/Nomenclature',
+                    type: 'GET',
+                    contentType: "application/json",
+                    success: function (nomenclatures) {
+                        $.each(nomenclatures, function (index, nomenclature) {
+                            var ooption = document.createElement('option');
+                            ooption.value = nomenclature.id;
+                            ooption.innerText = nomenclature.name
+                            select.appendChild(ooption);
+
+                            var ooptionEdit = document.createElement('option');
+                            ooptionEdit.value = nomenclature.id;
+                            ooptionEdit.innerText = nomenclature.name
+                            selectEdit.appendChild(ooptionEdit);
+                        })
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                });
+            }
+
+
+
+            function AddTechProcess() {
+                var techProcessName = document.getElementById("techProcess").value;
+
+                var indexNomenclatureSelected = document.getElementById("selectNomenclature").options.selectedIndex;
+                var nomenclatureId = document.getElementById("selectNomenclature").options[indexNomenclatureSelected].value;
+
+                var launchBatch = document.getElementById("launchBatch").value;
+                if (launchBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
+
+                var minBatch = document.getElementById("minBatch").value;
+                if (minBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
+
+                var maxBatch = document.getElementById("maxBatch").value;
+                if (maxBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
+
+
+                $.ajax({
+                    url: "api/techProcess",
+                    contentType: "application/json",
+                    method: "POST",
+                    data: JSON.stringify({
+                        name: techProcessName,
+                        nomenclatureId: nomenclatureId,
+                        launchBatch: launchBatch,
+                        minBatch: minBatch,
+                        maxBatch: maxBatch
+                    }),
+                    success: function (techProcess) {
+                        reset('techProcessForm');
+                        alert('Запись успешно добавлена');
+                        addRow('techProcessTable', techProcess);
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                    }
+                })
+            }
+
+
+            // Получение всех techProcess
+            function GetTechProcesss() {
+                //techProcessesMap.clear();
+
+                var select = document.getElementById('selectFilterTechProcess');
+                var option = document.createElement('option');
+                option.value = 'Все';
+                option.innerText = 'Все';
+                select.appendChild(option);
+
+                $.ajax({
+                    url: '/api/TechProcess',
+                    type: 'GET',
+                    contentType: "application/json",
+                    success: function (techProcesss) {
+
+                        $.each(techProcesss, function (index, techProcess) {
+                            var flag = 0;
+                            //techProcessesMap.set(techProcess.id, techProcess);
+
+                            var ooption = document.createElement('option');
+                            ooption.value = techProcess.id;
+                            ooption.innerText = techProcess.name;
+
+                            //select.options.forEach(function () {
+                            //    if (this == option) {
+                            //        flag = 1;
+                            //    }
+                            //});
+                            //if (flag != 1) {
+                                select.appendChild(ooption);
+
+                                var transactionList = techProcess;
+
+                                addRow("techProcessTable", transactionList);
+                            //}
+                        })
+                    },
+                    error: function (e) {
+                        console.log(e.message);
+                        if (e.status == 500) {
+                            alert('Нет соединения с базой данных');
+                        }
+                    }
+                });
+            }
+
+            //function GetTechProcessFilter() {
+
+
             //}
 
-
-
-        }
-
-
-        async function GetTechProcessById(id) {
-            var urlstr = "api/TechProcess/" + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: async function (techProcess) {
-                    var previousTO = document.getElementById('techProcessEdit');
-                    previousTO.value = techProcess.name;
-
-                    var previousNomenclature = document.getElementById('selectNomenclatureEdit');
-                    previousNomenclature.value = techProcess.nomenclatureId;
-
-                    var previousLaunchBatch = document.getElementById('launchBatchEdit');
-                    previousLaunchBatch.value = techProcess.launchBatch;
-
-                    var previousMinBatch = document.getElementById('minBatchEdit');
-                    previousMinBatch.value = techProcess.minBatch;
-
-                    var previousMaxBatch = document.getElementById('maxBatchEdit');
-                    previousMaxBatch.value = techProcess.maxBatch;
-
-                    resultForDelete.set('techProcessName', techProcess.name);
-                    resultForDelete.set('nomenclatureId', techProcess.NomenclatureId);
-                    resultForDelete.set('launchBatch', techProcess.launchBatch);
-                    resultForDelete.set('minBatch', techProcess.minBatch);
-                    resultForDelete.set('maxBatch', techProcess.maxBatch);
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-
-        function GetNomenclatures() {
-            var select = document.getElementById('selectNomenclature');
-            var selectEdit = document.getElementById('selectNomenclatureEdit');
-            $.ajax({
-                url: '/api/Nomenclature',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclatures) {
-                    $.each(nomenclatures, function (index, nomenclature) {
-                        var ooption = document.createElement('option');
-                        ooption.value = nomenclature.id;
-                        ooption.innerText = nomenclature.name
-                        select.appendChild(ooption);
-
-                        var ooptionEdit = document.createElement('option');
-                        ooptionEdit.value = nomenclature.id;
-                        ooptionEdit.innerText = nomenclature.name
-                        selectEdit.appendChild(ooptionEdit);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-        }
-
-
-
-        function AddTechProcess() {
-            var techProcessName = document.getElementById("techProcess").value;
-
-            var indexNomenclatureSelected = document.getElementById("selectNomenclature").options.selectedIndex;
-            var nomenclatureId = document.getElementById("selectNomenclature").options[indexNomenclatureSelected].value;
-
-            var launchBatch = document.getElementById("launchBatch").value;
-            if (launchBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Количество в партии запуска"'); }
-
-            var minBatch = document.getElementById("minBatch").value;
-            if (minBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Минимальное количество в партии"'); }
-
-            var maxBatch = document.getElementById("maxBatch").value;
-            if (maxBatch.match(/^[-\+]?\d+/) === null) { alert('Укажите корректное числовое значение параметра "Максимальное количество в партии"'); }
-
-
-            $.ajax({
-                url: "api/techProcess",
-                contentType: "application/json",
-                method: "POST",
-                data: JSON.stringify({
-                    name: techProcessName,
-                    nomenclatureId: nomenclatureId,
-                    launchBatch: launchBatch,
-                    minBatch: minBatch,
-                    maxBatch: maxBatch
-                }),
-                success: function (techProcess) {
-                    reset('techProcessForm');
-                    alert('Запись успешно добавлена');
-                    addRow('techProcessTable', techProcess);
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            })
-        }
-
-
-        // Получение всех techProcess
-        function GetTechProcesss() {
-            $.ajax({
-                url: '/api/TechProcess',
-                type: 'GET',
-                contentType: "application/json",
-                success: function (techProcesss) {
-
-                    $.each(techProcesss, function (index, techProcess) {
-                        var transactionList = techProcess;
-
-                        addRow("techProcessTable", transactionList);
-                    })
-                },
-                error: function (e) {
-                    console.log(e.message);
-                    if (e.status == 500) {
-                        alert('Нет соединения с базой данных');
+            async function GetNomenclatureName(id) {
+                var name;
+                var urlstr = '/api/Nomenclature/' + id;
+                await $.ajax({
+                    url: urlstr,
+                    type: 'GET',
+                    contentType: "application/json",
+                    success: function (nomenclature) {
+                        name = nomenclature.name;
+                    },
+                    error: function (e) {
+                        console.log(e.message);
                     }
-                }
-            });
-        }
-
-        async function GetNomenclatureName(id) {
-            var name;
-            var urlstr = '/api/Nomenclature/' + id;
-            await $.ajax({
-                url: urlstr,
-                type: 'GET',
-                contentType: "application/json",
-                success: function (nomenclature) {
-                    name = nomenclature.name;
-                },
-                error: function (e) {
-                    console.log(e.message);
-                }
-            });
-            return name;
-        }
-
-        async function addRow(tableID, data) {
-
-            var table = document.getElementById(tableID);
-
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-
-            var techProcessName = data.name;
-
-            var nomenclatureId = data.nomenclatureId;
-            var nomenclatureName = await GetNomenclatureName(nomenclatureId);
-
-            var cell1 = row.insertCell(0);
-            cell1.innerText = techProcessName;
-
-            var cell2 = row.insertCell(1);
-            cell2.innerText = nomenclatureName;
-
-            var cell3 = row.insertCell(2);
-            cell3.innerText = data.launchBatch;
-
-            var cell4 = row.insertCell(3);
-            cell4.innerText = data.minBatch;
-
-            var cell5 = row.insertCell(4);
-            cell5.innerText = data.maxBatch;
-
-            var cell6 = row.insertCell(5);
-            //var el = document.createElement('label');
-            //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
-            //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
-            cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
-            //cell4.appendChild(el);
-        }
-        GetTechProcesss();
-        GetNomenclatures();
-
-
-
-
-
-
-        var overlay = document.getElementById('overlay'),
-            mOpen = document.querySelectorAll('[data-modal]'),
-            mClose = document.querySelectorAll('[data-close]'),
-            outer = document.querySelector('.modal-outer'),
-            modals = document.querySelectorAll('.modal-outer > div'),
-            duration = 400,
-            mStatus = false,
-            h = null;
-
-
-
-        setTopOuter();
-
-        function setTopOuter() {
-            outer.style.top = -outer.offsetHeight + 'px';
-        }
-
-
-        function somebodyShow(modal) {
-
-            mStatus = true;
-            overlay.classList.remove('fadeOut');
-            overlay.classList.add('fadeIn');
-            modal.style.display = 'block';
-
-            var start = new Date().getTime(),
-                startTop = outer.getBoundingClientRect().top,
-                finalTop = (window.innerHeight - outer.offsetHeight) / 2,
-                offset = outer.offsetHeight + finalTop;
-
-            var fn = function () {
-                var now = new Date().getTime() - start,
-                    currTop = Math.round(startTop + offset * now / duration);
-
-                currTop = (currTop > finalTop) ? finalTop : currTop;
-                outer.style.top = currTop + 'px';
-
-                if (currTop < finalTop) {
-                    requestAnimationFrame(fn);
-                }
-            }
-            requestAnimationFrame(fn);
-            window.addEventListener('resize', setTopOpenOuter);
-        }
-
-        function setTopOpenOuter() {
-            outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
-        }
-
-        (function () {
-            if (mOpen.length == 0) return;
-            [].forEach.call(mOpen, function (el) {
-                el.addEventListener('click', function (e) {
-                    var modalId = el.getAttribute('data-modal'),
-                        modal = document.getElementById(modalId);
-                    somebodyShow(modal);
                 });
-            });
-        }());
-
-
-        [].forEach.call(mClose, function (el) {
-            el.addEventListener('click', modalClose);
-        });
-
-        document.addEventListener('keydown', modalClose);
-
-
-        function modalClose(event) {
-            if (mStatus && (!event.keyCode || event.keyCode === 27)) {
-                mStatus = false;
-
-                var start = new Date().getTime(),
-                    startTop = outer.getBoundingClientRect().top,
-                    finalTop = -outer.offsetHeight,
-                    offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
-
-                var fn = function () {
-                    var now = new Date().getTime() - start,
-                        currTop = Math.round(startTop - offset * now / duration);
-
-                    currTop = (currTop < finalTop) ? finalTop : currTop;
-                    outer.style.top = currTop + 'px';
-
-                    if (currTop > finalTop) {
-                        requestAnimationFrame(fn);
-                    } else {
-                        overlay.classList.remove('fadeIn');
-                        overlay.classList.add('fadeOut');
-                        [].forEach.call(modals, function (modal) {
-                            modal.removeAttribute('style');
-                        });
-                    }
-                }
-                requestAnimationFrame(fn);
-                window.removeEventListener('resize', setTopOpenOuter);
+                return name;
             }
-        }
+
+            async function addRow(tableID, data) {
+
+                var table = document.getElementById(tableID);
+
+                var rowCount = table.rows.length;
+                var row = table.insertRow(rowCount);
+
+                var techProcessName = data.name;
+
+                var nomenclatureId = data.nomenclatureId;
+                var nomenclatureName = await GetNomenclatureName(nomenclatureId);
+
+                var cell1 = row.insertCell(0);
+                cell1.innerText = techProcessName;
+
+                var cell2 = row.insertCell(1);
+                cell2.innerText = nomenclatureName;
+
+                var cell3 = row.insertCell(2);
+                cell3.innerText = data.launchBatch;
+
+                var cell4 = row.insertCell(3);
+                cell4.innerText = data.minBatch;
+
+                var cell5 = row.insertCell(4);
+                cell5.innerText = data.maxBatch;
+
+                var cell6 = row.insertCell(5);
+                //var el = document.createElement('label');
+                //cell4.innerHTML = '<input type="checkbox" class="cbx" value="' + data.id + '" id="checkbox' + data.id + '" style="display: none;"><label for="checkbox' + data.id + '" class="check"><svg width="18px" height="18px" viewBox="0 0 18 18"><path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path><polyline points="1 9 7 14 15 4"></polyline></svg></label>';
+                //el.innerHTML = '<input type="checkbox" id="checkbox" value="' + data.id + '" id="cbx" style="display: block;">';
+                cell6.innerHTML = '<input type="checkbox" value="' + data.id + '" id="checkbox' + data.id + '"/><label for="checkbox' + data.id + '"></label>';
+                //cell4.appendChild(el);
+            }
+            GetTechProcesss();
+            GetNomenclatures();
 
 
 
-        ; (function () {
+
+
+
             var overlay = document.getElementById('overlay'),
                 mOpen = document.querySelectorAll('[data-modal]'),
                 mClose = document.querySelectorAll('[data-close]'),
@@ -738,7 +728,7 @@
                 mStatus = false,
                 h = null;
 
-            if (mOpen.length == 0) return;
+
 
             setTopOuter();
 
@@ -746,21 +736,9 @@
                 outer.style.top = -outer.offsetHeight + 'px';
             }
 
-            [].forEach.call(mOpen, function (el) {
-                el.addEventListener('click', function (e) {
-                    var modalId = el.getAttribute('data-modal'),
-                        modal = document.getElementById(modalId);
-                    modalShow(modal);
-                });
-            });
 
-            [].forEach.call(mClose, function (el) {
-                el.addEventListener('click', modalClose);
-            });
+            function somebodyShow(modal) {
 
-            document.addEventListener('keydown', modalClose);
-
-            function modalShow(modal) {
                 mStatus = true;
                 overlay.classList.remove('fadeOut');
                 overlay.classList.add('fadeIn');
@@ -785,6 +763,29 @@
                 requestAnimationFrame(fn);
                 window.addEventListener('resize', setTopOpenOuter);
             }
+
+            function setTopOpenOuter() {
+                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+            }
+
+            (function () {
+                if (mOpen.length == 0) return;
+                [].forEach.call(mOpen, function (el) {
+                    el.addEventListener('click', function (e) {
+                        var modalId = el.getAttribute('data-modal'),
+                            modal = document.getElementById(modalId);
+                        somebodyShow(modal);
+                    });
+                });
+            }());
+
+
+            [].forEach.call(mClose, function (el) {
+                el.addEventListener('click', modalClose);
+            });
+
+            document.addEventListener('keydown', modalClose);
+
 
             function modalClose(event) {
                 if (mStatus && (!event.keyCode || event.keyCode === 27)) {
@@ -817,15 +818,106 @@
                 }
             }
 
-            function setTopOpenOuter() {
-                outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
-            }
-        })();
 
-    </script>
 
-    <script>var typeAnimate = 'slide';</script>
-    @*<script>
+            ; (function () {
+                var overlay = document.getElementById('overlay'),
+                    mOpen = document.querySelectorAll('[data-modal]'),
+                    mClose = document.querySelectorAll('[data-close]'),
+                    outer = document.querySelector('.modal-outer'),
+                    modals = document.querySelectorAll('.modal-outer > div'),
+                    duration = 400,
+                    mStatus = false,
+                    h = null;
+
+                if (mOpen.length == 0) return;
+
+                setTopOuter();
+
+                function setTopOuter() {
+                    outer.style.top = -outer.offsetHeight + 'px';
+                }
+
+                [].forEach.call(mOpen, function (el) {
+                    el.addEventListener('click', function (e) {
+                        var modalId = el.getAttribute('data-modal'),
+                            modal = document.getElementById(modalId);
+                        modalShow(modal);
+                    });
+                });
+
+                [].forEach.call(mClose, function (el) {
+                    el.addEventListener('click', modalClose);
+                });
+
+                document.addEventListener('keydown', modalClose);
+
+                function modalShow(modal) {
+                    mStatus = true;
+                    overlay.classList.remove('fadeOut');
+                    overlay.classList.add('fadeIn');
+                    modal.style.display = 'block';
+
+                    var start = new Date().getTime(),
+                        startTop = outer.getBoundingClientRect().top,
+                        finalTop = (window.innerHeight - outer.offsetHeight) / 2,
+                        offset = outer.offsetHeight + finalTop;
+
+                    var fn = function () {
+                        var now = new Date().getTime() - start,
+                            currTop = Math.round(startTop + offset * now / duration);
+
+                        currTop = (currTop > finalTop) ? finalTop : currTop;
+                        outer.style.top = currTop + 'px';
+
+                        if (currTop < finalTop) {
+                            requestAnimationFrame(fn);
+                        }
+                    }
+                    requestAnimationFrame(fn);
+                    window.addEventListener('resize', setTopOpenOuter);
+                }
+
+                function modalClose(event) {
+                    if (mStatus && (!event.keyCode || event.keyCode === 27)) {
+                        mStatus = false;
+
+                        var start = new Date().getTime(),
+                            startTop = outer.getBoundingClientRect().top,
+                            finalTop = -outer.offsetHeight,
+                            offset = outer.offsetHeight + (window.innerHeight - outer.offsetHeight) / 2;
+
+                        var fn = function () {
+                            var now = new Date().getTime() - start,
+                                currTop = Math.round(startTop - offset * now / duration);
+
+                            currTop = (currTop < finalTop) ? finalTop : currTop;
+                            outer.style.top = currTop + 'px';
+
+                            if (currTop > finalTop) {
+                                requestAnimationFrame(fn);
+                            } else {
+                                overlay.classList.remove('fadeIn');
+                                overlay.classList.add('fadeOut');
+                                [].forEach.call(modals, function (modal) {
+                                    modal.removeAttribute('style');
+                                });
+                            }
+                        }
+                        requestAnimationFrame(fn);
+                        window.removeEventListener('resize', setTopOpenOuter);
+                    }
+                }
+
+                function setTopOpenOuter() {
+                    outer.style.top = (window.innerHeight - outer.offsetHeight) / 2 + 'px';
+                }
+            })();
+
+        </script>
+
+        <script>var typeAnimate = 'slide';</script>
+        @*<script>
             ; (function () {
                 var overlay = document.getElementById('overlay'),
                     mOpen = document.querySelectorAll('[data-modal]'),
